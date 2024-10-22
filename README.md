@@ -4,7 +4,7 @@
 
 ### User
 
-- user-list:
+- user-list: [http://backend-ip:8000/users/]() GET 获取当前所有用户的信息列表
 ```json
 {
     "count": 2,
@@ -31,7 +31,7 @@
 }
 ```
 
-- user-detail:
+- user-detail: [http://backend-ip:8000/users/\<int:pk\>]() GET 获取id为pk的用户详细信息(id是数据库自动生成的，不同于开发者分配的uid)
 ```json
 {
     "email": "Alice@gmail.com",
@@ -43,7 +43,7 @@
 }
 ```
 
-- user-register TODO:暂定只需传递以下字段
+- user-register: [http://backend-ip:8000/users/register/]() POST 向后端提交注册信息 TODO:暂定只需传递以下字段
 ```json
 {
     "email": "Alice@gmail.com",
@@ -51,7 +51,7 @@
     "password_hashed": "wevn852",
 }
 ```
-- user-login TODO:暂定只需传递以下字段
+- user-login: [http://backend-ip:8000/users/login/] POST 向后端提交登录信息 TODO:暂定只需传递以下字段
 ```json
 {
     "email": "Alice@gmail.com",
