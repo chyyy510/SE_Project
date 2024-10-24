@@ -28,3 +28,9 @@ class UserRegeisterSerializer(serializers.ModelSerializer):
         validated_data["is_staff"] = False
 
         return super().create(validated_data)
+
+
+class UserLoginSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["email", "password_hashed"]
