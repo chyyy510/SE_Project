@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from appuser.models import User
 from appuser.utils import GenerateInfo
+import os
+from .utils import PrivacyProtection
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -26,6 +28,11 @@ class UserRegeisterSerializer(serializers.ModelSerializer):
         validated_data["uid"] = GenerateInfo.generate_uid()
         validated_data["is_active"] = True  # ?TODO:需要发送验证码激活吗
         validated_data["is_staff"] = False
+
+        validated_data["salt"] = os.urandom(16)
+        validated_data["password_hashed"] = PrivacyProtection.hash_password(
+            validated_data["password_hashed"], validated_data["salt"]
+        )
 
         return super().create(validated_data)
 

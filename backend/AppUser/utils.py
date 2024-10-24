@@ -1,18 +1,22 @@
 # 放置一些工具函数
+from .models import User
+from django.db.models import Max
 
 
 class GenerateInfo:
-    uid_now_max = 1000000
 
     @classmethod
     def generate_uid(cls):
-        cls.uid_now_max += 1
-        return cls.uid_now_max
+        max_uid = User.objects.aggregate(Max("uid"))["uid__max"]
+        if max_uid == None:
+            max_uid = 1000000
+        max_uid += 1
+        return max_uid
 
 
 from Cryptodome.PublicKey import RSA
 from Cryptodome.Cipher import PKCS1_OAEP
-import base64
+import base64, hashlib
 
 
 class PrivacyProtection:
@@ -62,5 +66,6 @@ class PrivacyProtection:
         return decrypted_password.decode("utf-8")
 
     @classmethod
-    def hash_password(cls, password):  # 给解密后的密码
-        pass
+    def hash_password(cls, password, salt):  # 给解密后的密码+salt hash存数据库
+        password = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 100000)
+        return password.hex()

@@ -43,13 +43,15 @@ class UserLogin(generics.GenericAPIView):
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response(
-                {"error": "Invalid email or password"},
+                {"error": "Invalid email"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        if user.password_hashed != password_hashed:
+        this_password = PrivacyProtection.hash_password(password_hashed, user.salt)
+
+        if user.password_hashed != this_password:
             return Response(
-                {"error": "Invalid email or password"},
+                {"error": "Invalid password"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
