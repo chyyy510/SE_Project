@@ -37,7 +37,8 @@ class UserLogin(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         email = request.data.get("email")
-        password_hashed = request.data.get("password_hashed")
+        password_decrypted = request.data.get("password_hashed")
+        password_decrypted = PrivacyProtection.decrypt_password(password_decrypted)
 
         try:
             user = User.objects.get(email=email)
@@ -47,7 +48,7 @@ class UserLogin(generics.GenericAPIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        this_password = PrivacyProtection.hash_password(password_hashed, user.salt)
+        this_password = PrivacyProtection.hash_password(password_decrypted, user.salt)
 
         if user.password_hashed != this_password:
             return Response(
