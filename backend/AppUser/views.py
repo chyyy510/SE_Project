@@ -10,7 +10,7 @@ from appuser.serializers import (
 from rest_framework import generics
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
-from .utils import PrivacyProtection
+from utils.privacy_protection import PrivacyProtection
 
 
 # Create your views here.

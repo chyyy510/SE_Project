@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from appuser.models import User
-from appuser.utils import GenerateInfo
+from appuser.models import User, UserProfile
+from utils.generate_info import GenerateInfo
 import os
-from .utils import PrivacyProtection
+from utils.privacy_protection import PrivacyProtection
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "uid",
-            "nickname",
+            "username",
             "email",
             "password_hashed",
             "is_active",
@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserRegeisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["email", "nickname", "password_hashed"]
+        fields = ["email", "username", "password_hashed"]
 
     def create(self, validated_data):
         validated_data["uid"] = GenerateInfo.generate_uid()
@@ -41,3 +41,15 @@ class UserLoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["email", "password_hashed"]
+
+
+class UserProfileNicknameSerializer(serializers.Serializer):
+    class Meta:
+        model = UserProfile
+        fields = ["nickname"]
+
+
+class UserProfileAvatarSerializer(serializers.Serializer):
+    class Meta:
+        model = UserProfile
+        fields = ["avatar"]

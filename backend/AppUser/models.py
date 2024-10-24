@@ -1,12 +1,12 @@
 from django.db import models
-from django.contrib.auth.hashers import make_password, check_password
+from utils.generate_path import GeneratePath
 
 # Create your models here.
 
 
 class User(models.Model):
     uid = models.IntegerField(unique=True)
-    nickname = models.CharField(max_length=100)
+    username = models.CharField(max_length=128, unique=True)
     email = models.EmailField(unique=True)
     password_hashed = models.CharField(max_length=128)
     is_active = models.BooleanField(default=False)
@@ -14,4 +14,13 @@ class User(models.Model):
     salt = models.BinaryField()
 
     def __str__(self):
-        return self.nickname
+        return self.username
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    nickname = models.CharField(max_length=128)
+    avatar = models.ImageField(
+        upload_to=GeneratePath.generate_path_avatar,
+        default="avatar/user_0/default_avatar.png",
+    )
