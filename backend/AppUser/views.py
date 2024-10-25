@@ -3,14 +3,18 @@ from rest_framework.response import Response
 from appuser.models import User
 from appuser.serializers import (
     UserSerializer,
-    UserRegeisterSerializer,
-    UserLoginSerializer,
+    DataUserRegisterSerializer,
+    DataUserLoginSerializer,
 )
 
 from rest_framework import generics
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
+
+import os
+
 from utils.privacy_protection import PrivacyProtection
+from utils.generate_info import GenerateInfo
 
 
 # Create your views here.
@@ -26,12 +30,12 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
 
 
-class UserRegister(generics.CreateAPIView):
+"""class UserRegister(generics.CreateAPIView):
     queryset = User.objects.all()
-    serializer_class = UserRegeisterSerializer
+    serializer_class = UserRegeisterSerializer"""
 
 
-class UserLogin(generics.GenericAPIView):
+"""class UserLogin(generics.GenericAPIView):
     queryset = User.objects.all()
     serializer_class = UserLoginSerializer
 
@@ -68,9 +72,69 @@ class UserLogin(generics.GenericAPIView):
                     "is_active": user.is_active,
                 },
             }
-        )
+        )"""
 
 
 class UserTokenRefresh(TokenRefreshView):
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
+
+
+class UserProfileDetail(generics.GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        return Response({"user": user.username})
+
+
+class UserProfileAvatarUpload(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        return Response({"user": user.username})
+
+
+class UserRegister(generics.GenericAPIView):
+    queryset = User.objects.all()
+    serializer_class = DataUserRegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        # print(request.data)
+        email = request.data.get("email")
+        user_exists = User.objects.filter(email=email).exists()
+
+        if user_exists:
+            return Response(
+                {"message": "Email already exists."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        username = request.data.get("username")
+        user_exists = User.objects.filter(username=username).exists()
+
+        if user_exists:
+            return Response(
+                {"message": "Username already exists."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # dont exist continue to create
+        uid = GenerateInfo.generate_uid()
+        salt = os.urandom(16)
+        password_encrypted = request.data.get("password_encrypted")
+        password_de = PrivacyProtection.decrypt_password(password_encrypted)
+        password_hashed = PrivacyProtection.hash_password(password_de, salt)
+
+        user = User(
+            uid=uid,
+            email=email,
+            username=username,
+            password_hashed=password_hashed,
+            is_active=True,
+            is_staff=False,
+            salt=salt,
+        )
+
+        user.save()
+
+        serializer = UserSerializer(user)
+
+        return Response(serializer.data)

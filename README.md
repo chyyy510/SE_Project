@@ -59,8 +59,21 @@ POST 向后端提交注册信息 TODO:暂定只需传递以下字段
 ```json
 {
     "email": "Alice@gmail.com",
-    "nickname": "Alice",
-    "password_hashed": "wevn852",
+    "username": "Alice",
+    "password_encrypted": "wevn852",
+}
+```
+
+若数据库中已有email或username，返回错误
+```json
+{
+    "message": "Email already exists."
+}
+```
+或
+```json
+{
+    "message": "Username already exists."
 }
 ```
 #### user-login

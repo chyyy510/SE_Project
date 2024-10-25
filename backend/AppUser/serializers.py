@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from appuser.models import User, UserProfile
+from appuser.models import User, UserProfile, DataUserRegister, DataUserLogin
 from utils.generate_info import GenerateInfo
 import os
 from utils.privacy_protection import PrivacyProtection
@@ -53,3 +53,15 @@ class UserProfileAvatarSerializer(serializers.Serializer):
     class Meta:
         model = UserProfile
         fields = ["avatar"]
+
+
+class DataUserRegisterSerializer(serializers.Serializer):
+    class Meta:
+        model = DataUserRegister
+        fields = ["email", "username", "password_encrypted"]
+
+
+class DataUserLoginSerializer(serializers.Serializer):
+    class Meta:
+        model = DataUserLogin
+        fields = ["email", "password_encrypted"]
