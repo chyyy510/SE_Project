@@ -20,9 +20,12 @@ class PrivacyProtection:
         cipher = PKCS1_OAEP.new(private_key)
 
         # 解密
-        decrypted_password = cipher.decrypt(encrypted_password_bytes)
-
-        return decrypted_password.decode("utf-8")
+        try:
+            decrypted_password = cipher.decrypt(encrypted_password_bytes)
+            return decrypted_password.decode("utf-8")
+        except (ValueError, TypeError) as e:
+            # print("解密失败：", e)
+            return BaseException
 
     @classmethod
     def hash_password(cls, password, salt):  # 给解密后的密码+salt hash存数据库

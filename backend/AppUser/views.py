@@ -30,68 +30,6 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
 
 
-"""class UserRegister(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserRegeisterSerializer"""
-
-
-"""class UserLogin(generics.GenericAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserLoginSerializer
-
-    def post(self, request, *args, **kwargs):
-        email = request.data.get("email")
-        password_decrypted = request.data.get("password_hashed")
-        password_decrypted = PrivacyProtection.decrypt_password(password_decrypted)
-
-        try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            return Response(
-                {"error": "Invalid email"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-
-        this_password = PrivacyProtection.hash_password(password_decrypted, user.salt)
-
-        if user.password_hashed != this_password:
-            return Response(
-                {"error": "Invalid password"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-
-        refresh = RefreshToken.for_user(user)
-
-        return Response(
-            {
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-                "user": {
-                    "email": user.email,
-                    "nickname": user.nickname,
-                    "is_active": user.is_active,
-                },
-            }
-        )"""
-
-
-class UserTokenRefresh(TokenRefreshView):
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-
-
-class UserProfileDetail(generics.GenericAPIView):
-    def get(self, request, *args, **kwargs):
-        user = request.user
-        return Response({"user": user.username})
-
-
-class UserProfileAvatarUpload(generics.GenericAPIView):
-    def post(self, request, *args, **kwargs):
-        user = request.user
-        return Response({"user": user.username})
-
-
 class UserRegister(generics.GenericAPIView):
     queryset = User.objects.all()
     serializer_class = DataUserRegisterSerializer
@@ -138,3 +76,68 @@ class UserRegister(generics.GenericAPIView):
         serializer = UserSerializer(user)
 
         return Response(serializer.data)
+
+
+class UserLogin(generics.GenericAPIView):
+    queryset = User.objects.all()
+    serializer_class = DataUserLoginSerializer
+
+    def post(self, request, *args, **kwargs):
+        email = request.data.get("email")
+        password_decrypted = request.data.get("password_encrypted")
+        password_decrypted = PrivacyProtection.decrypt_password(password_decrypted)
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "Invalid email"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        try:
+            this_password = PrivacyProtection.hash_password(
+                password_decrypted, user.salt
+            )
+        except BaseException:
+            return Response(
+                {"error": "Invalid password"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        if user.password_hashed != this_password:
+            return Response(
+                {"error": "Invalid password"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        refresh = RefreshToken.for_user(user)
+
+        return Response(
+            {
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+                "user": {
+                    "email": user.email,
+                    "username": user.username,
+                    "is_active": user.is_active,
+                },
+            }
+        )
+
+
+class UserTokenRefresh(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+class UserProfileDetail(generics.GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        return Response({"user": user.username})
+
+
+class UserProfileAvatarUpload(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        return Response({"user": user.username})

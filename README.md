@@ -84,7 +84,7 @@ POST 向后端提交登录信息 TODO:暂定只需传递以下字段
 ```json
 {
     "email": "Alice@gmail.com",
-    "password_hashed": "wevn852",
+    "password_encrypted": "wevn852",
 }
 ```
 
@@ -97,14 +97,20 @@ POST 向后端提交登录信息 TODO:暂定只需传递以下字段
     "user": {
         "email": "Alice@gmail.com",
         "is_active": true,
-        "nickname": "Alice"
+        "username": "Alice"
     }
 }
 ```
 登录失败后端返回
 ```json
 {
-    "error": "Invalid email or password"
+    "error": "Invalid email"
+}
+```
+或
+```json
+{
+    "error": "Invalid password"
 }
 ```
 

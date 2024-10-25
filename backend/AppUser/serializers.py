@@ -19,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 
-class UserRegeisterSerializer(serializers.ModelSerializer):
+"""class UserRegeisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["email", "username", "password_hashed"]
@@ -34,13 +34,13 @@ class UserRegeisterSerializer(serializers.ModelSerializer):
             validated_data["password_hashed"], validated_data["salt"]
         )
 
-        return super().create(validated_data)
+        return super().create(validated_data)"""
 
 
-class UserLoginSerializer(serializers.ModelSerializer):
+"""class UserLoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["email", "password_hashed"]
+        fields = ["email", "password_hashed"]"""
 
 
 class UserProfileNicknameSerializer(serializers.Serializer):
