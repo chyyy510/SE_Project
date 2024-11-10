@@ -56,20 +56,23 @@ class UserRegister(generics.GenericAPIView):
 
         # dont exist continue to create
         uid = GenerateInfo.generate_uid()
-        salt = os.urandom(16)
+        # salt = os.urandom(16)
         password_encrypted = request.data.get("password_encrypted")
         password_de = PrivacyProtection.decrypt_password(password_encrypted)
-        password_hashed = PrivacyProtection.hash_password(password_de, salt)
+
+        # password_hashed = PrivacyProtection.hash_password(password_de, salt)
 
         user = User(
             uid=uid,
             email=email,
             username=username,
-            password_hashed=password_hashed,
+            # password_hashed=password_hashed,
             is_active=True,
             is_staff=False,
-            salt=salt,
+            # salt=salt,
         )
+
+        user.set_password(password_de)
 
         user.save()
 
@@ -83,6 +86,7 @@ class UserLogin(generics.GenericAPIView):
     serializer_class = DataUserLoginSerializer
 
     def post(self, request, *args, **kwargs):
+        print("login ok")
         email = request.data.get("email")
         password_decrypted = request.data.get("password_encrypted")
         password_decrypted = PrivacyProtection.decrypt_password(password_decrypted)
@@ -95,7 +99,7 @@ class UserLogin(generics.GenericAPIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        try:
+        """try:
             this_password = PrivacyProtection.hash_password(
                 password_decrypted, user.salt
             )
@@ -103,9 +107,9 @@ class UserLogin(generics.GenericAPIView):
             return Response(
                 {"error": "Invalid password"},
                 status=status.HTTP_401_UNAUTHORIZED,
-            )
+            )"""
 
-        if user.password_hashed != this_password:
+        if user.check_password(password_decrypted) == False:
             return Response(
                 {"error": "Invalid password"},
                 status=status.HTTP_401_UNAUTHORIZED,

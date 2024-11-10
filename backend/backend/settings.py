@@ -23,6 +23,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-vhyiojdg^-*uof^ib4e@xf8xyfi@bi3mx)$udk&u8en_v+2!48"
 
+# JWT 过期时间，设置为 5 小时
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),  # 访问令牌的过期时间
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # 刷新令牌的过期时间
+    #    "ROTATE_REFRESH_TOKENS": False,  # 是否轮换刷新令牌
+    #    "BLACKLIST_AFTER_ROTATION": True,  # 刷新令牌过期后是否将其加入黑名单
+    #   "ALGORITHM": "HS256",  # 使用的加密算法
+    #   "SIGNING_KEY": SECRET_KEY,  # 加密时使用的签名密钥
+    #  "VERIFYING_KEY": None,  # 如果需要验证 JWT，需要提供密钥
+    # "AUTH_HEADER_TYPES": ("Bearer",),  # 认证头的类型，默认为 "Bearer"
+    # "USER_ID_FIELD": "id",  # 设置用户标识字段，默认是 "id"
+    #  "USER_ID_CLAIM": "username",  # 设置 JWT 中的用户 ID 字段
+}
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -39,12 +56,14 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework_simplejwt",
     "corsheaders",
     "appuser",
     "experiment",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -52,7 +71,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
 ]
 
 CORS_ALLOWED_ALL_ORIGINS = True
@@ -96,7 +114,7 @@ DATABASES = {
     }
 }
 
-
+AUTH_USER_MODEL = "appuser.User"
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -135,12 +153,17 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# 设置分页器
+# Rest_framework相关
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",  # 设置 JWT 认证
+    ],
 }
 
 # media文件
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "media/"
+
+# logging
