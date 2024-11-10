@@ -132,6 +132,8 @@ class UserLogin(generics.GenericAPIView):
 
 class UserTokenRefresh(TokenRefreshView):
     def post(self, request, *args, **kwargs):
+        user = request.user
+        print(user)
         return super().post(request, *args, **kwargs)
 
 
