@@ -22,5 +22,5 @@ class Experiment(models.Model):
     money_left = models.DecimalField(
         max_digits=10, decimal_places=2, validators=[MinValueValidator(0.01)]
     )
-    time_created = models.DateTimeField()
-    time_modified = models.DateTimeField()
+    # time_created = models.DateTimeField()
+    # time_modified = models.DateTimeField()
