@@ -1,19 +1,12 @@
 from rest_framework import serializers
 
-from .models import Experiment
+from experiment.models import Experiment
 
 
-class ExperimentSerializer(serializers.Serializer):
+class ExperimentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Experiment
-        fields = [
-            "id",
-            "title",
-            "status",
-            "creator",
-            "person_wanted",
-            "person_already",
-        ]
+        fields = "__all__"
 
 
 class ExperimentCreateSerializer(serializers.Serializer):

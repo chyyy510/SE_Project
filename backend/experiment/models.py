@@ -7,7 +7,7 @@ from django.core.validators import MinValueValidator
 
 class Experiment(models.Model):
     title = models.CharField(max_length=128)
-    description = models.TextField
+    description = models.TextField()
     statuse_choice = {("open", "进行中"), ("close", "已结束")}
     status = models.CharField(max_length=8)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -22,5 +22,8 @@ class Experiment(models.Model):
     money_left = models.DecimalField(
         max_digits=10, decimal_places=2, validators=[MinValueValidator(0.01)]
     )
-    # time_created = models.DateTimeField()
-    # time_modified = models.DateTimeField()
+    time_created = models.DateTimeField()
+    time_modified = models.DateTimeField()
+
+    def __str__(self):
+        return self.title + '"' + self.description + '"'
