@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from django.contrib.auth.models import AnonymousUser
 from experiment.models import Experiment
 from experiment.serializers import ExperimentSerializer, ExperimentCreateSerializer
 
@@ -27,6 +28,12 @@ class ExperimentCreate(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         user = request.user
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
         title = request.data.get("title")
         description = request.data.get("description")
         person_wanted = request.data.get("person_wanted")
