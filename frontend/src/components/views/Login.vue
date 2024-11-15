@@ -24,20 +24,36 @@
   </div>
 </template>
 
+
 <script>
+import { user_login } from '../api/api';
+import axios from 'axios';
 export default {
   name: 'Login',
   data() {
     return {
-      username: '',
+      email: '',
       password: '',
+      username: '',
       remember: false
     };
   },
   methods: {
-    login() {
-      this.$router.push('/home');
-    }
+    async login() { 
+      try { 
+        this.$router.push({ name: 'User' });
+        const response = await user_login(this.email, this.password);
+        if (response.data.is_active) { 
+          // 登录成功，跳转到 User.vue 
+          this.$router.push({ name: 'User' }); } 
+        else { 
+          // 登录失败，显示错误信息 
+          this.errorMessage = 'Login failed. Please check your email and password.'; } 
+        } 
+          catch (error) { 
+            // 处理请求错误 
+            this.errorMessage = 'An error occurred. Please try again later.'; } 
+          }
   }
 };
 </script>

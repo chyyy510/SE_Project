@@ -3,7 +3,9 @@ import Router from 'vue-router'
 import Home from '@/components/views/Home.vue'
 import Login from '@/components/views/Login.vue'
 import Register from '@/components/views/Register.vue'
-import Projects from '@/components/views/Projects.vue'
+import User from '../components/views/User.vue'
+import ProjectSearch from '../components/views/ProjectSearch.vue'
+import ProjectDetail from '../components/views/ProjectDetail.vue'
 
 Vue.use(Router)
 
@@ -24,10 +26,20 @@ export default new Router({
       path: '/register',
       name: 'Register',
       component: Register
-    },{
-      path: '/projects',
-      name: 'projects',
-      component: Projects
+    },
+    { path: '/user', 
+      name: 'User', 
+      component: User 
+    },
+    { path: '/projects',
+      name: 'ProjectSearch',
+      component: ProjectSearch
+    },
+    {
+      path: '/projects/:id',
+      name: 'ProjectDetail',
+      component: ProjectDetail,
+      props: true
     }
   ]
 })

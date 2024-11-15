@@ -29,7 +29,8 @@
 </template>
 
 <script>
-import { postRegister } from '@/api/api';
+import { postRegister } from '../api/api';
+import axios from 'axios';
 export default {
   name: 'Register',
   data() {
@@ -41,9 +42,30 @@ export default {
   },
   methods: {
     register() {
-      //postRegister(this.email, this.username, this.password);
+      postRegister(this.email, this.username, this.password);
+      
       alert("注册成功");
-      this.$router.push('/login');
+      /*axios.get('http://localhost:8000/users')
+  .then(response => {
+    console.log(response.data);
+  })
+  .catch(error => {
+    if (error.response) {
+      // 请求成功发出且服务器也响应了状态码，但状态代码超出了 2xx 的范围
+      console.log('1');//error.response.data
+      console.log('2');//error.response.status
+      console.log('3');//error.response.headers
+    } else if (error.request) {
+      // 请求已经成功发起，但没有收到响应
+      console.log('error1',error.request);//,error.request
+    } else {
+      // 发送请求时出了点问题
+      console.log('Error2',error.message);// error.message
+    }
+    console.log('4');//error.config
+  });
+
+      this.$router.push('/login');*/
     }
   }
 };
