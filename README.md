@@ -140,3 +140,173 @@ POST 向后端提交之前获取的refresh
     "detail": "Token is invalid or expired"
 }
 ```
+
+#### user-profile
+
+[http://backend-ip:8000/users/profile]
+
+GET 前端获取当前登录用户的主页信息TODO:
+
+需要在header中包含**Authorization:"Bearer \<之前获取的access\>"**（没有尖括号）
+
+### experiment
+
+#### experiment-list
+
+[http://backend-ip:8000/experiments/]
+
+GET 前端获取所有的实验信息
+
+```json
+{
+    "count": 7,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "creator": 1,
+            "description": "This is a test experiment.",
+            "id": 1,
+            "money_left": "0.00",
+            "money_paid": "0.00",
+            "money_per_person": "10.00",
+            "person_already": 0,
+            "person_wanted": 20,
+            "status": "open",
+            "time_created": "2024-11-13T15:52:50.431072+08:00",
+            "time_modified": "2024-11-13T15:52:50.431078+08:00",
+            "title": "test_exp"
+        },
+        {
+            "creator": 1,
+            "description": "This is a test experiment.",
+            "id": 2,
+            "money_left": "0.00",
+            "money_paid": "0.00",
+            "money_per_person": "10.00",
+            "person_already": 0,
+            "person_wanted": 20,
+            "status": "open",
+            "time_created": "2024-11-13T16:20:06.554001+08:00",
+            "time_modified": "2024-11-13T16:20:06.554006+08:00",
+            "title": "test_exp"
+        },
+        ...
+    ]
+}
+```
+
+#### experiment-create
+
+[http://backend-ip:8000/experiments/create/]
+
+POST 前端向后端发送要创建的实验信息，进行此功能必须先登录
+
+前端发送：
+```json
+{
+    "title": "xxx",
+    "description": "xxx",
+    "person_wanted": 20,
+    "money_per_person": 10,
+}
+```
+
+后端返回创建后的详细信息：
+```json
+{
+    "creator": 1,
+    "description": "This is another test experiment.",
+    "id": 8,
+    "money_left": "0.00",
+    "money_paid": "0.00",
+    "money_per_person": "10.00",
+    "person_already": 0,
+    "person_wanted": 20,
+    "status": "open",
+    "time_created": "2024-11-13T22:22:54.415083+08:00",
+    "time_modified": "2024-11-13T22:22:54.415104+08:00",
+    "title": "another_test_exp"
+}
+```
+
+#### experiment-search
+
+[http://backend-ip:8000/experiments/search/?title=aaa&description=bbb&orderby=ccc&sort=ddd]
+
+GET 查找title中包含aaa且description中包含bbb且按ccc字段降序或升序排列的实验列表
+
+四个关键字可部分使用，title默认为空，description默认为空（即包含全部实验），orderby默认按id，sort可选asc或desc，默认为asc。
+
+后端返回满足搜索条件的实验列表
+```json
+{
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "creator": 1,
+            "description": "This is another test experiment.",
+            "id": 8,
+            "money_left": "0.00",
+            "money_paid": "0.00",
+            "money_per_person": "10.00",
+            "person_already": 0,
+            "person_wanted": 20,
+            "status": "open",
+            "time_created": "2024-11-13T22:22:54.415083+08:00",
+            "time_modified": "2024-11-13T22:22:54.415104+08:00",
+            "title": "another_test_exp"
+        },
+        {
+            "creator": 1,
+            "description": "This is another test experiment.",
+            "id": 7,
+            "money_left": "0.00",
+            "money_paid": "0.00",
+            "money_per_person": "10.00",
+            "person_already": 0,
+            "person_wanted": 20,
+            "status": "open",
+            "time_created": "2024-11-13T21:27:06.787422+08:00",
+            "time_modified": "2024-11-13T21:27:06.787444+08:00",
+            "title": "another_test_exp"
+        }
+    ]
+}
+```
+
+### other
+
+所有需要登录进行的操作，若未登录或token过期，均返回401_UNAUTHORIZED错误，其中
+
+未登录：
+```json
+{
+    "detail": "Authentication required"
+}
+```
+
+access token过期:
+```json
+{
+    "code": "token_not_valid",
+    "detail": "此令牌对任何类型的令牌无效",
+    "messages": [
+        {
+            "message": "令牌无效或已过期",
+            "token_class": "AccessToken",
+            "token_type": "access"
+        }
+    ]
+}
+```
+
+refresh token过期:
+```json
+{
+    "code": "token_not_valid",
+    "detail": "令牌无效或已过期"
+}
+```

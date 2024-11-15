@@ -4,3 +4,5 @@ __pycache__/
 .vscode/
 privacy/
 node_modules/
+backend-env/
+logs/
