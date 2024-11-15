@@ -16,4 +16,9 @@ urlpatterns = [
     path("login/", UserLogin.as_view(), name="user-login"),
     path("token/refresh/", UserTokenRefresh.as_view(), name="token-refresh"),
     path("profile/", UserProfileDetail.as_view(), name="user-profile"),
+    path(
+        "profile/update/avatar/",
+        UserProfileAvatarUpload.as_view(),
+        name="avatar-upload",
+    ),
 ]

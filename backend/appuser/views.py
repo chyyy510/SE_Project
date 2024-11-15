@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.response import Response
-from appuser.models import User
+from rest_framework.parsers import FormParser, MultiPartParser
+from appuser.models import User, UserProfile
 from appuser.serializers import (
     UserSerializer,
     DataUserRegisterSerializer,
@@ -11,10 +12,15 @@ from rest_framework import generics
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 
-import os
+from django.core.files.storage import FileSystemStorage
+from django.core.exceptions import ValidationError
+from django.contrib.auth.models import AnonymousUser
+from django.conf import settings
+
 
 from utils.privacy_protection import PrivacyProtection
 from utils.generate_info import GenerateInfo
+from utils.generate_path import GeneratePath
 
 
 # Create your views here.
@@ -76,6 +82,9 @@ class UserRegister(generics.GenericAPIView):
 
         user.save()
 
+        userprofile = UserProfile(user=user, nickname="user" + str(uid))
+        userprofile.save()
+
         serializer = UserSerializer(user)
 
         return Response(serializer.data)
@@ -98,16 +107,6 @@ class UserLogin(generics.GenericAPIView):
                 {"error": "Invalid email"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
-
-        """try:
-            this_password = PrivacyProtection.hash_password(
-                password_decrypted, user.salt
-            )
-        except BaseException:
-            return Response(
-                {"error": "Invalid password"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )"""
 
         if user.check_password(password_decrypted) == False:
             return Response(
@@ -140,10 +139,55 @@ class UserTokenRefresh(TokenRefreshView):
 class UserProfileDetail(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         user = request.user
-        return Response({"user": user.username})
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        profile = UserProfile.objects.get(user=user)
+
+        return Response(
+            {
+                "user": user.username,
+                "nickname": profile.nickname,
+                "avatar": profile.avatar,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class UserProfileAvatarUpload(generics.GenericAPIView):
+
     def post(self, request, *args, **kwargs):
         user = request.user
-        return Response({"user": user.username})
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        image = request.FILES.get("avatar")
+
+        if not image:
+            return Response(
+                {"detail": "No avatar file uploaded."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not image.content_type.startswith("image"):
+            return Response(
+                {"detail": "The file is not an image."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        fs = FileSystemStorage(location=settings.MEDIA_ROOT)  # 设置文件存储位置
+        filename = GeneratePath.generate_path_avatar(request, image.name)
+        filename = fs.save(filename, image)  # 保存文件
+        file_url = fs.url(filename)
+
+        profile = UserProfile.objects.get(user=user)
+        profile.avatar = file_url
+
+        profile.save()
+
+        return Response({"user": user.username, "avatar_url": file_url})
