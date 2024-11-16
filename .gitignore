@@ -6,3 +6,5 @@ privacy/
 node_modules/
 backend-env/
 logs/
+.venv/
+.idea/
