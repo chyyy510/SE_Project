@@ -7,7 +7,7 @@ class GenerateInfo:
     @classmethod
     def generate_uid(cls):
         max_uid = User.objects.aggregate(Max("uid"))["uid__max"]
-        if max_uid == None:
+        if max_uid is None:
             max_uid = 1000000
         max_uid += 1
         return max_uid
