@@ -30,7 +30,6 @@
 
 <script>
 import { postRegister } from '../api/api';
-import axios from 'axios';
 export default {
   name: 'Register',
   data() {
@@ -41,31 +40,25 @@ export default {
     };
   },
   methods: {
-    register() {
-      postRegister(this.email, this.username, this.password);
-      
+    async getRsaCode (str){ // 注册方法
+      let pubKey = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmIzophqDebSpnL77RK0l
+6l8TECsiW7t1+7ilLuc0OtPBFgRaIyEUhjV90XY1LJcWZ3UmdZ77GBoHRcZa0UAE
+8DF7seDu2yyXy2xE0i4gFo41WhOwIkV0SVlT7hQ+llf2w8Nk48efjjpz9v5Nf62I
+VxRBcDQq3BUbvq/ZHbkUs7jiAIp2DeW4FBL3gj7C4yaCkis0HOHFSqCGxDfDr8Vg
+Y9quJIoKfLDqMeXylBICW9tAdUSBC6nf8fdiFflvdenVb1VhZ64oseJMp+8Bqt5R
+wTHjucdOXlXbhM+pooTEKu+FyVQcwbwkjL0MM8SnZcfozP9ZAlSiO+5vewrqiOhB
+NwIDAQAB
+-----END PUBLIC KEY-----`;// ES6 模板字符串 引用 rsa 公钥
+      let encryptStr = new JSEncrypt();
+      encryptStr.setPublicKey(pubKey); // 设置 加密公钥
+      let data = encryptStr.encrypt(str.toString());  // 进行加密
+      return data;
+    },
+    async register() {
+      await postRegister(this.email, this.username, getRsaCode(this.password));
       alert("注册成功");
-      /*axios.get('http://localhost:8000/users')
-  .then(response => {
-    console.log(response.data);
-  })
-  .catch(error => {
-    if (error.response) {
-      // 请求成功发出且服务器也响应了状态码，但状态代码超出了 2xx 的范围
-      console.log('1');//error.response.data
-      console.log('2');//error.response.status
-      console.log('3');//error.response.headers
-    } else if (error.request) {
-      // 请求已经成功发起，但没有收到响应
-      console.log('error1',error.request);//,error.request
-    } else {
-      // 发送请求时出了点问题
-      console.log('Error2',error.message);// error.message
-    }
-    console.log('4');//error.config
-  });
-
-      this.$router.push('/login');*/
+      this.$router.push('/login');
     }
   }
 };

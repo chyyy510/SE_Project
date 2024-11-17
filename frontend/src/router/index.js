@@ -6,6 +6,7 @@ import Register from '@/components/views/Register.vue'
 import User from '../components/views/User.vue'
 import ProjectSearch from '../components/views/ProjectSearch.vue'
 import ProjectDetail from '../components/views/ProjectDetail.vue'
+import ProjectLaunch from '@/components/views/ProjectLaunch.vue'
 
 Vue.use(Router)
 
@@ -40,6 +41,11 @@ export default new Router({
       name: 'ProjectDetail',
       component: ProjectDetail,
       props: true
+    },
+    {
+      path: '/projects/launch',
+      name: 'ProjectLaunch',
+      component: ProjectLaunch,
     }
   ]
 })
