@@ -95,7 +95,7 @@ class UserLogin(generics.GenericAPIView):
     serializer_class = DataUserLoginSerializer
 
     def post(self, request, *args, **kwargs):
-        print("login ok")
+        # print("login ok")
         email = request.data.get("email")
         password_decrypted = request.data.get("password_encrypted")
         password_decrypted = PrivacyProtection.decrypt_password(password_decrypted)
