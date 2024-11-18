@@ -1,5 +1,5 @@
 <template>
-    <div class="volunteer-list">
+    <div class="project-list">
       <input type="text" v-model="searchQuery" placeholder="搜索活动..." v-if="!showDetail" />
       <div v-if="!showDetail">
         <div v-if="filteredActivities.length === 0">没有找到相关活动</div>
@@ -12,6 +12,9 @@
       <div v-else>
         <button @click="showDetail = false">返回</button>
         <ProjectDetail :project="selectedActivity" />
+      </div>
+      <div>
+        <button @click="launchProject()">+</button>
       </div>
     </div>
   </template>
@@ -44,7 +47,8 @@
         return this.activities.filter(activity => 
           activity.title.includes(this.searchQuery) || 
           activity.description.includes(this.searchQuery) ||
-          activity.location.includes(this.searchQuery)
+          activity.location.includes(this.searchQuery)||
+          activity.date.includes(this.searchQuery)
         );
       }
     },
@@ -57,13 +61,16 @@
       showActivityDetail(activity) {
         this.selectedActivity = activity;
         this.showDetail = true;
+      },
+      launchProject(){
+        this.$router.push('/projects/launch');
       }
     }
   };
   </script>
   
   <style scoped>
-  .volunteer-list {
+  .project-list {
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;

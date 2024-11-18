@@ -26,8 +26,7 @@
 
 
 <script>
-import { user_login } from '../api/api';
-import axios from 'axios';
+import { postLogin } from '../api/api';
 export default {
   name: 'Login',
   data() {
@@ -39,21 +38,26 @@ export default {
     };
   },
   methods: {
-    async login() { 
-      try { 
-        this.$router.push({ name: 'User' });
-        const response = await user_login(this.email, this.password);
-        if (response.data.is_active) { 
-          // 登录成功，跳转到 User.vue 
-          this.$router.push({ name: 'User' }); } 
-        else { 
-          // 登录失败，显示错误信息 
-          this.errorMessage = 'Login failed. Please check your email and password.'; } 
-        } 
-          catch (error) { 
-            // 处理请求错误 
-            this.errorMessage = 'An error occurred. Please try again later.'; } 
-          }
+    getRsaCode (str){ // 注册方法
+      let pubKey = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmIzophqDebSpnL77RK0l
+6l8TECsiW7t1+7ilLuc0OtPBFgRaIyEUhjV90XY1LJcWZ3UmdZ77GBoHRcZa0UAE
+8DF7seDu2yyXy2xE0i4gFo41WhOwIkV0SVlT7hQ+llf2w8Nk48efjjpz9v5Nf62I
+VxRBcDQq3BUbvq/ZHbkUs7jiAIp2DeW4FBL3gj7C4yaCkis0HOHFSqCGxDfDr8Vg
+Y9quJIoKfLDqMeXylBICW9tAdUSBC6nf8fdiFflvdenVb1VhZ64oseJMp+8Bqt5R
+wTHjucdOXlXbhM+pooTEKu+FyVQcwbwkjL0MM8SnZcfozP9ZAlSiO+5vewrqiOhB
+NwIDAQAB
+-----END PUBLIC KEY-----`;// ES6 模板字符串 引用 rsa 公钥
+      let encryptStr = new JSEncrypt();
+      encryptStr.setPublicKey(pubKey); // 设置 加密公钥
+      let data = encryptStr.encrypt(str.toString());  // 进行加密
+      return data;
+    },
+    async register() {
+      await postLogin(this.email, this.username, getRsaCode(this.password));
+      alert("注册成功");
+      this.$router.push('/login');
+    }
   }
 };
 </script>
