@@ -1,12 +1,69 @@
 # SE_Project
 
+## 后端的运行
+
+需要安装 MySQL，创建 `pku_backend` 数据库。在项目根目录创建 `.env` 文件写入数据库密码。
+
+如果你不想安装 MySQL 可以直接连接至校园网内的测试数据库。在 `backend/backend/settings.py` 修改：
+
+```python
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "<在群里问>（x",
+        "USER": "<在群里问>",
+        "PASSWORD": "<在群里问>",
+        "HOST": "<在群里问>",
+        "PORT": "<在群里问>",
+    }
+}
+```
+
+### Windows
+
+```bash
+pip install pycryptodomex django djangorestframework djangorestframework-simplejwt django-cors-headers Pillow python-decouple mysqlclient
+```
+
+### Linux（Ubuntu）
+
+```bash
+pip install pycryptodomex django djangorestframework djangorestframework-simplejwt django-cors-headers Pillow python-decouple pymysql
+```
+
+如果没有 `pip` 请：
+
+```bash
+sudo apt install python3-pip
+```
+
+安装 `pip`，
+
+```bash
+sudo apt install python<版本>-venv
+```
+
+安装 `venv`（`<版本>` 替换为 Python 版本，对于 Ubuntu 24.04 来说是 3.12），然后创建虚拟环境：
+
+```bash
+python3 -m venv <虚拟环境路径>
+```
+
+`<虚拟环境路径>` 替换为你想要的路径。一般情况下是 `.venv`。
+
+然后激活虚拟环境。如果你用 bash/zsh 可以：
+
+```bash
+source .venv/bin/activate
+```
+
 ## 数据传输标准
 
 ### User
 
 #### user-list
 
-[http://backend-ip:8000/users/]() 
+[http://backend-ip:8000/users/]()
 
 GET 获取当前所有用户的信息列表
 ```json
@@ -37,7 +94,7 @@ GET 获取当前所有用户的信息列表
 
 #### user-detail
 
-[http://backend-ip:8000/users/\<int:pk\>]() 
+[http://backend-ip:8000/users/\<int:pk\>]()
 
 GET 获取id为pk的用户详细信息(id是数据库自动生成的，不同于开发者分配的uid)
 ```json
@@ -51,9 +108,9 @@ GET 获取id为pk的用户详细信息(id是数据库自动生成的，不同于
 }
 ```
 
-#### user-register 
+#### user-register
 
-[http://backend-ip:8000/users/register/]() 
+[http://backend-ip:8000/users/register/]()
 
 POST 向后端提交注册信息 TODO:暂定只需传递以下字段
 ```json
@@ -78,7 +135,7 @@ POST 向后端提交注册信息 TODO:暂定只需传递以下字段
 ```
 #### user-login
 
-[http://backend-ip:8000/users/login/] 
+[http://backend-ip:8000/users/login/]
 
 POST 向后端提交登录信息 TODO:暂定只需传递以下字段
 ```json
