@@ -25,7 +25,11 @@ DATABASES = {
 pip install pycryptodomex django djangorestframework djangorestframework-simplejwt django-cors-headers Pillow python-decouple mysqlclient
 ```
 
-### Linux（Ubuntu）
+```bash
+python manage.py runserver
+```
+
+### Linux（仅在 Ubuntu 24.04 测试）
 
 ```bash
 pip install pycryptodomex django djangorestframework djangorestframework-simplejwt django-cors-headers Pillow python-decouple pymysql
@@ -55,6 +59,10 @@ python3 -m venv <虚拟环境路径>
 
 ```bash
 source .venv/bin/activate
+```
+
+```bash
+python3 manage.py runserver
 ```
 
 ## 数据传输标准
