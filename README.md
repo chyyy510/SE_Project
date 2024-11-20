@@ -26,43 +26,36 @@ pip install pycryptodomex django djangorestframework djangorestframework-simplej
 ```
 
 ```bash
-python manage.py runserver
+python manage.py runserver 0.0.0.0:8000
 ```
 
 ### Linux（仅在 Ubuntu 24.04 测试）
+
+在你的**虚拟环境**中：
 
 ```bash
 pip install pycryptodomex django djangorestframework djangorestframework-simplejwt django-cors-headers Pillow python-decouple pymysql
 ```
 
-如果没有 `pip` 请：
+如果没有 `pip`，可以 `sudo apt install python3-pip` 安装。然后 `sudo apt install python<版本>-venv` 安装 `venv`（`<版本>` 替换为 Python 版本，对于 Ubuntu 24.04 来说是 3.12）。
 
-```bash
-sudo apt install python3-pip
-```
-
-安装 `pip`，
-
-```bash
-sudo apt install python<版本>-venv
-```
-
-安装 `venv`（`<版本>` 替换为 Python 版本，对于 Ubuntu 24.04 来说是 3.12），然后创建虚拟环境：
+创建虚拟环境，`<虚拟环境路径>` 替换为你想要的路径。一般情况下是 `.venv`：
 
 ```bash
 python3 -m venv <虚拟环境路径>
 ```
 
-`<虚拟环境路径>` 替换为你想要的路径。一般情况下是 `.venv`。
-
-然后激活虚拟环境。如果你用 bash/zsh 可以：
+接下来激活虚拟环境，如果你用 bash/zsh 可以：
 
 ```bash
 source .venv/bin/activate
 ```
 
+最后：
+
+
 ```bash
-python3 manage.py runserver
+python3 manage.py runserver 0.0.0.0:8000
 ```
 
 ## 数据传输标准
