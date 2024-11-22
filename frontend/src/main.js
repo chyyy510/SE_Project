@@ -16,3 +16,20 @@ new Vue({
   components: { App },
   template: '<App/>'
 })
+
+
+router.beforeEach((to, from, next)=>{
+  if(to.meta.requiresLogin == "true"){
+      // 需要登录状态的页面
+      if(localStorage.getItem("loginFlag") == "true"){
+          next();
+      }
+      else{
+          alert("请登录以继续");
+          next('/login');
+      }
+  }
+  else{
+        next();
+    }
+})

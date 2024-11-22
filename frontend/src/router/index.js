@@ -30,7 +30,10 @@ export default new Router({
     },
     { path: '/user', 
       name: 'User', 
-      component: User 
+      component: User ,
+      meta:{
+        requiresLogin:"true"
+      }
     },
     { path: '/projects',
       name: 'ProjectSearch',
@@ -46,6 +49,9 @@ export default new Router({
       path: '/projects/launch',
       name: 'ProjectLaunch',
       component: ProjectLaunch,
+      meta:{
+        requiresLogin:"true"
+      }
     }
   ]
 })

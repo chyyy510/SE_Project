@@ -11,7 +11,9 @@
       <label for="password">密码</label>
       <input type="password" v-model="user.password" />
       <button @click="updateUserInfo">更新信息</button>
+      
     </div>
+    <button @click="logout">退出登录</button>
   </div>
 </template>
 
@@ -57,6 +59,10 @@ export default {
         .catch(error => {
           console.error('更新用户信息失败', error);
         });
+    },
+    logout() {
+      localStorage.setItem('loginFlag', 'false');
+      this.$router.push('/');
     }
   }
 };

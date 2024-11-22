@@ -27,6 +27,7 @@
 
 <script>
 import { postLogin } from '../api/api';
+import JSEncrypt from 'jsencrypt';
 export default {
   name: 'Login',
   data() {
@@ -53,10 +54,11 @@ NwIDAQAB
       let data = encryptStr.encrypt(str.toString());  // 进行加密
       return data;
     },
-    async register() {
-      await postLogin(this.email, this.username, getRsaCode(this.password));
-      alert("注册成功");
-      this.$router.push('/login');
+    async login() {
+      await postLogin(this.email, this.username, this.getRsaCode(this.password));
+      alert("登录成功");
+      localStorage.setItem('loginFlag', 'true');
+      this.$router.push('/user');
     }
   }
 };
