@@ -1,6 +1,5 @@
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.parsers import FormParser, MultiPartParser
 from appuser.models import User, UserProfile
 from appuser.serializers import (
     UserSerializer,
@@ -13,7 +12,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from django.core.files.storage import FileSystemStorage
-from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AnonymousUser
 from django.conf import settings
 
