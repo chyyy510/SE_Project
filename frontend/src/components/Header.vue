@@ -5,7 +5,7 @@
             <img src="../assets/logo.png" width="100px" height="auto">
             <router-link to="/home">主页</router-link>
             <router-link to="/projects">实验</router-link>
-            <router-link to="/login">登录</router-link>
+            <router-link to="/user">我的</router-link>
         </nav>
     </header>
 </template>

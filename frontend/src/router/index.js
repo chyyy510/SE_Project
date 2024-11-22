@@ -32,7 +32,7 @@ export default new Router({
       name: 'User', 
       component: User ,
       meta:{
-        requiresLogin:"true"
+        requiresLogin: 'true'
       }
     },
     { path: '/projects',
@@ -50,7 +50,7 @@ export default new Router({
       name: 'ProjectLaunch',
       component: ProjectLaunch,
       meta:{
-        requiresLogin:"true"
+        requiresLogin: 'true'
       }
     }
   ]

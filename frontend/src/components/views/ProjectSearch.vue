@@ -20,13 +20,15 @@
   </template>
   
   <script>
+  import Project from './Project.vue';
   import ProjectDetail from './ProjectDetail.vue';
   import { debounce } from 'lodash';
   
   export default {
     name: 'ProjectSearch',
     components: {
-      ProjectDetail
+      ProjectDetail,
+      Project
     },
     data() {
       return {
