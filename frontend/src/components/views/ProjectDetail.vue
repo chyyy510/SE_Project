@@ -21,7 +21,13 @@ export default {
   },
   methods: {
     applyForProject() {
-      alert('申请参与成功！');
+      if(localStorage.getItem("loginFlag") == "true"){
+          alert('申请成功！');
+      }
+      else{
+          alert("请登录以继续");
+          this.$router.push('/login');
+      }
     }
   }
 };

@@ -17,6 +17,7 @@
   
 <script>
 export default {
+  name: 'ProjectLaunch',
     data() {
       return {
         projectName: '',

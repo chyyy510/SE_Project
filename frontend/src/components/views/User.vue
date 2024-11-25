@@ -1,17 +1,23 @@
 <template>
   <div class="user-center">
     <h2>个人中心</h2>
-    <div class="avatar-section">
-      <img :src="user.avatar||require('../../assets/logo.png')" alt="User Avatar" />
-      <input type="file" @change="uploadAvatar" />
+    <div class="left-section">
+      <div class="avatar-section">
+        <img :src="user.avatar || defaultAvatar" alt="User Avatar" />
+      </div>
+      <div class="info-section">
+        <span class="username">{{ user.username }}</span>
+      </div>
+      <button @click="toggleEditMode">更新信息</button>
     </div>
-    <div class="info-section">
+    <div v-if="editMode" class="edit-section">
       <label for="username">用户名</label>
       <input type="text" v-model="user.username" />
       <label for="password">密码</label>
       <input type="password" v-model="user.password" />
-      <button @click="updateUserInfo">更新信息</button>
-      
+      <label for="avatar">更换头像</label>
+      <input type="file" @change="uploadAvatar" />
+      <button @click="updateUserInfo">保存更改</button>
     </div>
     <button @click="logout">退出登录</button>
   </div>
@@ -25,19 +31,21 @@ export default {
       user: {
         avatar: '', // 用户头像URL
         username: '', // 用户名
-        password: '' // 密码
+        password: '', // 密码
+        email: '' // 邮箱
       },
-      defaultAvatar: '../../assets/logo.png'
+      defaultAvatar: require('../../assets/logo.png'),
+      editMode: false // 编辑模式开关
     };
+  },
+  created() {
+    this.user.username = localStorage.getItem('username');
   },
   methods: {
     uploadAvatar(event) {
       const file = event.target.files[0];
-      // 上传头像逻辑
-      // 例如：使用FormData上传到服务器
       const formData = new FormData();
       formData.append('avatar', file);
-      // 假设我们有一个上传头像的API
       axios.post('/api/upload-avatar', formData)
         .then(response => {
           this.user.avatar = response.data.avatarUrl;
@@ -46,15 +54,19 @@ export default {
           console.error('上传头像失败', error);
         });
     },
+    toggleEditMode() {
+      this.editMode = !this.editMode;
+    },
     updateUserInfo() {
-      // 更新用户信息逻辑
-      // 例如：发送请求到服务器更新用户名和密码
       axios.post('/api/update-user', {
         username: this.user.username,
-        password: this.user.password
+        password: this.user.password,
+        email: this.user.email
       })
-        .then(response => {
+        .then(() => {
+          localStorage.setItem('username', this.user.username);
           alert('用户信息更新成功');
+          this.editMode = false; // 关闭编辑模式
         })
         .catch(error => {
           console.error('更新用户信息失败', error);
@@ -62,6 +74,7 @@ export default {
     },
     logout() {
       localStorage.setItem('loginFlag', 'false');
+      localStorage.setItem('username', '');
       this.$router.push('/');
     }
   }
