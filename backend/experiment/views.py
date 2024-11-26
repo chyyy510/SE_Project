@@ -27,20 +27,19 @@ class ExperimentCreate(generics.GenericAPIView):
     serializer_class = ExperimentCreateSerializer
 
     def post(self, request, *args, **kwargs):
-        user = request.user
         if isinstance(request.user, AnonymousUser):
             return Response(
                 {"detail": "Authentication required"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
-
+        user = request.user
         title = request.data.get("title")
         description = request.data.get("description")
         person_wanted = request.data.get("person_wanted")
         money_per_person = request.data.get("money_per_person")
         # ?creator=user
 
-        print("{}", user)
+        # print("{}", user)
 
         experiment = Experiment(
             title=title,
