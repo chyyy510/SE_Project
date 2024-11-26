@@ -72,6 +72,24 @@ class EngagementList(generics.GenericAPIView):
             )
         user = request.user
         engagements = Engagement.objects.filter(user=user).order_by("id")
+
+        paginator = EngagementPagination()
+        paginator_engagements = paginator.paginate_queryset(engagements, request)
+
+        serializer = EngagementSerializer(paginator_engagements, many=True)
+
+        return Response(serializer.data)
+
+
+class ExperimentEngagedList(generics.GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        user = request.user
+        engagements = Engagement.objects.filter(user=user).order_by("id")
         # experiments_id = engagements.values("experiment")
         experiment_ids = engagements.values_list("experiment_id", flat=True).distinct()
 
@@ -86,7 +104,7 @@ class EngagementList(generics.GenericAPIView):
         return paginator.get_paginated_response(serializer.data)
 
 
-class CreationList(generics.GenericAPIView):
+class ExperimentCreatedList(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         if isinstance(request.user, AnonymousUser):
             return Response(
