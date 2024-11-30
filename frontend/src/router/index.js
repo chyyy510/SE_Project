@@ -4,11 +4,11 @@ import Home from '@/components/views/Home.vue'
 import Login from '@/components/views/Login.vue'
 import Register from '@/components/views/Register.vue'
 import User from '../components/views/User.vue'
-import ProjectSearch from '../components/views/ProjectSearch.vue'
 import ProjectDetail from '../components/views/ProjectDetail.vue'
 import ProjectLaunch from '@/components/views/ProjectLaunch.vue'
 import UserApplied from '@/components/views/UserApplied.vue'
 import UserLaunched from '@/components/views/UserLaunched.vue'
+import Projects from '@/components/views/Projects.vue'
 
 Vue.use(Router)
 
@@ -38,8 +38,8 @@ export default new Router({
       }
     },
     { path: '/projects',
-      name: 'ProjectSearch',
-      component: ProjectSearch
+      name: 'Projects',
+      component: Projects
     },
     {
       path: '/projects/launch',

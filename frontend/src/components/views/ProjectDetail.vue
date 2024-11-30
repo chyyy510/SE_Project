@@ -1,6 +1,5 @@
 <template>
   <div class="project-detail">
-    <p><button @click="back2Search()">返回</button></p>
     <img :src="project.publisherAvatar" alt="Publisher Avatar" class="avatar" />
     <h2>{{ project.title }}</h2>
     <p><strong>发布者：</strong>{{ project.publisherName }}</p>
@@ -9,7 +8,10 @@
     <p><strong>地点：</strong>{{ project.location }}</p>
     <p><strong>人均报酬：</strong>{{ project.money_per_person }}</p>
 	  <p><strong>人数：</strong>{{ project.person_applied }}/{{ project.person_wanted }}</p>
-    <button v-if="applied" @click="applyForProject">申请参与</button>
+    <button :class="{ disabled: applied }" 
+      @click="applyForProject" :disabled="applied">
+        {{button_text}}
+    </button>
   </div>
 </template>
 
@@ -27,16 +29,17 @@ export default {
         money_per_person :'',
         person_applied :'',
         person_wanted :''
-      }
+      },
+      applied:false,
+      button_text:'申请参与'
     }
   },
   methods: {
-    back2Search(){
-      this.$router.push('/projects');
-    },
     applyForProject() {
       if(localStorage.getItem("loginFlag") == "true") {
           alert('申请成功！');
+          this.applied=true;
+          this.button_text='已申请'
       }
       else{
           alert("请登录以继续");
@@ -64,13 +67,17 @@ export default {
 }
 button {
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #94070a;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 button:hover {
-  background-color: #0056b3;
+  background-color: #94070a;
+}
+button.disabled { 
+  background-color: gray; 
+  cursor: not-allowed; 
 }
 </style>

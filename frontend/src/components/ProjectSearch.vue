@@ -7,15 +7,12 @@
             <Project :project="project" />
         </div>
       </div>
-      <div>
-        <button @click="launchProject()">+</button>
-      </div>
     </div>
   </template>
   
   <script>
-  import Project from './Project.vue';
-  import ProjectDetail from './ProjectDetail.vue';
+  import Project from './views/Project.vue';
+  import ProjectDetail from './views/ProjectDetail.vue';
   import { debounce } from 'lodash';
   
   export default {
@@ -23,6 +20,12 @@
     components: {
       ProjectDetail,
       Project
+    },
+    props: {
+      projects: {
+        type: Object,
+        required: true
+      }
     },
     data() {
       return {
