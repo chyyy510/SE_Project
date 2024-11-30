@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "appuser",
     "experiment",
+    "relation",
 ]
 
 MIDDLEWARE = [
