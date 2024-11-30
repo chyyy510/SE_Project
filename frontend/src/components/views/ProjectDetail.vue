@@ -1,27 +1,41 @@
 <template>
   <div class="project-detail">
+    <p><button @click="back2Search()">返回</button></p>
     <img :src="project.publisherAvatar" alt="Publisher Avatar" class="avatar" />
     <h2>{{ project.title }}</h2>
     <p><strong>发布者：</strong>{{ project.publisherName }}</p>
     <p><strong>描述：</strong>{{ project.description }}</p>
     <p><strong>日期：</strong>{{ project.date }}</p>
     <p><strong>地点：</strong>{{ project.location }}</p>
-    <button @click="applyForProject">申请参与</button>
+    <p><strong>人均报酬：</strong>{{ project.money_per_person }}</p>
+	  <p><strong>人数：</strong>{{ project.person_applied }}/{{ project.person_wanted }}</p>
+    <button v-if="applied" @click="applyForProject">申请参与</button>
   </div>
 </template>
 
 <script>
 export default {
   name: 'ProjectDetail',
-  props: {
-    project: {
-      type: Object,
-      required: true
+  data() {
+    return {
+      project: {
+        title :'',
+        publisherName :'',
+        description :'',
+        date :'',
+        location :'',
+        money_per_person :'',
+        person_applied :'',
+        person_wanted :''
+      }
     }
   },
   methods: {
+    back2Search(){
+      this.$router.push('/projects');
+    },
     applyForProject() {
-      if(localStorage.getItem("loginFlag") == "true"){
+      if(localStorage.getItem("loginFlag") == "true") {
           alert('申请成功！');
       }
       else{

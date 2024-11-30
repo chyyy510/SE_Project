@@ -2,19 +2,19 @@
 <template>
   <div>
       <Header/>
+      <UserHeader v-if="showSidebar"/>
       <router-view/>
-      <UserSidebar v-if="showSidebar"/>
   </div>
 </template>
 
 <script>
 import Header from './components/Header.vue';
-import UserSidebar from './components/UserSidebar.vue';
+import UserHeader from './components/UserHeader.vue';
 export default {
   name: 'App',
   components: {
     Header,
-    UserSidebar
+    UserHeader
   },
   data() { 
     return { 

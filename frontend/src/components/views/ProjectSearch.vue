@@ -1,17 +1,11 @@
 <template>
     <div class="project-list">
       <input type="text" v-model="searchQuery" placeholder="搜索活动..." v-if="!showDetail" />
-      <div v-if="!showDetail">
-        <div v-if="filteredActivities.length === 0">没有找到相关活动</div>
-        <div v-else>
-          <div v-for="activity in filteredActivities" :key="activity.id" @click="showActivityDetail(activity)" class="activity-item">
-            <Project :activity="activity" />
-          </div>
-        </div>
-      </div>
+      <div v-if="filteredProjects.length === 0">没有找到相关活动</div>
       <div v-else>
-        <button @click="showDetail = false">返回</button>
-        <ProjectDetail :project="selectedActivity" />
+        <div v-for="project in filteredProjects" :key="project.id" @click="showProjectDetail(project)" class="project-item">
+            <Project :project="project" />
+        </div>
       </div>
       <div>
         <button @click="launchProject()">+</button>
@@ -33,22 +27,22 @@
     data() {
       return {
         searchQuery: '',
-        activities: [
+        projects: [
           { id: 1, title: '社区清洁', description: '帮助清洁社区公园。', date: '2024-10-20', location: '北京市海淀区', publisherName: '张三', publisherAvatar: 'path/to/avatar1.png' },
           { id: 2, title: '老人陪伴', description: '陪伴老人聊天，帮助他们解决日常问题。', date: '2024-10-22', location: '北京市朝阳区', publisherName: '李四', publisherAvatar: 'path/to/avatar2.png' },
           // 更多活动条目...
         ],
         showDetail: false,
-        selectedActivity: null
+        selectedProject: null
       };
     },
     computed: {
-      filteredActivities() {
-        return this.activities.filter(activity => 
-          activity.title.includes(this.searchQuery) || 
-          activity.description.includes(this.searchQuery) ||
-          activity.location.includes(this.searchQuery)||
-          activity.date.includes(this.searchQuery)
+      filteredProjects() {
+        return this.projects.filter(project => 
+          project.title.includes(this.searchQuery) || 
+          project.description.includes(this.searchQuery) ||
+          project.location.includes(this.searchQuery)||
+          project.date.includes(this.searchQuery)
         );
       }
     },
@@ -58,9 +52,8 @@
       }, 300)
     },
     methods: {
-      showActivityDetail(activity) {
-        this.selectedActivity = activity;
-        this.showDetail = true;
+      showProjectDetail(project) {
+        this.$router.push(`/projects/${project.id}`);
       },
       launchProject(){
         this.$router.push('/projects/launch');
@@ -86,7 +79,7 @@
     border: 1px solid #ccc;
     border-radius: 5px;
   }
-  .activity-item {
+  .project-item {
     margin-bottom: 20px;
     padding: 10px;
     border: 1px solid #ddd;
@@ -94,7 +87,7 @@
     background-color: #fff;
     cursor: pointer;
   }
-  .activity-item:hover {
+  .project-item:hover {
     background-color: #f0f0f0;
   }
   </style>

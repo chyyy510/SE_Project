@@ -1,9 +1,11 @@
 <template>
-  <div class="activity-item">
-    <h3>{{ activity.title }}</h3>
-    <p>{{ activity.description }}</p>
-    <p><strong>日期：</strong>{{ activity.date }}</p>
-    <p><strong>地点：</strong>{{ activity.location }}</p>
+  <div class="project-item">
+    <h3>{{ project.title }}</h3>
+    <p>{{ project.description }}</p>
+    <p><strong>日期：</strong>{{ project.date }}</p>
+    <p><strong>地点：</strong>{{ project.location }}</p>
+	<p><strong>人均报酬：</strong>{{ project.money_per_person }}</p>
+	<p><strong>人数：</strong>{{ project.person_applied }}/{{ project.person_wanted }}</p>
   </div>
 </template>
 
@@ -11,7 +13,7 @@
 export default {
   name: 'Project',
   props: {
-    activity: {
+    project: {
       type: Object,
       required: true
     }
@@ -20,14 +22,14 @@ export default {
 </script>
 
 <style scoped>
-.activity-item {
+.project-item {
   margin-bottom: 20px;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
   background-color: #fff;
 }
-.activity-item h3 {
+.project-item h3 {
   margin: 0 0 10px;
 }
 </style>

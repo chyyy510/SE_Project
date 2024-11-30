@@ -30,6 +30,7 @@ export default {
         console.log('项目名称:', this.projectName);
         console.log('项目描述:', this.projectDescription);
         alert('项目已提交！');
+        this.$router.push('/projects');
       }
     }
   };
@@ -43,6 +44,7 @@ export default {
     border: 1px solid #ccc;
     border-radius: 8px;
     background-color: #f9f9f9;
+    color: #94070a;
   }
   .form-group {
     margin-bottom: 15px;
@@ -57,12 +59,13 @@ export default {
     box-sizing: border-box;
   }
   button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+  width: 100%;
+  padding: 10px;
+  background-color: #94070a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
   }
   button:hover {
     background-color: #0056b3;

@@ -50,6 +50,11 @@ export default new Router({
       }
     },
     {
+      path: '/projects/:id',
+      name: 'ProjectDetail',
+      component: ProjectDetail,
+    },
+    {
       path: '/user/launched',
       name: 'UserLaunched',
       component: UserLaunched,
