@@ -4,20 +4,26 @@
     <div class="left-section">
       <div class="avatar-section">
         <img :src="user.avatar || defaultAvatar" alt="User Avatar" />
+        <button @click="triggerFileInput" class="edit-button">修改</button>
+        <input type="file" ref="fileInput" @change="uploadAvatar" style="display: none;" />
       </div>
       <div class="info-section">
-        <span class="username">{{ user.username }}</span>
+        <div class="info-item" v-for="field in fields" :key="field.name">
+          <div class="info-row">
+            <span class="label">{{ field.label }}:</span>
+            <span class="value">{{ field.name === 'password' ? '******' : user[field.name] }}</span>
+            <button @click="editField(field.name)" class="edit-button">修改</button>
+          </div>
+          <div v-if="editingField === field.name" class="edit-section">
+            <label :for="field.name">{{ field.labelchange }}</label>
+            <div class="edit-row">
+              <input :type="field.name === 'password' ? 'password' : 'text'" v-model="user[field.name]" />
+              <button @click="saveField">保存</button>
+              <button @click="cancelEdit">取消</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <button @click="toggleEditMode">更新信息</button>
-    </div>
-    <div v-if="editMode" class="edit-section">
-      <label for="username">用户名</label>
-      <input type="text" v-model="user.username" />
-      <label for="password">密码</label>
-      <input type="password" v-model="user.password" />
-      <label for="avatar">更换头像</label>
-      <input type="file" @change="uploadAvatar" />
-      <button @click="updateUserInfo">保存更改</button>
     </div>
     <button @click="logout">退出登录</button>
   </div>
@@ -35,13 +41,21 @@ export default {
         email: '' // 邮箱
       },
       defaultAvatar: require('../../assets/logo.png'),
-      editMode: false // 编辑模式开关
+      editingField: null, // 当前正在编辑的字段
+      fields: [
+        { name: 'username', label: '用户名' , labelchange:'修改用户名：'},
+        { name: 'password', label: '密码' , labelchange:'修改密码：'},
+        { name: 'email', label: '邮箱' , labelchange:'修改绑定邮箱：'}
+      ]
     };
   },
   created() {
     this.user.username = localStorage.getItem('username');
   },
   methods: {
+    triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
     uploadAvatar(event) {
       const file = event.target.files[0];
       const formData = new FormData();
@@ -54,23 +68,24 @@ export default {
           console.error('上传头像失败', error);
         });
     },
-    toggleEditMode() {
-      this.editMode = !this.editMode;
+    editField(field) {
+      this.editingField = field;
     },
-    updateUserInfo() {
+    saveField() {
       axios.post('/api/update-user', {
-        username: this.user.username,
-        password: this.user.password,
-        email: this.user.email
+        [this.editingField]: this.user[this.editingField]
       })
         .then(() => {
-          localStorage.setItem('username', this.user.username);
+          localStorage.setItem(this.editingField, this.user[this.editingField]);
           alert('用户信息更新成功');
-          this.editMode = false; // 关闭编辑模式
+          this.editingField = null; // 关闭编辑模式
         })
         .catch(error => {
           console.error('更新用户信息失败', error);
         });
+    },
+    cancelEdit() {
+      this.editingField = null;
     },
     logout() {
       localStorage.setItem('loginFlag', 'false');
@@ -88,11 +103,13 @@ export default {
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 10px;
+  position: relative;
 }
 .avatar-section {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  position: relative;
 }
 .avatar-section img {
   width: 100px;
@@ -100,19 +117,38 @@ export default {
   border-radius: 50%;
   margin-right: 20px;
 }
-.info-section label {
-  display: block;
-  margin-top: 10px;
+.avatar-section .edit-button {
+  position: absolute;
+  right: 0;
 }
-.info-section input {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
+.info-section {
+  margin-bottom: 20px;
+}
+.info-item {
   margin-bottom: 10px;
 }
-
-h1 {
-   align-items: center;
-   color: #94070a;
+.info-row {
+  display: flex;
+  align-items: center;
 }
-</style>  
+.info-row .label {
+  width: 80px;
+  font-weight: bold;
+}
+.info-row .value {
+  flex: 1;
+}
+.info-row .edit-button {
+  margin-left: 10px;
+}
+.edit-section {
+  margin-top: 10px;
+}
+.edit-row {
+  display: flex;
+  align-items: center;
+}
+.edit-row input {
+  margin-right: 10px;
+}
+</style>
