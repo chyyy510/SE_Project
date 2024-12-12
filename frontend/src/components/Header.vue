@@ -42,7 +42,7 @@ export default {
         padding-right: 60px;
     }
     .block {
-        width: 50px; 
+        width: 100px; 
         height: 50px; 
         background-color: #94070a; 
         display: flex; 
