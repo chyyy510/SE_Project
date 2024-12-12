@@ -2,10 +2,10 @@
   <div class="project-list">
     <input type="text" v-model="searchQuery" placeholder="搜索活动..." @input="fetchProjects" v-if="!showDetail" />
     <div class="sort-buttons">
-      <div class="left-buttons">
+      <div class="sift-buttons">
         <button @click="toggleTagBox" :class="{ 'active': showTagBox }" class="tag-button">按标签筛选</button>
       </div>
-      <div class="right-buttons">
+      <div class="list-buttons">
         <button @click="toggleSortOrder" class="sort-button">{{ sortOrder === 'asc' ? '顺序显示' : '逆序显示' }}</button>
         <button @click="toggleSortBy" class="sort-button">{{ sortBy === 'id' ? '发布顺序' : '时间顺序' }}</button>
       </div>
@@ -50,6 +50,7 @@ export default {
   },
   created() {
     this.fetchTags();
+    this.fetchProjects();
   },
   watch: {
     searchQuery: debounce(function(newQuery) {
@@ -59,13 +60,18 @@ export default {
   methods: {
     fetchProjects() {
       const tagNames = this.selectedTags.map(tag => tag.name).join(',');
-      postSearch(tagNames, this.searchQuery, this.sortBy, this.sortOrder)
+      /*postSearch(tagNames, this.searchQuery, this.sortBy, this.sortOrder)
         .then(response => {
           this.projects = response.data;
         })
         .catch(error => {
           console.error('Error fetching projects:', error);
-        });
+        });*/
+        this.projects= [
+            { id: 1, title: '社区清洁', description: '帮助清洁社区公园。', date: '2024-10-20', location: '北京市海淀区', publisherName: '张三', publisherAvatar: 'path/to/avatar1.png' },
+            { id: 2, title: '老人陪伴', description: '陪伴老人聊天，帮助他们解决日常问题。', date: '2024-10-22', location: '北京市朝阳区', publisherName: '李四', publisherAvatar: 'path/to/avatar2.png' },
+            // 更多活动条目...
+            ];
     },
     fetchTags() {
       /*axios.get('/api/tags')
@@ -129,10 +135,10 @@ input[type="text"] {
   justify-content: space-between;
   margin-bottom: 20px;
 }
-.left-buttons {
+.sift-buttons {
   display: flex;
 }
-.right-buttons {
+.list-buttons {
   display: flex;
 }
 .tag-button, .sort-button {
@@ -144,9 +150,9 @@ input[type="text"] {
   cursor: pointer;
 }
 .tag-button.active, .sort-button:hover {
-  background-color: #007bff;
+  background-color: #94070a;
   color: #fff;
-  border-color: #007bff;
+  border-color: #94070a;
 }
 .tag-box {
   display: flex;
@@ -162,9 +168,9 @@ input[type="text"] {
   cursor: pointer;
 }
 .tag-box span.selected {
-  background-color: #007bff;
+  background-color: #94070a;
   color: #fff;
-  border-color: #007bff;
+  border-color: #94070a;
 }
 .project-item {
   margin-bottom: 20px;

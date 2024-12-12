@@ -4,7 +4,7 @@
     <div class="left-section">
       <div class="avatar-section">
         <img :src="user.avatar || defaultAvatar" alt="User Avatar" />
-        <button @click="triggerFileInput" class="edit-button">修改</button>
+        <button @click="triggerFileInput" class="sort-button edit-button">修改</button>
         <input type="file" ref="fileInput" @change="uploadAvatar" style="display: none;" />
       </div>
       <div class="info-section">
@@ -12,22 +12,23 @@
           <div class="info-row">
             <span class="label">{{ field.label }}:</span>
             <span class="value">{{ field.name === 'password' ? '******' : user[field.name] }}</span>
-            <button @click="editField(field.name)" class="edit-button">修改</button>
+            <button @click="editField(field.name)" class="sort-button">修改</button>
           </div>
           <div v-if="editingField === field.name" class="edit-section">
             <label :for="field.name">{{ field.labelchange }}</label>
             <div class="edit-row">
               <input :type="field.name === 'password' ? 'password' : 'text'" v-model="user[field.name]" />
-              <button @click="saveField">保存</button>
-              <button @click="cancelEdit">取消</button>
+              <button @click="saveField" class="sort-button">保存</button>
+              <button @click="cancelEdit" class="sort-button">取消</button>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <button @click="logout">退出登录</button>
+    <button @click="logout" class="sort-button">退出登录</button>
   </div>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -118,8 +119,7 @@ export default {
   margin-right: 20px;
 }
 .avatar-section .edit-button {
-  position: absolute;
-  right: 0;
+  margin-left: auto;
 }
 .info-section {
   margin-bottom: 20px;
@@ -138,9 +138,6 @@ export default {
 .info-row .value {
   flex: 1;
 }
-.info-row .edit-button {
-  margin-left: 10px;
-}
 .edit-section {
   margin-top: 10px;
 }
@@ -151,4 +148,19 @@ export default {
 .edit-row input {
   margin-right: 10px;
 }
+.sort-button {
+  padding: 5px 10px;
+  margin: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+  cursor: pointer;
+}
+.sort-button:hover {
+  background-color: #94070a;
+  color: #fff;
+  border-color: #94070a;
+}
 </style>
+
+
