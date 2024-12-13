@@ -35,6 +35,12 @@ export default {
     ProjectDetail,
     Project
   },
+  props: {
+    searchTag: {
+      type: Object,
+      Required: true
+    },
+  },
   data() {
     return {
       searchQuery: '',
@@ -62,18 +68,19 @@ export default {
   fetchProjects() {
     const tagVector = this.tags.map(tag => this.selectedTags.includes(tag) ? 1 : 0).join('');
     console.log(tagVector,this.searchQuery,this.sortOrder,this.sortBy);
-    getSearch(tagVector, this.searchQuery, this.sortOrder, this.sortBy)
+    console.log(this.searchTag)
+    /*getSearch(tagVector, this.searchQuery, this.sortOrder, this.sortBy)
       .then(response => {
         this.projects = response.data;
       })
       .catch(error => {
         console.error('Error fetching projects:', error);
-      });
+      });*/
   
-      /*this.projects= [
+      this.projects= [
             { id: 100, title: '社区清洁', description: '帮助清洁社区公园。', date: '2024-10-20', location: '北京市海淀区', publisherName: '张三', publisherAvatar: 'path/to/avatar1.png' },
             { id: 2, title: '老人陪伴', description: '陪伴老人聊天，帮助他们解决日常问题。', date: '2024-10-22', location: '北京市朝阳区', publisherName: '李四', publisherAvatar: 'path/to/avatar2.png' },
-          ];*/
+          ];
     },
     fetchTags() {
       /*axios.get('/api/tags')

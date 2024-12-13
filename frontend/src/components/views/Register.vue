@@ -57,7 +57,7 @@ NwIDAQAB
     },
     async register() {
       try{
-        await postRegister(this.email, this.username, getRsaCode(this.password));
+        await postRegister(this.email, this.username, this.getRsaCode(this.password));
         alert("注册成功");
         this.$router.push('/login');
       }

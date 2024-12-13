@@ -4,8 +4,8 @@
     <p>{{ project.description }}</p>
     <p><strong>日期：</strong>{{ project.date }}</p>
     <p><strong>地点：</strong>{{ project.location }}</p>
-	<p><strong>人均报酬：</strong>{{ project.money_per_person }}</p>
-	<p><strong>人数：</strong>{{ project.person_applied }}/{{ project.person_wanted }}</p>
+	  <p><strong>人均报酬：</strong>{{ project.money_per_person }}</p>
+	  <p><strong>人数：</strong>{{ project.person_applied }}/{{ project.person_wanted }}</p>
   </div>
 </template>
 

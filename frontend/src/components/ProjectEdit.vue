@@ -32,24 +32,20 @@
 </template>
   
 <script>
+import { postLaunch } from '../api/api';
+
 export default {
   name: 'ProjectLaunch',
-    data() {
-      return {
-        project: {
-          title :'',
-          description :'',
-          date :'',
-          location :'',
-          money_per_person :'',
-          person_wanted :''
-        },
-      };
-    },
+  props:{
+    project:{
+      type:Object,
+      Required:true
+    }
+  },
     methods: {
       async submitForm() {
         // 在这里处理表单提交逻辑
-        await postLaunch(this.title, this.description, this.person_wanted, this.money_per_person);
+        await postLaunch(this.project.title, this.project.description, this.project.person_wanted, this.project.money_per_person);
         alert('项目已提交！');
         this.$router.push('/projects');
       }
