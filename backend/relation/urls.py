@@ -4,6 +4,7 @@ from relation.views import (
     EngagementList,
     ExperimentEngagedList,
     ExperimentCreatedList,
+    VolunteerQualify,
 )
 
 urlpatterns = [
@@ -18,5 +19,10 @@ urlpatterns = [
         "experiments-created/list/",
         ExperimentCreatedList.as_view(),
         name="exp-created-list",
+    ),
+    path(
+        "qualifications/volunteers/",
+        VolunteerQualify.as_view(),
+        name="qualify-volunteer",
     ),
 ]
