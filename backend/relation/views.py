@@ -72,6 +72,24 @@ class EngagementList(generics.GenericAPIView):
             )
         user = request.user
         engagements = Engagement.objects.filter(user=user).order_by("id")
+
+        paginator = EngagementPagination()
+        paginator_engagements = paginator.paginate_queryset(engagements, request)
+
+        serializer = EngagementSerializer(paginator_engagements, many=True)
+
+        return Response(serializer.data)
+
+
+class ExperimentEngagedList(generics.GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        user = request.user
+        engagements = Engagement.objects.filter(user=user).order_by("id")
         # experiments_id = engagements.values("experiment")
         experiment_ids = engagements.values_list("experiment_id", flat=True).distinct()
 
@@ -86,7 +104,7 @@ class EngagementList(generics.GenericAPIView):
         return paginator.get_paginated_response(serializer.data)
 
 
-class CreationList(generics.GenericAPIView):
+class ExperimentCreatedList(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         if isinstance(request.user, AnonymousUser):
             return Response(
@@ -101,3 +119,81 @@ class CreationList(generics.GenericAPIView):
 
         serializer = ExperimentSerializer(paginated_experiments, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+
+class VolunteerQualify(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        user = request.user
+        experiment_id = request.data.get("experiment_id")
+        experiment = Experiment.objects.get(id=experiment_id)
+
+        if experiment.creator != user:
+            return Response(
+                {"detail": "The experiment doesn't belong to the user."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        volunteer_id = request.data.get("volunteer_id")
+        try:
+            engagement = Engagement.objects.get(
+                user=volunteer_id, experiment=experiment_id
+            )
+        except Engagement.DoesNotExist:
+            return Response(
+                {"detail": "The volunteer didn't engage in the experiment."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Engagement.MultipleObjectsReturned:
+            return Response(
+                {"detail": "Same volunteer engaged in the experiment multiple times"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        qualification = request.data.get("qualification")
+
+        # 检查是否在三个选项里，以及转换方向
+        in_flag = False
+
+        for tp in Engagement.status_choice:
+            if tp[0] == qualification:
+                in_flag = True
+                break
+
+        if in_flag == False:  # 不在
+            return Response(
+                {"detail": "Status error."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # 在,检查转换方向#TODO:换个更好的写法？
+        if engagement.status == "to-qualify-user":
+            if qualification != "to-check-result":
+                return Response(
+                    {"detail": "Status transition error."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        if engagement.status == "to-check-result":
+            if qualification != "finish":
+                return Response(
+                    {"detail": "Status transition error."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        if engagement.status == "finish":
+            return Response(
+                {"detail": "Status transition error."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        engagement.status = qualification
+        engagement.save()
+
+        return Response(
+            {"detail": "Volunteer status changed successfully."},
+            status=status.HTTP_200_OK,
+        )
