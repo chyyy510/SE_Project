@@ -34,7 +34,22 @@ export default {
       button_text:'申请参与'
     }
   },
+  created()
+    {
+      this.getId();
+    },
   methods: {
+    getId(){
+      const currentUrl = window.location.href;
+      const idMatch = currentUrl.match(/\/projects\/(\d+)$/);
+      if (idMatch) {
+        const projectId = idMatch[1];
+        console.log('Project ID:', projectId);
+      } 
+      else {
+        console.log('未找到项目 ID');
+      }
+    },
     applyForProject() {
       if(localStorage.getItem("loginFlag") == "true") {
           alert('申请成功！');
