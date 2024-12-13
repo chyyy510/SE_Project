@@ -1,5 +1,6 @@
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from appuser.models import User, UserProfile
 from appuser.serializers import (
     UserSerializer,
@@ -24,9 +25,16 @@ from utils.generate_path import GeneratePath
 # Create your views here.
 
 
+class UserPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+
 class UserList(generics.ListAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by("id")
     serializer_class = UserSerializer
+    pagination_class = UserPagination
 
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
