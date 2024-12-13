@@ -32,27 +32,26 @@
 </template>
   
 <script>
+import { postLaunch } from '../api/api';
+
 export default {
   name: 'ProjectLaunch',
     data() {
       return {
         project: {
           title :'',
-          publisherName :'',
           description :'',
           date :'',
           location :'',
           money_per_person :'',
-          person_applied :'',
           person_wanted :''
         },
       };
     },
     methods: {
-      submitForm() {
+      async submitForm() {
         // 在这里处理表单提交逻辑
-        console.log('项目名称:', this.projectName);
-        console.log('项目描述:', this.projectDescription);
+        await postLaunch(this.title, this.description, this.person_wanted, this.money_per_person);
         alert('项目已提交！');
         this.$router.push('/projects');
       }
