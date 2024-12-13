@@ -1,18 +1,13 @@
 import axiosInstance from './index'
 
 const axios = axiosInstance
-const SERVER_URL = 'http://10.129.241.57:8080';
+const SERVER_URL = 'http://192.168.232.25:8000';
 
 export const postLogin = (email, password) => 
     {
         return axios.post(`${SERVER_URL}/users/login/`, 
-                        {'email': email, 'password': password},
-                        {withCredentials: true})
-                        .then(response => 
-                            { console.log(response.data.error); }) 
-                        .catch(error => { 
-                            alert(response.data);
-                            console.error(response.data); });
+                        {'email': email, 'password_encrypted': password},
+                        {withCredentials: true});
     }
 
 export const postRegister = (email, username, password) => 
@@ -23,7 +18,7 @@ export const postRegister = (email, username, password) =>
                         .then(response => 
                             { console.log(response); }) 
                         .catch(error => { 
-                            alert(response.data);
+                            alert(response.data.message);
                             console.error(response.data); });
     }
 

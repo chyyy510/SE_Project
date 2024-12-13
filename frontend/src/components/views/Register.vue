@@ -4,21 +4,18 @@
       <h2>注册</h2>
       <div class="form-group">
         <label for="username">用户名</label>
-        <input type="text" id="username" v-model="username" required 
-        oninvalid="this.setCustomValidity('请输入用户名')"
-        oninput="this.setCustomValidity('')"/>
+        <input type="text" id="username" v-model="username" required oninvalid="this.setCustomValidity('请输入用户名')"
+          oninput="this.setCustomValidity('')" />
       </div>
       <div class="form-group">
         <label for="email">邮箱</label>
-        <input type="email" id="email" v-model="email" required 
-        oninvalid="this.setCustomValidity('请输入正确的邮箱')"
-        oninput="this.setCustomValidity('')" />
+        <input type="email" id="email" v-model="email" required oninvalid="this.setCustomValidity('请输入正确的邮箱')"
+          oninput="this.setCustomValidity('')" />
       </div>
       <div class="form-group">
         <label for="password">密码</label>
-        <input type="password" id="password" v-model="password" required 
-        oninvalid="this.setCustomValidity('请输入密码')"
-        oninput="this.setCustomValidity('')"/>
+        <input type="password" id="password" v-model="password" required oninvalid="this.setCustomValidity('请输入密码')"
+          oninput="this.setCustomValidity('')" />
       </div>
       <div class="form-group form-inline">
         <router-link to="/login">登录</router-link>
@@ -40,7 +37,7 @@ export default {
     };
   },
   methods: {
-    async getRsaCode (str){ // 注册方法
+    async getRsaCode(str) { // 注册方法
       let pubKey = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmIzophqDebSpnL77RK0l
 6l8TECsiW7t1+7ilLuc0OtPBFgRaIyEUhjV90XY1LJcWZ3UmdZ77GBoHRcZa0UAE
@@ -80,13 +77,16 @@ NwIDAQAB
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
 .form-group {
   margin-bottom: 15px;
 }
+
 label {
   display: block;
   margin-bottom: 5px;
 }
+
 input[type="text"],
 input[type="email"],
 input[type="password"] {
@@ -94,6 +94,7 @@ input[type="password"] {
   padding: 8px;
   box-sizing: border-box;
 }
+
 button {
   width: 100%;
   padding: 10px;
@@ -103,9 +104,11 @@ button {
   border-radius: 5px;
   cursor: pointer;
 }
+
 button:hover {
   background-color: #0056b3;
 }
+
 a {
   color: #94070a;
   text-decoration: none;

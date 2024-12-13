@@ -1,5 +1,6 @@
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from appuser.models import User, UserProfile
 from appuser.serializers import (
     UserSerializer,
@@ -24,9 +25,16 @@ from utils.generate_path import GeneratePath
 # Create your views here.
 
 
+class UserPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+
 class UserList(generics.ListAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by("id")
     serializer_class = UserSerializer
+    pagination_class = UserPagination
 
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -94,6 +102,7 @@ class UserLogin(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         # print("login ok")
+        print(request.data)
         email = request.data.get("email")
         password_decrypted = request.data.get("password_encrypted")
         password_decrypted = PrivacyProtection.decrypt_password(password_decrypted)
@@ -106,6 +115,8 @@ class UserLogin(generics.GenericAPIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
+        print("email right")
+
         if user.check_password(password_decrypted) == False:
             return Response(
                 {"error": "Invalid password"},
@@ -113,6 +124,8 @@ class UserLogin(generics.GenericAPIView):
             )
 
         refresh = RefreshToken.for_user(user)
+
+        print("pwd right")
 
         return Response(
             {
@@ -129,8 +142,8 @@ class UserLogin(generics.GenericAPIView):
 
 class UserTokenRefresh(TokenRefreshView):
     def post(self, request, *args, **kwargs):
-        user = request.user
-        print(user)
+        # user = request.user
+        # print(user)
         return super().post(request, *args, **kwargs)
 
 
@@ -149,7 +162,7 @@ class UserProfileDetail(generics.GenericAPIView):
             {
                 "user": user.username,
                 "nickname": profile.nickname,
-                "avatar": profile.avatar,
+                "avatar": profile.avatar,  # TODO:返回图片好像要额外注意些东西
             },
             status=status.HTTP_200_OK,
         )
