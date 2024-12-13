@@ -56,9 +56,15 @@ NwIDAQAB
       return data;
     },
     async register() {
-      await postRegister(this.email, this.username, getRsaCode(this.password));
-      alert("注册成功");
-      this.$router.push('/login');
+      try{
+        await postRegister(this.email, this.username, getRsaCode(this.password));
+        alert("注册成功");
+        this.$router.push('/login');
+      }
+      catch(error){
+        return null;
+      };
+
     }
   }
 };
