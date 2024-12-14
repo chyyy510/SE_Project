@@ -23,20 +23,39 @@ class ExperimentList(generics.ListAPIView):
     pagination_class = ExperimentPagination
 
 
+class ExperimentDetail(generics.RetrieveAPIView):
+    queryset = Experiment.objects.all()
+    serializer_class = ExperimentSerializer
+
+    def get(self, request, *args, **kwargs):
+        try:
+            response = super().get(request, *args, **kwargs)
+            response.data["message"] = (
+                "Find the experiment successfully. 成功找到该实验。"
+            )
+        except Exception:
+            return Response(
+                {"detail": "Experiment doesn't exist. 该实验不存在。"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        return response
+
+
 class ExperimentCreate(generics.GenericAPIView):
     queryset = Experiment.objects.all()
     serializer_class = ExperimentCreateSerializer
 
     def post(self, request, *args, **kwargs):
-        print("...")
+
         if isinstance(request.user, AnonymousUser):
             return Response(
                 {"detail": "Authentication required. 该功能需要先登录。"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
-        print("...")
+
         user = request.user
-        print("...")
+
         title = request.data.get("title")
         description = request.data.get("description")
         person_wanted = request.data.get("person_wanted")

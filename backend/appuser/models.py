@@ -17,7 +17,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     uid = models.IntegerField(unique=True)
     username = models.CharField(max_length=128, unique=True)
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=128)  # pre:password_hashed
+    password = models.CharField(max_length=128)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     salt = models.BinaryField()

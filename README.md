@@ -101,7 +101,7 @@ status_code=200
 
 #### user-detail
 
-[http://backend-ip:8000/users/\<int:pk\>]()
+[http://backend-ip:8000/users/\<int:pk\>/]()
 
 GET 获取id为pk的用户详细信息(id是数据库自动生成的，不同于开发者分配的uid)
 
@@ -173,7 +173,7 @@ status_code=200
 
 #### user-login
 
-[http://backend-ip:8000/users/login/]
+[http://backend-ip:8000/users/login/]()
 
 POST 向后端提交登录信息 TODO:暂定只需传递以下字段
 ```json
@@ -214,7 +214,7 @@ status_code=400
 
 #### token-refresh
 
-[http://backend-ip:8000/users/token/refresh/]
+[http://backend-ip:8000/users/token/refresh/]()
 
 POST 向后端提交之前获取的refresh
 
@@ -245,7 +245,7 @@ status_code=401
 
 #### user-profile
 
-[http://backend-ip:8000/users/profile]
+[http://backend-ip:8000/users/profile/]()
 
 GET 前端获取当前登录用户的主页信息TODO:
 
@@ -255,7 +255,7 @@ GET 前端获取当前登录用户的主页信息TODO:
 
 #### experiment-list
 
-[http://backend-ip:8000/experiments/]
+[http://backend-ip:8000/experiments/]()
 
 GET 前端获取所有的实验信息
 
@@ -298,9 +298,35 @@ GET 前端获取所有的实验信息
 }
 ```
 
+#### experiment-detail
+
+[http://backend-ip:8000/experiments/\<int:pk\>/]()
+
+GET 获取id为pk的实验详细信息
+
+status_code=200
+
+```json
+{
+    "creator": 1,
+    "description": "This is a test experiment.",
+    "id": 1,
+    "message": "Find the experiment successfully. 成功找到该实验。",
+    "money_left": "0.00",
+    "money_paid": "0.00",
+    "money_per_person": "10.00",
+    "person_already": 0,
+    "person_wanted": 20,
+    "status": "open",
+    "time_created": "2024-11-13T15:52:50.431072+08:00",
+    "time_modified": "2024-11-13T15:52:50.431078+08:00",
+    "title": "test_exp"
+}
+```
+
 #### experiment-create
 
-[http://backend-ip:8000/experiments/create/]
+[http://backend-ip:8000/experiments/create/]()
 
 POST 前端向后端发送要创建的实验信息，进行此功能必须先登录
 
@@ -336,7 +362,7 @@ status_code=200
 
 #### experiment-search
 
-[http://backend-ip:8000/experiments/search/?title=aaa&description=bbb&orderby=ccc&sort=ddd]
+[http://backend-ip:8000/experiments/search/?title=aaa&description=bbb&orderby=ccc&sort=ddd]()
 
 GET 查找title中包含aaa且description中包含bbb且按ccc字段降序或升序排列的实验列表
 
