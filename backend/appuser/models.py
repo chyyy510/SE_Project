@@ -5,6 +5,7 @@ from django.contrib.auth.models import (
     Group,
     Permission,
 )
+from django.core.validators import MinValueValidator
 from utils.generate_path import GeneratePath
 import os
 from utils.privacy_protection import PrivacyProtection
@@ -57,6 +58,9 @@ class UserProfile(models.Model):
         upload_to=GeneratePath.generate_path_avatar,
         default="avatar/user_0/default_avatar.png",
     )
+    point = models.IntegerField(
+        validators=[MinValueValidator(0)]
+    )  # 积分，发布实验时充值，完成实验获取，100:1兑换rmb
 
 
 # 以下为前后端数据传输时用的字段，不存储与数据库中

@@ -100,7 +100,7 @@ class UserRegister(generics.GenericAPIView):
 
         user.save()
 
-        userprofile = UserProfile(user=user, nickname="user" + str(uid))
+        userprofile = UserProfile(user=user, nickname="user" + str(uid), point=0)
         userprofile.save()
 
         serializer = UserSerializer(user)
