@@ -39,6 +39,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.username
 
+    def save(self, *args, **kwargs):
+        self.full_clean()  # 调用验证
+        super().save(*args, **kwargs)
+
     def set_password(self, raw_password):
 
         self.salt = os.urandom(16)

@@ -98,7 +98,13 @@ class UserRegister(generics.GenericAPIView):
 
         user.set_password(password_de)
 
-        user.save()
+        try:
+            user.save()
+        except Exception:
+            return Response(
+                {"detail": "Format error. 有内容不符合格式。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         userprofile = UserProfile(user=user, nickname="user" + str(uid), point=0)
         userprofile.save()

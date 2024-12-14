@@ -27,5 +27,8 @@ class Experiment(models.Model):
     time_created = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
 
+    activity_location = models.CharField(max_length=128, default="北京大学")
+    activity_time = models.DateField(default="2024-01-01")
+
     def __str__(self):
         return self.title + '"' + self.description + '"'

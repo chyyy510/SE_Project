@@ -60,10 +60,11 @@ class ExperimentCreate(generics.GenericAPIView):
         description = request.data.get("description")
         person_wanted = request.data.get("person_wanted")
         money_per_person = request.data.get("money_per_person")
+        activity_time = request.data.get("activity_time", "2024-01-01")
+        activity_location = request.data.get("activity_location", "北京大学")
         # ?creator=user
 
         # print("{}", user)
-
         experiment = Experiment(
             title=title,
             description=description,
@@ -74,9 +75,17 @@ class ExperimentCreate(generics.GenericAPIView):
             money_per_person=money_per_person,
             money_paid=0,  # TODO:
             money_left=0,  # TODO:
+            activity_time=activity_time,
+            activity_location=activity_location,
         )
 
-        experiment.save()
+        try:
+            experiment.save()
+        except Exception:
+            return Response(
+                {"detail": "Format error. 有内容不符合格式。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         serializer = ExperimentSerializer(experiment)
 
