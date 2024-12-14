@@ -1,10 +1,10 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
-from relation.models import Engagement
+from relation.models import Engagement, Tags
 from experiment.models import Experiment
 from experiment.views import ExperimentPagination
-from relation.serializers import EngagementSerializer
+from relation.serializers import EngagementSerializer, TagsSerializer
 from experiment.serializers import ExperimentSerializer
 
 from django.contrib.auth.models import AnonymousUser
@@ -178,32 +178,55 @@ class VolunteerQualify(generics.GenericAPIView):
             )
 
         # 在,检查转换方向#TODO:换个更好的写法？
-        if engagement.status == "to-qualify-user":
-            if qualification != "to-check-result":
+        match (engagement.status, qualification):
+            case ("to-qualify-user", "to-check-result") | ("to-check-result", "finish"):
+                engagement.status = qualification
+                engagement.save()
+
+                return Response(
+                    {
+                        "message": "Volunteer status changed successfully. 成功转换志愿者审核状态。"
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            case _:
                 return Response(
                     {"detail": "Status transition error. 不能这样转换状态。"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+        # if engagement.status == "to-qualify-user":
+        #     if qualification != "to-check-result":
+        #         return Response(
+        #             {"detail": "Status transition error. 不能这样转换状态。"},
+        #             status=status.HTTP_400_BAD_REQUEST,
+        #         )
 
-        if engagement.status == "to-check-result":
-            if qualification != "finish":
-                return Response(
-                    {"detail": "Status transition error. 不能这样转换状态。"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+        # if engagement.status == "to-check-result":
+        #     if qualification != "finish":
+        #         return Response(
+        #             {"detail": "Status transition error. 不能这样转换状态。"},
+        #             status=status.HTTP_400_BAD_REQUEST,
+        #         )
 
-        if engagement.status == "finish":
-            return Response(
-                {"detail": "Status transition error. 不能这样转换状态。"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        # if engagement.status == "finish":
+        #     return Response(
+        #         {"detail": "Status transition error. 不能这样转换状态。"},
+        #         status=status.HTTP_400_BAD_REQUEST,
+        #     )
 
-        engagement.status = qualification
-        engagement.save()
+        # engagement.status = qualification
+        # engagement.save()
 
-        return Response(
-            {
-                "message": "Volunteer status changed successfully. 成功转换志愿者审核状态。"
-            },
-            status=status.HTTP_200_OK,
-        )
+        # return Response(
+        #     {
+        #         "message": "Volunteer status changed successfully. 成功转换志愿者审核状态。"
+        #     },
+        #     status=status.HTTP_200_OK,
+        # )
+
+
+class TagsView(generics.GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        tags = Tags.objects.all()
+        serializer = TagsSerializer(tags, many=True)
+        return Response(serializer.data)  # 返回 JSON 数据
