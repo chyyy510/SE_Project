@@ -18,8 +18,9 @@ class ExperimentPagination(PageNumberPagination):
 
 
 class ExperimentList(generics.ListAPIView):
-    queryset = Experiment.objects.all()
+    queryset = Experiment.objects.all().order_by("id")
     serializer_class = ExperimentSerializer
+    pagination_class = ExperimentPagination
 
 
 class ExperimentCreate(generics.GenericAPIView):
@@ -27,12 +28,15 @@ class ExperimentCreate(generics.GenericAPIView):
     serializer_class = ExperimentCreateSerializer
 
     def post(self, request, *args, **kwargs):
+        print("...")
         if isinstance(request.user, AnonymousUser):
             return Response(
-                {"detail": "Authentication required"},
+                {"detail": "Authentication required. 该功能需要先登录。"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
+        print("...")
         user = request.user
+        print("...")
         title = request.data.get("title")
         description = request.data.get("description")
         person_wanted = request.data.get("person_wanted")
@@ -67,7 +71,11 @@ class ExperimentSearch(generics.GenericAPIView):
         description = request.GET.get("description", "")
 
         orderby = request.GET.get("orderby", "id")
-        sort = request.GET.get("sort", "desc")
+
+        if hasattr(Experiment, orderby) == False:
+            orderby = "id"
+
+        sort = request.GET.get("sort", "asc")
 
         if sort == "desc":
             orderby = f"-{orderby}"  # 使用负号表示降序排序

@@ -60,6 +60,8 @@ python3 manage.py runserver 0.0.0.0:8000
 
 ## 数据传输标准
 
+返回的详细信息，如果出错则统一为detail，正常则统一为message。
+
 ### User
 
 #### user-list
@@ -67,6 +69,8 @@ python3 manage.py runserver 0.0.0.0:8000
 [http://backend-ip:8000/users/]()
 
 GET 获取当前所有用户的信息列表
+
+status_code=200
 ```json
 {
     "count": 2,
@@ -74,20 +78,22 @@ GET 获取当前所有用户的信息列表
     "previous": null,
     "results": [
         {
-            "email": "Alice@gmail.com",
+            "email": "123456@qq.com",
+            "id": 1,
             "is_active": true,
             "is_staff": false,
-            "nickname": "Alice",
-            "password_hashed": "wevn852",
-            "uid": 46531
+            "password": "4d28edb601106a84742a3c1a394db573d5c8bf2bdc86c36a3652bdad67c7db11",
+            "uid": 1000001,
+            "username": "123456"
         },
         {
-            "email": "Bob@stu.pku.edu.cn",
+             "email": "test@qq.con",
+            "id": 2,
             "is_active": true,
             "is_staff": false,
-            "nickname": "Bob",
-            "password_hashed": "ghio63",
-            "uid": 435856
+            "password": "1015c01afd731ee9494902a36d98aca8615f37a695a1ce7e99627c37ba015c85",
+            "uid": 1000002,
+            "username": "test"
         }
     ]
 }
@@ -98,14 +104,27 @@ GET 获取当前所有用户的信息列表
 [http://backend-ip:8000/users/\<int:pk\>]()
 
 GET 获取id为pk的用户详细信息(id是数据库自动生成的，不同于开发者分配的uid)
+
+status_code=200
 ```json
 {
-    "email": "Alice@gmail.com",
+    "email": "123456@qq.com",
+    "id": 1,
     "is_active": true,
     "is_staff": false,
-    "nickname": "Alice",
-    "password_hashed": "wevn852",
-    "uid": 46531
+    "message": "Find the user successfully. 成功找到该用户。",
+    "password": "4d28edb601106a84742a3c1a394db573d5c8bf2bdc86c36a3652bdad67c7db11",
+    "uid": 1000001,
+    "username": "123456"
+}
+```
+
+若该用户不存在，则返回
+
+status_code=404
+```json
+{
+    "detail": "User doesn't exist. 该用户不存在。"
 }
 ```
 
@@ -123,17 +142,35 @@ POST 向后端提交注册信息 TODO:暂定只需传递以下字段
 ```
 
 若数据库中已有email或username，返回错误
+
+status_code=400
 ```json
 {
-    "message": "Email already exists."
+    "detail": "Email already exists.邮箱已存在。"
 }
 ```
 或
 ```json
 {
-    "message": "Username already exists."
+    "detail": "Username already exists.用户名已存在。"
 }
 ```
+
+成功注册则返回
+
+status_code=200
+```json
+{
+    "email": "Alice@gmail.com",
+    "id": 9,
+    "is_active": true,
+    "is_staff": false,
+    "password": "de06629acd0fcd41f25333870f8749fbfacad8f78ee10603aa6c0c9d1f370676",
+    "uid": 1000008,
+    "username": "Alice"
+}
+```
+
 #### user-login
 
 [http://backend-ip:8000/users/login/]
@@ -148,6 +185,7 @@ POST 向后端提交登录信息 TODO:暂定只需传递以下字段
 
 登录成功后端返回
 
+status_code=200
 ```json
 {
     "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5NzQ3NTc2LCJpYXQiOjE3Mjk3NDcyNzYsImp0aSI6ImJhMWRhOTMyMWJmYjQyOWVhZTJiNDBmOGFhOTdhZDY2IiwidXNlcl9pZCI6MX0.YKAtBt7fAzr8Q8cenyrJfrCAuMWb41co22okeZ1zuoo",
@@ -160,15 +198,17 @@ POST 向后端提交登录信息 TODO:暂定只需传递以下字段
 }
 ```
 登录失败后端返回
+
+status_code=400
 ```json
 {
-    "error": "Invalid email"
+    "detail": "Invalid email.邮箱不存在。"
 }
 ```
 或
 ```json
 {
-    "error": "Invalid password"
+    "detail": "Invalid password.密码错误。"
 }
 ```
 
@@ -185,17 +225,21 @@ POST 向后端提交之前获取的refresh
 ```
 
 后端返回更新后的access
+
+status_code=200
 ```json
 {
-    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5NzQ4MDgzLCJpYXQiOjE3Mjk3NDcyNzYsImp0aSI6ImU3NWZkNzIwOWIxZTRhZGU5MDk2ZTc1Zjc4MzQwMzI5IiwidXNlcl9pZCI6MX0.wQ9aMBMwgkyGbWKfCK_8cRvBcq2rNvPd_wPNW9kG7BA"
+    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM0MTg4Njg2LCJpYXQiOjE3MzQxODY4MjYsImp0aSI6IjQ5ZTY2MmI2MTI1ODQxMDliYzU3ZGE3OWU3NjE3ZDZkIiwidXNlcl9pZCI6MX0.ftsZ8dpZ6028bRY_FqtBOt1c8BF-B0WR4sBvMXOp6sI",
+    "message": "Access token has been refreshed.access令牌已更新。"
 }
 ```
 
 若refresh错误，后端返回
+
+status_code=401
 ```json
 {
-    "code": "token_not_valid",
-    "detail": "Token is invalid or expired"
+    "detail": "Token is invalid or expired.令牌无效或已过期。"
 }
 ```
 
@@ -271,6 +315,8 @@ POST 前端向后端发送要创建的实验信息，进行此功能必须先登
 ```
 
 后端返回创建后的详细信息：
+
+status_code=200
 ```json
 {
     "creator": 1,
@@ -297,6 +343,8 @@ GET 查找title中包含aaa且description中包含bbb且按ccc字段降序或升
 四个关键字可部分使用，title默认为空，description默认为空（即包含全部实验），orderby默认按id，sort可选asc或desc，默认为asc。
 
 后端返回满足搜索条件的实验列表
+
+status_code=200
 ```json
 {
     "count": 2,
@@ -339,14 +387,18 @@ GET 查找title中包含aaa且description中包含bbb且按ccc字段降序或升
 
 所有需要登录进行的操作，若未登录或token过期，均返回401_UNAUTHORIZED错误，其中
 
-未登录：
+若未登录
+
+status_code=401
 ```json
 {
-    "detail": "Authentication required"
+    "detail": "Authentication required. 该功能需要先登录。"
 }
 ```
 
-access token过期:
+若令牌无效或过期
+
+status_code=401
 ```json
 {
     "code": "token_not_valid",

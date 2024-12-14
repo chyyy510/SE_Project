@@ -26,7 +26,7 @@ class EngagementCreate(generics.GenericAPIView):
         user = request.user
         if isinstance(request.user, AnonymousUser):
             return Response(
-                {"detail": "Authentication required"},
+                {"detail": "Authentication required. 该功能需要先登录。"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
@@ -36,7 +36,7 @@ class EngagementCreate(generics.GenericAPIView):
             experiment = Experiment.objects.get(id=eid)
         except:
             return Response(
-                {"message": "The experiment doesn't exist."},
+                {"detail": "The experiment doesn't exist. 该实验不存在。"},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
@@ -48,7 +48,9 @@ class EngagementCreate(generics.GenericAPIView):
 
         if engagement_exist:
             return Response(
-                {"message": "User has engaged in this experiment."},
+                {
+                    "detail": "User has engaged in this experiment. 用户已经参与过该实验。"
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -67,7 +69,7 @@ class EngagementList(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         if isinstance(request.user, AnonymousUser):
             return Response(
-                {"detail": "Authentication required"},
+                {"detail": "Authentication required. 该功能需要先登录。"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
         user = request.user
@@ -85,7 +87,7 @@ class ExperimentEngagedList(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         if isinstance(request.user, AnonymousUser):
             return Response(
-                {"detail": "Authentication required"},
+                {"detail": "Authentication required. 该功能需要先登录。"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
         user = request.user
@@ -108,7 +110,7 @@ class ExperimentCreatedList(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         if isinstance(request.user, AnonymousUser):
             return Response(
-                {"detail": "Authentication required"},
+                {"detail": "Authentication required. 该功能需要先登录。"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
         user = request.user
@@ -125,7 +127,7 @@ class VolunteerQualify(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         if isinstance(request.user, AnonymousUser):
             return Response(
-                {"detail": "Authentication required"},
+                {"detail": "Authentication required. 该功能需要先登录。"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
         user = request.user
@@ -134,7 +136,9 @@ class VolunteerQualify(generics.GenericAPIView):
 
         if experiment.creator != user:
             return Response(
-                {"detail": "The experiment doesn't belong to the user."},
+                {
+                    "detail": "The experiment doesn't belong to the user. 该实验非当前用户所创建。"
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
         volunteer_id = request.data.get("volunteer_id")
@@ -144,12 +148,16 @@ class VolunteerQualify(generics.GenericAPIView):
             )
         except Engagement.DoesNotExist:
             return Response(
-                {"detail": "The volunteer didn't engage in the experiment."},
+                {
+                    "detail": "The volunteer didn't engage in the experiment. 该志愿者并未参与此实验。"
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
         except Engagement.MultipleObjectsReturned:
             return Response(
-                {"detail": "Same volunteer engaged in the experiment multiple times"},
+                {
+                    "detail": "Same volunteer engaged in the experiment multiple times. 该志愿者重复参与了此实验。"
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -165,7 +173,7 @@ class VolunteerQualify(generics.GenericAPIView):
 
         if in_flag == False:  # 不在
             return Response(
-                {"detail": "Status error."},
+                {"detail": "Status error. 没有这一状态。"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -173,20 +181,20 @@ class VolunteerQualify(generics.GenericAPIView):
         if engagement.status == "to-qualify-user":
             if qualification != "to-check-result":
                 return Response(
-                    {"detail": "Status transition error."},
+                    {"detail": "Status transition error. 不能这样转换状态。"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
         if engagement.status == "to-check-result":
             if qualification != "finish":
                 return Response(
-                    {"detail": "Status transition error."},
+                    {"detail": "Status transition error. 不能这样转换状态。"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
         if engagement.status == "finish":
             return Response(
-                {"detail": "Status transition error."},
+                {"detail": "Status transition error. 不能这样转换状态。"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -194,6 +202,8 @@ class VolunteerQualify(generics.GenericAPIView):
         engagement.save()
 
         return Response(
-            {"detail": "Volunteer status changed successfully."},
+            {
+                "message": "Volunteer status changed successfully. 成功转换志愿者审核状态。"
+            },
             status=status.HTTP_200_OK,
         )
