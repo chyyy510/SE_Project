@@ -59,7 +59,7 @@ class UserTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.count(), 3)
 
-    def test_users_register_failed_email(self):
+    def test_users_register_failed_email_duplication(self):
         # wrong email duplicate
         print("\n\033[37;42mtest email duplicate...\033[0m")
         response = self.client.post(
@@ -74,7 +74,22 @@ class UserTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(User.objects.count(), 2)
 
-    def test_users_register_failed_username(self):
+    def test_users_register_failed_email_format(self):
+        # wrong email
+        print("\n\033[37;42mtest email wrong format...\033[0m")
+        response = self.client.post(
+            reverse("user-register"),
+            data={
+                "email": "123456@kcom.",
+                "username": "testAlice",
+                "password_encrypted": "aNE7O04+KsAjsxtkM+ybDV83iCUxes0ydQdalEGP1zK4mQ7ZtaZBsBc8Lmd6yyW+I7RXz4Hq3E2L3HY9m3Jw3ZQ7zH0Mypuwi/3/bfbxwC5Q4lo1gF5FS2yK9NsQndl102J5bPWftObh9pKuuxmM3+TRZ44pl/1tsIRwOLrMmlIxmtFk2eCh8RHCetHmZoRQDZ3fg9bfD1XdWdAGYxeF5UC5kYQshaEswltX0fShsRA0ZY+VoJYowotgfmUuyWT9OQ3sRNA3UOwC94lIN1mnNVHcWP2NQ06XMa33eLxrSRTOUsYcL0C+6tYCD4MGu49jrnBsQXDc9GZMtSO7JjROGg==",
+            },
+        )
+        print(response.content)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(User.objects.count(), 2)
+
+    def test_users_register_failed_username_duplication(self):
         # wrong username duplicate
         print("\n\033[37;42mtest username duplicate...\033[0m")
         response = self.client.post(

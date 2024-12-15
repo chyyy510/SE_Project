@@ -1,27 +1,19 @@
 from django.urls import path
 from relation.views import (
     EngagementCreate,
-    EngagementList,
-    ExperimentEngagedList,
-    ExperimentCreatedList,
+    ExperimentSearchInEngaged,
     VolunteerQualify,
 )
 
 urlpatterns = [
-    path("engagements/create/", EngagementCreate.as_view(), name="engagement-create"),
-    path("engagements/list/", EngagementList.as_view(), name="engagements-list"),
+    path("engage/", EngagementCreate.as_view(), name="experiment-engage"),
     path(
-        "experiments-engaged/list/",
-        ExperimentEngagedList.as_view(),
-        name="exp-engaged-list",
+        "engage/search/",
+        ExperimentSearchInEngaged.as_view(),
+        name="experiment-engage-search",
     ),
     path(
-        "experiments-created/list/",
-        ExperimentCreatedList.as_view(),
-        name="exp-created-list",
-    ),
-    path(
-        "qualifications/volunteers/",
+        "qualify/volunteers/",
         VolunteerQualify.as_view(),
         name="qualify-volunteer",
     ),

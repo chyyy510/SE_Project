@@ -109,6 +109,23 @@ class ExperimentTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
+    def test_experiments_create_failed_date_format(self):
+        publisher = User.objects.get(username="publisher")
+        self.client.force_authenticate(user=publisher)
+
+        response = self.client.post(
+            reverse("experiment-create"),
+            data={
+                "title": "success",
+                "description": "anothe description",
+                "person_wanted": 2,
+                "money_per_person": 10,
+                "activity_time": "19581355",
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+
     def test_experiments_create_failed_not_login(self):
         response = self.client.post(
             reverse("experiment-create"),

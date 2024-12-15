@@ -118,3 +118,39 @@ class ExperimentSearch(generics.GenericAPIView):
 
         serializer = ExperimentSerializer(paginated_experiments, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+
+class ExperimentSearchInCreated(generics.GenericAPIView):
+
+    def get(self, request, *args, **kwargs):
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required. 该功能需要先登录。"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        user = request.user
+
+        title = request.GET.get("title", "")
+        description = request.GET.get("description", "")
+
+        orderby = request.GET.get("orderby", "id")
+
+        if hasattr(Experiment, orderby) == False:
+            orderby = "id"
+
+        sort = request.GET.get("sort", "asc")
+
+        if sort == "desc":
+            orderby = f"-{orderby}"  # 使用负号表示降序排序
+
+        experiments = Experiment.objects.filter(
+            creator=user, title__contains=title, description__contains=description
+        ).order_by(orderby)
+
+        # 分页处理
+        paginator = ExperimentPagination()
+        paginated_experiments = paginator.paginate_queryset(experiments, request)
+
+        serializer = ExperimentSerializer(paginated_experiments, many=True)
+        return paginator.get_paginated_response(serializer.data)

@@ -65,25 +65,8 @@ class EngagementCreate(generics.GenericAPIView):
         return Response(serializer.data)
 
 
-class EngagementList(generics.GenericAPIView):
-    def get(self, request, *args, **kwargs):
-        if isinstance(request.user, AnonymousUser):
-            return Response(
-                {"detail": "Authentication required. 该功能需要先登录。"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-        user = request.user
-        engagements = Engagement.objects.filter(user=user).order_by("id")
+class ExperimentSearchInEngaged(generics.GenericAPIView):
 
-        paginator = EngagementPagination()
-        paginator_engagements = paginator.paginate_queryset(engagements, request)
-
-        serializer = EngagementSerializer(paginator_engagements, many=True)
-
-        return Response(serializer.data)
-
-
-class ExperimentEngagedList(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         if isinstance(request.user, AnonymousUser):
             return Response(
@@ -96,26 +79,24 @@ class ExperimentEngagedList(generics.GenericAPIView):
         experiment_ids = engagements.values_list("experiment_id", flat=True).distinct()
 
         # 根据 experiment_id 查询对应的 Experiment 信息
-        experiments = Experiment.objects.filter(id__in=experiment_ids).order_by("id")
+        experiments = Experiment.objects.filter(id__in=experiment_ids)
 
-        paginator = ExperimentPagination()
-        paginated_experiments = paginator.paginate_queryset(experiments, request)
+        title = request.GET.get("title", "")
+        description = request.GET.get("description", "")
 
-        serializer = ExperimentSerializer(paginated_experiments, many=True)
+        orderby = request.GET.get("orderby", "id")
 
-        return paginator.get_paginated_response(serializer.data)
+        if hasattr(Experiment, orderby) == False:
+            orderby = "id"
 
+        sort = request.GET.get("sort", "asc")
 
-class ExperimentCreatedList(generics.GenericAPIView):
-    def get(self, request, *args, **kwargs):
-        if isinstance(request.user, AnonymousUser):
-            return Response(
-                {"detail": "Authentication required. 该功能需要先登录。"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-        user = request.user
-        experiments = Experiment.objects.filter(creator=user).order_by("id")
+        if sort == "desc":
+            orderby = f"-{orderby}"  # 使用负号表示降序排序
 
+        experiments = experiments.order_by(orderby)
+
+        # 分页处理
         paginator = ExperimentPagination()
         paginated_experiments = paginator.paginate_queryset(experiments, request)
 
