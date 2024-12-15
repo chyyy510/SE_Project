@@ -57,8 +57,7 @@ NwIDAQAB
       try{
         await postLogin(this.email, this.getRsaCode(this.password));
         alert("登录成功");
-        localStorage.setItem('loginFlag', 'true');
-        localStorage.setItem('username', this.username);
+        localStorage.setItem('user', response.data.user);
         this.$router.push('/user');
       }
       catch(error){
