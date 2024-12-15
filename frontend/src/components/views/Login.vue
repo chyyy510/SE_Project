@@ -61,8 +61,8 @@ NwIDAQAB
         this.$router.push('/user');
       }
       catch(error){
-        alert(error.response.data.error);
-        console.log(error.response.data.error);
+        alert(error.response.data.detail);
+        console.log(error.response.data.detail);
         return null;
       }
     }

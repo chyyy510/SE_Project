@@ -1,7 +1,7 @@
 import axiosInstance from './index'
 
 const axios = axiosInstance
-const SERVER_URL = 'http://10.129.241.57:8080';
+const SERVER_URL = 'http://192.168.232.25:8080';
 
 export const postLogin = (email, password) => 
     {
@@ -46,6 +46,7 @@ export const getProject = (id) =>
             return axios.get(`${SERVER_URL}/experiments/${id}`,
                             {withCredentials: true});        
         }
+
 export const postLaunch = (title, description, person_wanted, money_per_person) => 
     {
         return axios.post(`${SERVER_URL}/experiments/create`, 
