@@ -41,6 +41,18 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    def get(self, request, *args, **kwargs):
+        try:
+            response = super().get(request, *args, **kwargs)
+            response.data["message"] = "Find the user successfully. 成功找到该用户。"
+        except Exception:
+            return Response(
+                {"detail": "User doesn't exist. 该用户不存在。"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        return response
+
 
 class UserRegister(generics.GenericAPIView):
     queryset = User.objects.all()
@@ -53,7 +65,7 @@ class UserRegister(generics.GenericAPIView):
 
         if user_exists:
             return Response(
-                {"message": "Email already exists."},
+                {"detail": "Email already exists. 邮箱已存在。"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -62,7 +74,7 @@ class UserRegister(generics.GenericAPIView):
 
         if user_exists:
             return Response(
-                {"message": "Username already exists."},
+                {"detail": "Username already exists. 用户名已存在。"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -86,9 +98,15 @@ class UserRegister(generics.GenericAPIView):
 
         user.set_password(password_de)
 
-        user.save()
+        try:
+            user.save()
+        except Exception:
+            return Response(
+                {"detail": "Format error. 有内容不符合格式。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        userprofile = UserProfile(user=user, nickname="user" + str(uid))
+        userprofile = UserProfile(user=user, nickname="user" + str(uid), point=0)
         userprofile.save()
 
         serializer = UserSerializer(user)
@@ -111,16 +129,16 @@ class UserLogin(generics.GenericAPIView):
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response(
-                {"error": "Invalid email"},
-                status=status.HTTP_401_UNAUTHORIZED,
+                {"detail": "Invalid email. 邮箱不存在。"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         print("email right")
 
         if user.check_password(password_decrypted) == False:
             return Response(
-                {"error": "Invalid password"},
-                status=status.HTTP_401_UNAUTHORIZED,
+                {"detail": "Invalid password. 密码错误。"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         refresh = RefreshToken.for_user(user)
@@ -142,9 +160,17 @@ class UserLogin(generics.GenericAPIView):
 
 class UserTokenRefresh(TokenRefreshView):
     def post(self, request, *args, **kwargs):
-        # user = request.user
-        # print(user)
-        return super().post(request, *args, **kwargs)
+        try:
+            response = super().post(request, *args, **kwargs)
+        except Exception as e:
+            return Response(
+                {"detail": "Token is invalid or expired. 令牌无效或已过期。"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        response.data["message"] = "Access token has been refreshed. access令牌已更新。"
+
+        return response
 
 
 class UserProfileDetail(generics.GenericAPIView):
@@ -152,7 +178,7 @@ class UserProfileDetail(generics.GenericAPIView):
         user = request.user
         if isinstance(request.user, AnonymousUser):
             return Response(
-                {"detail": "Authentication required"},
+                {"detail": "Authentication required. 该功能需要先登录。"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
@@ -174,20 +200,20 @@ class UserProfileAvatarUpload(generics.GenericAPIView):
         user = request.user
         if isinstance(request.user, AnonymousUser):
             return Response(
-                {"detail": "Authentication required"},
+                {"detail": "Authentication required. 该功能需要先登录。"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
         image = request.FILES.get("avatar")
 
         if not image:
             return Response(
-                {"detail": "No avatar file uploaded."},
+                {"detail": "No avatar file uploaded. 未上传头像文件。"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         if not image.content_type.startswith("image"):
             return Response(
-                {"detail": "The file is not an image."},
+                {"detail": "The file is not an image. 该文件不是图片。"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

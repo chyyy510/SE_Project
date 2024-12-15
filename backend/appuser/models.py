@@ -5,6 +5,7 @@ from django.contrib.auth.models import (
     Group,
     Permission,
 )
+from django.core.validators import MinValueValidator
 from utils.generate_path import GeneratePath
 import os
 from utils.privacy_protection import PrivacyProtection
@@ -16,7 +17,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     uid = models.IntegerField(unique=True)
     username = models.CharField(max_length=128, unique=True)
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=128)  # pre:password_hashed
+    password = models.CharField(max_length=128)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     salt = models.BinaryField()
@@ -38,6 +39,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.username
 
+    def save(self, *args, **kwargs):
+        self.full_clean()  # 调用验证
+        super().save(*args, **kwargs)
+
     def set_password(self, raw_password):
 
         self.salt = os.urandom(16)
@@ -57,6 +62,9 @@ class UserProfile(models.Model):
         upload_to=GeneratePath.generate_path_avatar,
         default="avatar/user_0/default_avatar.png",
     )
+    point = models.IntegerField(
+        validators=[MinValueValidator(0)]
+    )  # 积分，发布实验时充值，完成实验获取，100:1兑换rmb
 
 
 # 以下为前后端数据传输时用的字段，不存储与数据库中

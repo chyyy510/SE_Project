@@ -15,3 +15,17 @@ class Engagement(models.Model):
         ("finish", "已完成"),
     }
     status = models.CharField(max_length=24, choices=status_choice)
+
+
+class Tags(models.Model):
+    name = models.CharField(max_length=10, unique=True)  # 标签名，唯一
+
+    def __str__(self):
+        return self.name
+
+
+class TagsExps(models.Model):
+    tags = models.ForeignKey(Tags, on_delete=models.SET_NULL, null=True)  # TODO:
+    experiment = models.ForeignKey(
+        Experiment, on_delete=models.SET_NULL, null=True
+    )  # TODO:
