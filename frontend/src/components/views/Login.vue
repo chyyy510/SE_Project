@@ -4,7 +4,7 @@
       <h2>登录</h2>
       <div class="form-group">
         <label for="email">邮箱</label>
-        <input type="text" id="email" v-model="email" required oninvalid="this.setCustomValidity('请输入邮箱')"
+        <input type="email" id="email" v-model="email" required oninvalid="this.setCustomValidity('请输入邮箱')"
           oninput="this.setCustomValidity('')" />
       </div>
       <div class="form-group">
@@ -55,9 +55,13 @@ NwIDAQAB
     },
     async login() {
       try{
-        await postLogin(this.email, this.getRsaCode(this.password));
+        const response = await postLogin(this.email, this.getRsaCode(this.password));
         alert("登录成功");
-        localStorage.setItem('user', response.data.user);
+        localStorage.setItem('loginFlag', 'true');
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('access', JSON.stringify(response.data.access));
+        console.log('用户信息',JSON.stringify(response.data.user));
+        console.log('令牌',JSON.stringify(response.data.access));
         this.$router.push('/user');
       }
       catch(error){
@@ -96,7 +100,7 @@ label {
   margin-bottom: 5px;
 }
 
-input[type="text"],
+input[type="email"],
 input[type="password"] {
   width: 100%;
   padding: 8px;
