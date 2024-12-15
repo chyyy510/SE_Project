@@ -21,7 +21,7 @@ new Vue({
 router.beforeEach((to, from, next)=>{
   if(to.meta.requiresLogin == "true"){
       // 需要登录状态的页面
-      if(localStorage.getItem("loginFlag") == "true"){
+      if(localStorage.getItem("user")){
           next();
       }
       else{

@@ -1,41 +1,17 @@
 <template>
-    <div class="launch-project">
-      <h1>发起新项目</h1>
-      <form @submit.prevent="submitForm">
-        <div class="form-group">
-          <label for="title">项目名称</label>
-          <input type="text" id="title" v-model="project.title" required />
-        </div>
-        <div class="form-group">
-          <label for="date">日期</label>
-          <input type="date" id="date" v-model="project.date" required />
-        </div>
-        <div class="form-group">
-          <label for="location">地点</label>
-          <input type="text" id="location" v-model="project.location" required />
-        </div>
-        <div class="form-group">
-          <label for="person">所需人数</label>
-          <input type="number" id="person" v-model="project.person_wanted" required />
-        </div>
-        <div class="form-group">
-          <label for="money">人均报酬</label>
-          <input type="number" id="money" v-model="project.money_per_person" required />
-        </div>
-        <div class="form-group">
-          <label for="description">项目描述</label>
-          <textarea id="description" v-model="project.description" required></textarea>
-        </div>
-        <button type="submit">提交</button>
-      </form>
-    </div>
+    <ProjectEdit :project="project" :banner="banner"/>
 </template>
   
 <script>
+import ProjectEdit from '../ProjectEdit.vue';
 export default {
   name: 'ProjectLaunch',
+  components: {
+    ProjectEdit
+  },
     data() {
       return {
+        banner:'发起新项目',
         project: {
           title :'',
           description :'',
@@ -45,14 +21,6 @@ export default {
           person_wanted :''
         },
       };
-    },
-    methods: {
-      async submitForm() {
-        // 在这里处理表单提交逻辑
-        await postLaunch(this.title, this.description, this.person_wanted, this.money_per_person);
-        alert('项目已提交！');
-        this.$router.push('/projects');
-      }
     }
   };
 </script>

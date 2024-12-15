@@ -24,7 +24,7 @@
 
 
 <script>
-import Project from './views/Project.vue';
+import Project from './Project.vue';
 import ProjectDetail from './views/ProjectDetail.vue';
 import { debounce } from 'lodash';
 import { getSearch } from './api/api';

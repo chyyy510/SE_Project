@@ -38,7 +38,6 @@ export default {
       user: {
         avatar: '', // 用户头像URL
         username: '', // 用户名
-        password: '', // 密码
         email: '' // 邮箱
       },
       defaultAvatar: require('../../assets/logo.png'),
@@ -51,7 +50,7 @@ export default {
     };
   },
   created() {
-    this.user.username = localStorage.getItem('username');
+    this.user = localStorage.getItem('user');
   },
   methods: {
     triggerFileInput() {
@@ -89,8 +88,7 @@ export default {
       this.editingField = null;
     },
     logout() {
-      localStorage.setItem('loginFlag', 'false');
-      localStorage.setItem('username', '');
+      localStorage.setItem('user', null);
       this.$router.push('/');
     }
   }

@@ -1,6 +1,6 @@
 <template>
     <div class="launch-project">
-      <h1>发起新项目</h1>
+      <h1>{{banner}}</h1>
       <form @submit.prevent="submitForm">
         <div class="form-group">
           <label for="title">项目名称</label>
@@ -32,11 +32,15 @@
 </template>
   
 <script>
-import { postLaunch } from '../api/api';
+import { postLaunch } from './api/api';
 
 export default {
   name: 'ProjectLaunch',
   props:{
+    banner:{
+      type:Object,
+      Required:true
+    },
     project:{
       type:Object,
       Required:true
