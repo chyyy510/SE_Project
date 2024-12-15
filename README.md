@@ -409,6 +409,27 @@ status_code=200
 }
 ```
 
+### engagement
+
+#### experiment-engage
+
+[http://backend-ip:8000/relations/engage/]()
+
+POST 
+
+#### experiment-engage-search
+
+[http://backend-ip:8000/relations/engage/search/]()
+
+### qualification
+
+#### qualify-volunteer
+
+[http://backend-ip:8000/relations/qualify/volunteers/]()
+
+
+
+
 ### other
 
 所有需要登录进行的操作，若未登录或token过期，均返回401_UNAUTHORIZED错误，其中

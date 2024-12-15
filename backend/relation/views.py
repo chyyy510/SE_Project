@@ -175,35 +175,6 @@ class VolunteerQualify(generics.GenericAPIView):
                     {"detail": "Status transition error. 不能这样转换状态。"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        # if engagement.status == "to-qualify-user":
-        #     if qualification != "to-check-result":
-        #         return Response(
-        #             {"detail": "Status transition error. 不能这样转换状态。"},
-        #             status=status.HTTP_400_BAD_REQUEST,
-        #         )
-
-        # if engagement.status == "to-check-result":
-        #     if qualification != "finish":
-        #         return Response(
-        #             {"detail": "Status transition error. 不能这样转换状态。"},
-        #             status=status.HTTP_400_BAD_REQUEST,
-        #         )
-
-        # if engagement.status == "finish":
-        #     return Response(
-        #         {"detail": "Status transition error. 不能这样转换状态。"},
-        #         status=status.HTTP_400_BAD_REQUEST,
-        #     )
-
-        # engagement.status = qualification
-        # engagement.save()
-
-        # return Response(
-        #     {
-        #         "message": "Volunteer status changed successfully. 成功转换志愿者审核状态。"
-        #     },
-        #     status=status.HTTP_200_OK,
-        # )
 
 
 class TagsView(generics.GenericAPIView):

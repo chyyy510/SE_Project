@@ -154,3 +154,16 @@ class ExperimentSearchInCreated(generics.GenericAPIView):
 
         serializer = ExperimentSerializer(paginated_experiments, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+
+class ExperimentClose(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required. 该功能需要先登录。"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        user = request.user
+
+        eid = request.data.get("experiment")
