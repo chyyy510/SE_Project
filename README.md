@@ -348,7 +348,7 @@ POST 前端向后端发送要创建的实验信息，进行此功能必须先登
     "description": "xxx",
     "person_wanted": 20,
     "money_per_person": 10,
-    "tags": 13
+    "tags": 13,
     "activity_time": "2024-01-01",
     "activity_location": "北京大学",
 }
