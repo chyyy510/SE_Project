@@ -23,6 +23,11 @@ class UserUsernameSerializer(serializers.ModelSerializer):
         fields = ["username"]
 
 
+class UsernameStatusSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    status = serializers.CharField
+
+
 class UserProfileNicknameSerializer(serializers.Serializer):
     class Meta:
         model = UserProfile

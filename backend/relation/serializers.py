@@ -14,6 +14,14 @@ class EngagementCreateSerializer(serializers.Serializer):
         fileds = ["experiment"]
 
 
+class VolunteerListSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source="user.username")
+
+    class Meta:
+        model = Engagement
+        fields = ["username", "status"]
+
+
 class TagsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tags
