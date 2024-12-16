@@ -3,6 +3,7 @@ from relation.views import (
     EngagementCreate,
     ExperimentSearchInEngaged,
     VolunteerQualify,
+    VolunteerList,
     TagsView,
 )
 
@@ -18,6 +19,7 @@ urlpatterns = [
         VolunteerQualify.as_view(),
         name="qualify-volunteer",
     ),
+    path("volunteers/list/", VolunteerList.as_view(), name="volunteer-list"),
     path(
         "tags/",
         TagsView.as_view(),

@@ -3,7 +3,9 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from relation.models import Engagement, Tags, TagsExps
 from experiment.models import Experiment
+from appuser.views import UserUsernamePagination
 from experiment.views import ExperimentPagination
+from appuser.serializers import UserUsernameSerializer
 from relation.serializers import EngagementSerializer, TagsSerializer
 from experiment.serializers import ExperimentSerializer
 
@@ -186,7 +188,7 @@ class VolunteerList(generics.GenericAPIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        eid = request.data.get("experiment")
+        eid = request.GET.get("experiment")
 
         try:
             experiment = Experiment.objects.get(id=eid)
@@ -206,6 +208,14 @@ class VolunteerList(generics.GenericAPIView):
 
         # 找所有volunteer
         engagements = Engagement.objects.filter(experiment=experiment).order_by("id")
+        query = engagements.select_related("user").all()
+        users = [engagement.user for engagement in query if engagement.user]
+        print(users)
+
+        paginator = UserUsernamePagination()
+        paginated_users = paginator.paginate_queryset(users, request)
+        serializer = UserUsernameSerializer(paginated_users, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class TagsView(generics.GenericAPIView):

@@ -16,6 +16,13 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 
+class UserUsernameSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ["username"]
+
+
 class UserProfileNicknameSerializer(serializers.Serializer):
     class Meta:
         model = UserProfile

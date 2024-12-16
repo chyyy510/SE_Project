@@ -25,12 +25,20 @@ from utils.generate_path import GeneratePath
 # Create your views here.
 
 
+# pagination
 class UserPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = "page_size"
     max_page_size = 100
 
 
+class UserUsernamePagination(PageNumberPagination):
+    page_size = 50
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+
+# view
 class UserList(generics.ListAPIView):
     queryset = User.objects.all().order_by("id")
     serializer_class = UserSerializer

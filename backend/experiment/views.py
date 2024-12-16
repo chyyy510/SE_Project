@@ -65,7 +65,7 @@ class ExperimentCreate(generics.GenericAPIView):
         activity_time = request.data.get("activity_time", "2024-01-01")
         activity_location = request.data.get("activity_location", "北京大学")
 
-        tags = request.data.get("tags")
+        tags = request.data.get("tags", 0)
 
         def int_to_bitset(n):
             bitset = set()
