@@ -173,7 +173,7 @@ class VolunteerQualify(generics.GenericAPIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
         user = request.user
-        experiment_id = request.data.get("experiment_id")
+        experiment_id = request.data.get("experiment")
         experiment = Experiment.objects.get(id=experiment_id)
 
         if experiment.creator != user:
@@ -190,7 +190,15 @@ class VolunteerQualify(generics.GenericAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        volunteer_id = request.data.get("volunteer_id")
+        volunteer_username = request.data.get("volunteer")
+        try:
+            volunteer_id = User.objects.get(username=volunteer_username)
+        except Exception:
+            return Response(
+                {"detail": "The volunteer doesn't exist. 该志愿者不存在。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         try:
             engagement = Engagement.objects.get(
                 user=volunteer_id, experiment=experiment_id
