@@ -61,15 +61,10 @@ export default {
   },
   created()
     {
-      this.getId();
-      if(this.project.relationship=='applicant')
-        this.button_text_apply='取消申请';
-      else
-      this.button_text_apply='申请参与';
-      console.log("关系",this.project.relationship);
+      this.getInfo();
     },
   methods: {
-    getId(){
+    getInfo(){
       const currentUrl = window.location.href;
       const idMatch = currentUrl.match(/\/projects\/(\d+)$/);
       if (idMatch) {
@@ -79,7 +74,12 @@ export default {
         getProject(access, this.project.id)
           .then(response => {
             this.project=response.data;
-            console.log(this.project);
+            if(this.project.relationship=='applicant')
+              this.button_text_apply='取消申请';
+            else
+              this.button_text_apply='申请参与';
+            console.log("关系",this.project.relationship);
+            console.log("文本",this.button_text_apply);
           })
           .catch(error => {
             console.error('Error fetching project:', error);
