@@ -20,6 +20,7 @@ from django.conf import settings
 from utils.privacy_protection import PrivacyProtection
 from utils.generate_info import GenerateInfo
 from utils.generate_path import GeneratePath
+from utils.log_print import log_print
 
 
 # Create your views here.
@@ -59,7 +60,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 
         profile = UserProfile.objects.get(user=user)
 
-        print(profile.avatar)
+        log_print(profile.avatar)
 
         response = Response(
             {
@@ -82,7 +83,7 @@ class UserRegister(generics.GenericAPIView):
     serializer_class = DataUserRegisterSerializer
 
     def post(self, request, *args, **kwargs):
-        # print(request.data)
+        log_print(request.data)
         email = request.data.get("email")
         user_exists = User.objects.filter(email=email).exists()
 
@@ -142,8 +143,7 @@ class UserLogin(generics.GenericAPIView):
     serializer_class = DataUserLoginSerializer
 
     def post(self, request, *args, **kwargs):
-        # print("login ok")
-        print(request.data)
+        log_print(request.data)
         email = request.data.get("email")
         password_decrypted = request.data.get("password_encrypted")
         password_decrypted = PrivacyProtection.decrypt_password(password_decrypted)
@@ -156,8 +156,6 @@ class UserLogin(generics.GenericAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        print("email right")
-
         if user.check_password(password_decrypted) == False:
             return Response(
                 {"detail": "Invalid password. 密码错误。"},
@@ -165,8 +163,6 @@ class UserLogin(generics.GenericAPIView):
             )
 
         refresh = RefreshToken.for_user(user)
-
-        print("pwd right")
 
         return Response(
             {
@@ -263,37 +259,36 @@ class UserProfileEdit(generics.GenericAPIView):
 
         user = request.user
 
-        attri = dict()
-
-        if (username := request.data.get("username")) is not None:
-            attri["username"] = username
-        if (email := request.data.get("email")) is not None:
-            attri["email"] = email
-        if (
-            new_password_encrypted := request.data.get("new_password_encrypted")
-        ) is not None:
-            old_password_encrypted = request.data.get("old_password_encrypted")
-            if old_password_encrypted is None:
-                return Response(
-                    {"detail": "Please enter old password. 请输入旧密码。"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            old_password_decrypted = PrivacyProtection.decrypt_password(
-                old_password_encrypted
-            )
-            if not user.check_password(old_password_decrypted):
-                return Response(
-                    {"detail": "Password is wrong. 旧密码错误。"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            user.set_password(
-                PrivacyProtection.decrypt_password(new_password_encrypted)
-            )
-
         try:
-            user.update(**attri)
+            if (username := request.data.get("username")) is not None:
+                user.username = username
+                user.save()
+            if (email := request.data.get("email")) is not None:
+                user.email = email
+                user.save()
+            if (
+                new_password_encrypted := request.data.get("new_password_encrypted")
+            ) is not None:
+                old_password_encrypted = request.data.get("old_password_encrypted")
+                if old_password_encrypted is None:
+                    return Response(
+                        {"detail": "Please enter old password. 请输入旧密码。"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                old_password_decrypted = PrivacyProtection.decrypt_password(
+                    old_password_encrypted
+                )
+                if not user.check_password(old_password_decrypted):
+                    return Response(
+                        {"detail": "Password is wrong. 旧密码错误。"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                user.set_password(
+                    PrivacyProtection.decrypt_password(new_password_encrypted)
+                )
+
             return Response(
                 {"detail": "User profile edited successfully. 用户信息更新成功。"}
             )

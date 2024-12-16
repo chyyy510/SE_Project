@@ -11,6 +11,8 @@ from relation.models import TagsExps
 from rest_framework import generics
 from django.utils import timezone
 
+from utils.log_print import log_print
+
 # Create your views here.
 
 
@@ -74,8 +76,8 @@ class ExperimentCreate(generics.GenericAPIView):
     serializer_class = ExperimentCreateSerializer
 
     def post(self, request, *args, **kwargs):
-        print(request.headers)
-        print(request.data)
+        log_print(request.headers)
+        log_print(request.data)
         if isinstance(request.user, AnonymousUser):
             return Response(
                 {"detail": "Authentication required. 该功能需要先登录。"},
@@ -105,7 +107,7 @@ class ExperimentCreate(generics.GenericAPIView):
 
         # ?creator=user
 
-        # print("{}", user)
+        # debug_print("{}", user)
         experiment = Experiment(
             title=title,
             description=description,
@@ -360,6 +362,7 @@ class ExperimentClose(generics.GenericAPIView):
 
 class ExperimentEdit(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
         if isinstance(request.user, AnonymousUser):
             return Response(
                 {"detail": "Authentication required. 该功能需要先登录。"},
@@ -373,7 +376,7 @@ class ExperimentEdit(generics.GenericAPIView):
                 {"detail": "Exp id please. 请提供实验 id。"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        if Experiment.objects.filter(id=id).creator != user:
+        if Experiment.objects.get(id=id).creator != user:
             return Response(
                 {
                     "detail": "You are not the creator of this experiment. 您不是此实验的创建者。"
