@@ -17,4 +17,4 @@ class EngagementCreateSerializer(serializers.Serializer):
 class TagsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tags
-        fields = ["name"]
+        fields = "__all__"

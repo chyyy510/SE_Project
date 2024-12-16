@@ -49,9 +49,18 @@ export default {
     methods: {
       async submitForm() {
         // 在这里处理表单提交逻辑
-        await postLaunch(this.project.title, this.project.description, this.project.person_wanted, this.project.money_per_person);
+        const access=JSON.parse(localStorage.getItem('access'));
+        console.log(access);
+        try{
+          await postLaunch(access, this.project.title, this.project.date, this.project.location,
+                        this.project.person_wanted, this.project.money_per_person, this.project.description);
         alert('项目已提交！');
         this.$router.push('/projects');
+        }
+        catch(error) {
+          console.log(error.response.data.detail);
+          return null;
+        }
       }
     }
   };

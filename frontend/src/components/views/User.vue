@@ -50,7 +50,7 @@ export default {
     };
   },
   created() {
-    this.user = localStorage.getItem('user');
+    this.user = JSON.parse(localStorage.getItem('user'));
   },
   methods: {
     triggerFileInput() {
@@ -88,6 +88,7 @@ export default {
       this.editingField = null;
     },
     logout() {
+      localStorage.setItem('loginFlag', 'false');
       localStorage.setItem('user', null);
       this.$router.push('/');
     }

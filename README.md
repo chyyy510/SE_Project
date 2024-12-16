@@ -335,10 +335,13 @@ POST 前端向后端发送要创建的实验信息，进行此功能必须先登
     "description": "xxx",
     "person_wanted": 20,
     "money_per_person": 10,
+    "tags": 13
     "activity_time": "2024-01-01",
     "activity_location": "北京大学",
 }
 ```
+
+> 这里，15 = 0b1101，意为该实验包含 id 为 1、3、4 的 tag。
 
 后端返回创建后的详细信息：
 
@@ -468,4 +471,20 @@ refresh token过期:
     "code": "token_not_valid",
     "detail": "令牌无效或已过期"
 }
+```
+
+### 所有 tag：
+
+- API：`<host>:<port>/relation/tags/`
+- 方法：GET
+- 返回
+```json
+[
+    {
+        "name": "tag1"
+    },
+    {
+        "name": "tag2"
+    }
+]
 ```

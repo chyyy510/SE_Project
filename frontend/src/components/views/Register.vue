@@ -27,6 +27,7 @@
 
 <script>
 import { postRegister } from '../api/api';
+import JSEncrypt from 'jsencrypt';
 export default {
   name: 'Register',
   data() {
@@ -37,7 +38,7 @@ export default {
     };
   },
   methods: {
-    async getRsaCode(str) { // 注册方法
+    getRsaCode(str) { // 注册方法
       let pubKey = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmIzophqDebSpnL77RK0l
 6l8TECsiW7t1+7ilLuc0OtPBFgRaIyEUhjV90XY1LJcWZ3UmdZ77GBoHRcZa0UAE
@@ -59,8 +60,6 @@ NwIDAQAB
         this.$router.push('/login');
       }
       catch(error){
-        alert(error.response.data.error);
-        console.log(error.response.data.error);
         return null;
       }
     }
