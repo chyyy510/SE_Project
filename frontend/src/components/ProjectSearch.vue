@@ -1,6 +1,8 @@
 <template>
   <div class="project-list">
-    <input type="text" v-model="searchQuery" placeholder="搜索活动..." @input="fetchProjects" v-if="!showDetail" />
+    <input type="text" v-model="searchTitle" placeholder="搜索项目名称..."/>
+    <input type="text" v-model="searchDescreption" placeholder="搜索项目内容..."/>
+    <button @click="fetchProjects()" class="search-button">搜索</button>
     <div class="sort-buttons">
       <div class="sift-buttons">
         <button @click="toggleTagBox" :class="{ 'active': showTagBox }" class="tag-button">按标签筛选</button>
@@ -11,7 +13,7 @@
       </div>
     </div>
     <div v-if="showTagBox" class="tag-box">
-      <span v-for="tag in tags" :key="tag.id" @click="toggleTag(tag)" :class="{ selected: selectedTags.includes(tag) }">{{ tag.name }}</span>
+      <span v-for="tag in tags" @click="toggleTag(tag)" :class="{ selected: selectedTags.includes(tag) }">{{ tag.name }}</span>
     </div>
     <div v-if="projects.length === 0">没有找到相关活动</div>
     <div v-else>
@@ -27,7 +29,7 @@
 import Project from './Project.vue';
 import ProjectDetail from './views/ProjectDetail.vue';
 import { debounce } from 'lodash';
-import { getSearch } from './api/api';
+import { getSearch, getTag } from './api/api';
 
 export default {
   name: 'ProjectSearch',
@@ -43,7 +45,8 @@ export default {
   },
   data() {
     return {
-      searchQuery: '',
+      searchTitle: '',
+      searchDescreption: '',
       projects: [],
       tags: [],
       selectedTags: [],
@@ -58,39 +61,28 @@ export default {
     this.fetchTags();
     this.fetchProjects();
   },
-  watch: {
-    searchQuery: debounce(function(newQuery) {
-      this.fetchProjects();
-    }, 300)
-  },
   methods: {
-    
   fetchProjects() {
-    const tagVector = this.tags.map(tag => this.selectedTags.includes(tag) ? 1 : 0).join('');
-    console.log(tagVector,this.searchQuery,this.sortOrder,this.sortBy);
+    //const tagVector = this.tags.map(tag => this.selectedTags.includes(tag) ? 1 : 0).join('');
+    console.log(this.searchTitle, this.searchDescreption, this.sortOrder,this.sortBy);
     console.log(this.searchTag)
-    /*getSearch(tagVector, this.searchQuery, this.sortOrder, this.sortBy)
+    getSearch(this.searchTitle, this.searchDescreption, this.sortOrder,this.sortBy)
       .then(response => {
-        this.projects = response.data;
+        this.projects = response.data.results;
       })
       .catch(error => {
         console.error('Error fetching projects:', error);
-      });*/
-  
-      this.projects= [
-            { id: 100, title: '社区清洁', description: '帮助清洁社区公园。', date: '2024-10-20', location: '北京市海淀区', publisherName: '张三', publisherAvatar: 'path/to/avatar1.png' },
-            { id: 2, title: '老人陪伴', description: '陪伴老人聊天，帮助他们解决日常问题。', date: '2024-10-22', location: '北京市朝阳区', publisherName: '李四', publisherAvatar: 'path/to/avatar2.png' },
-          ];
+      });
     },
     fetchTags() {
-      /*axios.get('/api/tags')
+      getTag()
         .then(response => {
           this.tags = response.data;
+          console.log(this.tags);
         })
         .catch(error => {
           console.error('Error fetching tags:', error);
-      });*/
-        this.tags=[{ id: 1, name: '环保' }, { id: 2, name: '社区服务' }, { id: 3, name: '教育' },]
+      });
     },
     toggleTag(tag) {
       const index = this.selectedTags.indexOf(tag);
@@ -191,5 +183,13 @@ input[type="text"] {
 }
 .project-item:hover {
   background-color: #f0f0f0;
+}
+.search-button {
+  padding: 10px 20px;
+  background-color: #94070a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 </style>

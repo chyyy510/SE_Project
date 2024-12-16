@@ -8,7 +8,7 @@
         </div>
         <div class="form-group">
           <label for="date">日期</label>
-          <input type="date" id="date" v-model="project.date" required />
+          <input type="date" id="date" v-model="project.activity_time" required />
         </div>
         <div class="form-group">
           <label for="location">地点</label>
@@ -52,7 +52,7 @@ export default {
         const access=JSON.parse(localStorage.getItem('access'));
         console.log(access);
         try{
-          await postLaunch(access, this.project.title, this.project.date, this.project.location,
+          await postLaunch(access, this.project.title, this.project.activity_time, this.project.location,
                         this.project.person_wanted, this.project.money_per_person, this.project.description);
         alert('项目已提交！');
         this.$router.push('/projects');

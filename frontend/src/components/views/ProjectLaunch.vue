@@ -15,7 +15,7 @@ export default {
         project: {
           title :'',
           description :'',
-          date :'',
+          activity_time :'',
           location :'',
           money_per_person :'',
           person_wanted :''
