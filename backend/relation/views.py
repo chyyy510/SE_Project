@@ -43,6 +43,12 @@ class EngagementCreate(generics.GenericAPIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
+        if experiment.status == "close":
+            return Response(
+                {"detail": "This experiment had been closed. 该实验已关闭。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         # 也得检测这个用户是否参与过该实验
 
         engagement_exist = Engagement.objects.filter(
@@ -163,6 +169,13 @@ class VolunteerQualify(generics.GenericAPIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        if experiment.status == "close":
+            return Response(
+                {"detail": "The experiment had been closed. 该实验已被关闭。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         volunteer_id = request.data.get("volunteer_id")
         try:
             engagement = Engagement.objects.get(

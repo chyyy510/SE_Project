@@ -269,3 +269,29 @@ class ExperimentClose(generics.GenericAPIView):
         user = request.user
 
         eid = request.data.get("experiment")
+        try:
+            experiment = Experiment.objects.get(id=eid)
+        except Exception:
+            return Response(
+                {"detail": "The experiment doesn't exist. 该实验不存在。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if experiment.creator != user:
+            return Response(
+                {"detail": "Not accessible. 当前用户无权操作"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        if experiment.status == "close":
+            return Response(
+                {"detail": "The experiment had been closed. 该实验早已被关闭。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        experiment.status = "close"
+        experiment.save()
+        return Response(
+            {"message": "Successfully close the experiment. 成功关闭实验。"},
+            status=status.HTTP_200_OK,
+        )
