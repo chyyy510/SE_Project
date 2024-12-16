@@ -7,6 +7,7 @@ from appuser.views import (
     UserTokenRefresh,
     UserProfileDetail,
     UserProfileAvatarUpload,
+    UserProfileEdit,
 )
 
 urlpatterns = [
@@ -21,4 +22,5 @@ urlpatterns = [
         UserProfileAvatarUpload.as_view(),
         name="avatar-upload",
     ),
+    path("profile/edit/", UserProfileEdit.as_view(), name="user-profile-edit"),
 ]

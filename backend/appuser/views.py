@@ -219,7 +219,6 @@ class UserProfileDetail(generics.GenericAPIView):
 
 
 class UserProfileAvatarUpload(generics.GenericAPIView):
-
     def post(self, request, *args, **kwargs):
         user = request.user
         if isinstance(request.user, AnonymousUser):
@@ -252,3 +251,54 @@ class UserProfileAvatarUpload(generics.GenericAPIView):
         profile.save()
 
         return Response({"user": user.username, "avatar": file_url})
+
+
+class UserProfileEdit(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required. 该功能需要先登录。"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        user = request.user
+
+        attri = dict()
+
+        if (username := request.data.get("username")) is not None:
+            attri["username"] = username
+        if (email := request.data.get("email")) is not None:
+            attri["email"] = email
+        if (
+            new_password_encrypted := request.data.get("new_password_encrypted")
+        ) is not None:
+            old_password_encrypted = request.data.get("old_password_encrypted")
+            if old_password_encrypted is None:
+                return Response(
+                    {"detail": "Please enter old password. 请输入旧密码。"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            old_password_decrypted = PrivacyProtection.decrypt_password(
+                old_password_encrypted
+            )
+            if not user.check_password(old_password_decrypted):
+                return Response(
+                    {"detail": "Password is wrong. 旧密码错误。"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            user.set_password(
+                PrivacyProtection.decrypt_password(new_password_encrypted)
+            )
+
+        try:
+            user.update(**attri)
+            return Response(
+                {"detail": "User profile edited successfully. 用户信息更新成功。"}
+            )
+        except Exception:
+            return Response(
+                {"detail": "Format error. 有内容不符合格式。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )

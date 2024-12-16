@@ -95,11 +95,11 @@ class ExperimentCreate(generics.GenericAPIView):
 
         def int_to_bitset(n):
             bitset = set()
-            position = 1  # 从1开始计数
+            position = 1
             while n > 0:
-                if n & 1:  # 如果最低位是1
+                if n & 1:
                     bitset.add(position)
-                n >>= 1  # 右移1位
+                n >>= 1
                 position += 1
             return bitset
 
@@ -123,7 +123,7 @@ class ExperimentCreate(generics.GenericAPIView):
         try:
             experiment.save()
             for tag_id in int_to_bitset(tags):
-                TagsExps(tag=tag_id, experiment=experiment.id).save()
+                TagsExps(tags=tag_id, experiment=experiment.id).save()
         except Exception:
             return Response(
                 {"detail": "Format error. 有内容不符合格式。"},
@@ -163,12 +163,38 @@ class ExperimentSearch(generics.GenericAPIView):
 
 class ExperimentAdvancedSearch(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
+        keyword = request.GET.get("keyword", "")
+
+        orderby = request.GET.get("orderby", "id")
+
+        if not hasattr(Experiment, orderby):
+            orderby = "id"
+
+        sort = request.GET.get("sort", "asc")
+
+        if sort == "desc":
+            orderby = f"-{orderby}"  # 使用负号表示降序排序
+
+        experiments = Experiment.objects.filter(
+            Q(title__contains=keyword) | Q(description__contains=keyword)
+        ).order_by(orderby)
+
+        # 分页处理
+        paginator = ExperimentPagination()
+        paginated_experiments = paginator.paginate_queryset(experiments, request)
+
+        serializer = ExperimentSerializer(paginated_experiments, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+
+class ExperimentAdvancedSearch(generics.GenericAPIView):
+    def get(self, request, *args, **kwargs):
         title = request.GET.get("title", "")
         description = request.GET.get("description", "")
 
         orderby = request.GET.get("orderby", "id")
 
-        if hasattr(Experiment, orderby) == False:
+        if not hasattr(Experiment, orderby):
             orderby = "id"
 
         sort = request.GET.get("sort", "asc")
@@ -233,12 +259,47 @@ class ExperimentAdvancedSearchInCreated(generics.GenericAPIView):
 
         user = request.user
 
+        keyword = request.GET.get("keyword", "")
+
+        orderby = request.GET.get("orderby", "id")
+
+        if not hasattr(Experiment, orderby):
+            orderby = "id"
+
+        sort = request.GET.get("sort", "asc")
+
+        if sort == "desc":
+            orderby = f"-{orderby}"  # 使用负号表示降序排序
+
+        experiments = Experiment.objects.filter(
+            Q(creator=user)
+            & (Q(title__contains=keyword) | Q(description__contains=keyword))
+        ).order_by(orderby)
+
+        # 分页处理
+        paginator = ExperimentPagination()
+        paginated_experiments = paginator.paginate_queryset(experiments, request)
+
+        serializer = ExperimentSerializer(paginated_experiments, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+
+class ExperimentAdvancedSearchInCreated(generics.GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required. 该功能需要先登录。"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        user = request.user
+
         title = request.GET.get("title", "")
         description = request.GET.get("description", "")
 
         orderby = request.GET.get("orderby", "id")
 
-        if hasattr(Experiment, orderby) == False:
+        if not hasattr(Experiment, orderby):
             orderby = "id"
 
         sort = request.GET.get("sort", "asc")
@@ -269,6 +330,56 @@ class ExperimentClose(generics.GenericAPIView):
         user = request.user
 
         eid = request.data.get("experiment")
+
+
+class ExperimentEdit(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required. 该功能需要先登录。"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        user = request.user
+        id = request.data.get("id")
+        if id is None:
+            return Response(
+                {"detail": "Exp id please. 请提供实验 id。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if Experiment.objects.filter(id=id).creator != user:
+            return Response(
+                {
+                    "detail": "You are not the creator of this experiment. 您不是此实验的创建者。"
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        attri = dict()
+
+        if (title := request.data.get("title")) is not None:
+            attri["title"] = title
+        if (description := request.data.get("description")) is not None:
+            attri["description"] = description
+        if (person_wanted := request.data.get("person_wanted")) is not None:
+            attri["person_wanted"] = person_wanted
+        if (money_per_person := request.data.get("money_per_person")) is not None:
+            attri["money_per_person"] = money_per_person
+        if (activity_time := request.data.get("activity_time")) is not None:
+            attri["activity_time"] = activity_time
+        if (activity_location := request.data.get("activity_location")) is not None:
+            attri["activity_location"] = activity_location
+
+        try:
+            Experiment.objects.filter(id=id).update(**attri)
+            return Response(
+                {"detail": "Experiment info edited successfully. 实验信息更新成功。"}
+            )
+
+        except Exception:
+            return Response(
+                {"detail": "Format error. 有内容不符合格式。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         try:
             experiment = Experiment.objects.get(id=eid)
         except Exception:

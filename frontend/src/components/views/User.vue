@@ -17,7 +17,25 @@
           <div v-if="editingField === field.name" class="edit-section">
             <label :for="field.name">{{ field.labelchange }}</label>
             <div class="edit-row">
-              <input :type="field.name === 'password' ? 'password' : 'text'" v-model="user[field.name]" />
+              <input v-if="field.name === 'password'" type="password" v-model="oldPassword" placeholder="旧密码" />
+              <input v-if="field.name === 'password'" type="password" v-model="newPassword" placeholder="新密码" />
+              <input v-else :type="field.name === 'password' ? 'password' : 'text'" v-model="editingValue" />
+              <button @click="saveField" class="sort-button">保存</button>
+              <button @click="cancelEdit" class="sort-button">取消</button>
+            </div>
+          </div>
+        </div>
+        <!-- 添加自我介绍编辑功能 -->
+        <div class="info-item">
+          <div class="info-row">
+            <span class="label">个人简介:</span>
+            <span class="value">{{ user.introduction || '（填写你的个人简介）' }}</span>
+            <button @click="editField('introduction')" class="sort-button">修改</button>
+          </div>
+          <div v-if="editingField === 'introduction'" class="edit-section">
+            <label for="introduction">修改个人简介：</label>
+            <div class="edit-row">
+              <input type="text" v-model="editingValue" />
               <button @click="saveField" class="sort-button">保存</button>
               <button @click="cancelEdit" class="sort-button">取消</button>
             </div>
@@ -29,19 +47,24 @@
   </div>
 </template>
 
-
 <script>
 import axios from 'axios';
+import { updateUserInfo } from '../api/api';
+
 export default {
   data() {
     return {
       user: {
         avatar: '', // 用户头像URL
         username: '', // 用户名
-        email: '' // 邮箱
+        email: '', // 邮箱
+        introduction: '' // 个人简介
       },
       defaultAvatar: require('../../assets/logo.png'),
       editingField: null, // 当前正在编辑的字段
+      editingValue: '', // 当前编辑的值
+      oldPassword: '', // 旧密码
+      newPassword: '', // 新密码
       fields: [
         { name: 'username', label: '用户名' , labelchange:'修改用户名：'},
         { name: 'password', label: '密码' , labelchange:'修改密码：'},
@@ -53,6 +76,21 @@ export default {
     this.user = JSON.parse(localStorage.getItem('user'));
   },
   methods: {
+    getRsaCode(str) { // 加密方法
+      let pubKey = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmIzophqDebSpnL77RK0l
+6l8TECsiW7t1+7ilLuc0OtPBFgRaIyEUhjV90XY1LJcWZ3UmdZ77GBoHRcZa0UAE
+8DF7seDu2yyXy2xE0i4gFo41WhOwIkV0SVlT7hQ+llf2w8Nk48efjjpz9v5Nf62I
+VxRBcDQq3BUbvq/ZHbkUs7jiAIp2DeW4FBL3gj7C4yaCkis0HOHFSqCGxDfDr8Vg
+Y9quJIoKfLDqMeXylBICW9tAdUSBC6nf8fdiFflvdenVb1VhZ64oseJMp+8Bqt5R
+wTHjucdOXlXbhM+pooTEKu+FyVQcwbwkjL0MM8SnZcfozP9ZAlSiO+5vewrqiOhB
+NwIDAQAB
+-----END PUBLIC KEY-----`;// ES6 模板字符串 引用 rsa 公钥
+      let encryptStr = new JSEncrypt();
+      encryptStr.setPublicKey(pubKey); // 设置 加密公钥
+      let data = encryptStr.encrypt(str.toString());  // 进行加密
+      return data;
+    },
     triggerFileInput() {
       this.$refs.fileInput.click();
     },
@@ -70,22 +108,51 @@ export default {
     },
     editField(field) {
       this.editingField = field;
+      this.editingValue = this.user[field];
     },
     saveField() {
-      axios.post('/api/update-user', {
-        [this.editingField]: this.user[this.editingField]
-      })
-        .then(() => {
-          localStorage.setItem(this.editingField, this.user[this.editingField]);
-          alert('用户信息更新成功');
-          this.editingField = null; // 关闭编辑模式
+      if (this.editingField === 'password') {
+        axios.post('/api/verify-password', { oldPassword: this.getRsaCode(this.oldPassword) })//这里的逻辑后端完成之后改
+          .then(response => {
+            if (response.data.success) {
+              updateUserInfo(this.user.id, { password: this.getRsaCode(this.newPassword) })
+                .then(() => {
+                  alert('密码更新成功');
+                  this.editingField = null; // 关闭编辑模式
+                  this.oldPassword = '';
+                  this.newPassword = '';
+                })
+                .catch(error => {
+                  console.error('更新密码失败', error);
+                });
+            } else {
+              alert('密码错误');
+            }
+          })
+          .catch(error => {
+            console.error('验证旧密码失败', error);
+          });
+      } else {
+        // 更新其他字段逻辑
+        updateUserInfo(this.user.id, {
+          [this.editingField]: this.editingValue
         })
-        .catch(error => {
-          console.error('更新用户信息失败', error);
-        });
+          .then(() => {
+            this.user[this.editingField] = this.editingValue;
+            localStorage.setItem(this.editingField, this.editingValue);
+            alert('用户信息更新成功');
+            this.editingField = null; // 关闭编辑模式
+          })
+          .catch(error => {
+            console.error('更新用户信息失败', error);
+          });
+      }
     },
     cancelEdit() {
       this.editingField = null;
+      this.editingValue = '';
+      this.oldPassword = '';
+      this.newPassword = '';
     },
     logout() {
       localStorage.setItem('loginFlag', 'false');
@@ -161,5 +228,3 @@ export default {
   border-color: #94070a;
 }
 </style>
-
-

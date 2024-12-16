@@ -5,6 +5,7 @@ from experiment.views import (
     ExperimentCreate,
     ExperimentSearch,
     ExperimentSearchInCreated,
+    ExperimentEdit,
 )
 
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
         ExperimentSearchInCreated.as_view(),
         name="experiment-create-search",
     ),
+    path("edit/", ExperimentEdit.as_view(), name="experiment-edit"),
 ]
