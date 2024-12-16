@@ -104,14 +104,16 @@ status_code=200
 [http://backend-ip:8000/users/detail/?username=xxx]()
 
 GET 获取username为xxx的用户详细信息
+- avatar: 头像url
 
 status_code=200
 ```json
 {
+    "avatar": "/media/avatar/user_0/default_avatar.png",
     "email": "123456@qq.com",
     "introduction": "Nothing here.",
     "message": "Find the user successfully. 成功找到该用户。",
-    "nickname": "user1000001",
+    "nickname": "user1000002",
     "point": 0,
     "username": "123456"
 }

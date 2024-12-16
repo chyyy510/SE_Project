@@ -59,13 +59,15 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 
         profile = UserProfile.objects.get(user=user)
 
+        print(profile.avatar)
+
         response = Response(
             {
                 "message": "Find the user successfully. 成功找到该用户。",
                 "email": user.email,
                 "username": username,
                 "nickname": profile.nickname,
-                # "avatar":profile.avatar,#TODO:
+                "avatar": profile.avatar.url,  # TODO:
                 "point": profile.point,
                 "introduction": profile.introduction,
             },
@@ -194,6 +196,7 @@ class UserTokenRefresh(TokenRefreshView):
         return response
 
 
+# TODO:可能不再需要，或者再修改成别的功能
 class UserProfileDetail(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -209,7 +212,7 @@ class UserProfileDetail(generics.GenericAPIView):
             {
                 "user": user.username,
                 "nickname": profile.nickname,
-                "avatar": profile.avatar,  # TODO:返回图片好像要额外注意些东西
+                "avatar": profile.avatar.url,
             },
             status=status.HTTP_200_OK,
         )
@@ -248,4 +251,4 @@ class UserProfileAvatarUpload(generics.GenericAPIView):
 
         profile.save()
 
-        return Response({"user": user.username, "avatar_url": file_url})
+        return Response({"user": user.username, "avatar": file_url})
