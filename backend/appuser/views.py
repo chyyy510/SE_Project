@@ -264,13 +264,19 @@ class UserProfileEdit(generics.GenericAPIView):
         user = request.user
 
         try:
-            if (username := request.data.get("username")) is not None:
+            if (
+                username := request.data.get("username")
+            ) is not None:  # TODO:不能修改和重复
                 log_print("username:", username)
                 user.username = username
                 user.save()
-            if (email := request.data.get("email")) is not None:
+            if (email := request.data.get("email")) is not None:  # TODO:不能修改和重复
                 log_print("email:", email)
                 user.email = email
+                user.save()
+            if (introduction := request.data.get("introduction")) is not None:
+                log_print("introduction:", introduction)
+                user.introduction = introduction
                 user.save()
             if (
                 new_password_encrypted := request.data.get("new_password_encrypted")
@@ -297,10 +303,15 @@ class UserProfileEdit(generics.GenericAPIView):
                     PrivacyProtection.decrypt_password(new_password_encrypted)
                 )
                 user.save()
+            serializer = UserSerializer(user)
+            response = Response(serializer.data)
 
-            return Response(
-                {"detail": "User profile edited successfully. 用户信息更新成功。"}
+            response.data["message"] = (
+                "User profile edited successfully. 用户信息更新成功。"
             )
+
+            return response
+
         except Exception:
             return Response(
                 {"detail": "Format error. 有内容不符合格式。"},
