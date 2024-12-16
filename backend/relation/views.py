@@ -68,6 +68,8 @@ class EngagementCreate(generics.GenericAPIView):
             user=user, experiment=experiment, status="user-qualification"
         )
 
+        experiment.person_already = experiment.person_already + 1
+
         engagement.save()
 
         serializer = EngagementSerializer(engagement)

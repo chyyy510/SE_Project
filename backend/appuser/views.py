@@ -2,11 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from appuser.models import User, UserProfile
-from appuser.serializers import (
-    UserSerializer,
-    DataUserRegisterSerializer,
-    DataUserLoginSerializer,
-)
+from appuser.serializers import UserSerializer
 
 from rest_framework import generics
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -80,7 +76,6 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class UserRegister(generics.GenericAPIView):
     queryset = User.objects.all()
-    serializer_class = DataUserRegisterSerializer
 
     def post(self, request, *args, **kwargs):
         log_print(request.data)
@@ -140,7 +135,6 @@ class UserRegister(generics.GenericAPIView):
 
 class UserLogin(generics.GenericAPIView):
     queryset = User.objects.all()
-    serializer_class = DataUserLoginSerializer
 
     def post(self, request, *args, **kwargs):
         log_print(request.data)

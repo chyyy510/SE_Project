@@ -308,7 +308,8 @@ headers中包含Authorization，用于判断relationship
 - relationship取值
   - 未登录：unauthorized
   - 创建者：creator
-  - 申请者：applicant
+  - 已申请者：applicant
+  - 非创建也未申请：passer-by
 - creator
   - 现在返回的是用户的username
 
@@ -439,7 +440,7 @@ POST
 
 ### volunteer-list
 
-[http://backend-ip:8000/relations/volunteers/list/]()
+[http://backend-ip:8000/relations/volunteers/list/?experiment=xxx]()
 
 
 
