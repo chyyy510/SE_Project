@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ProjectSearch :searchTag="tag"/>
+        <ProjectSearch :mode="mode"/>
         <button class="circle-button" @click="launchProject()">+</button>
     </div>
 </template>
@@ -15,7 +15,7 @@ export default {
     },
     data(){
         return{
-            tag:'',
+            mode:'',
         }
     },
     methods: {

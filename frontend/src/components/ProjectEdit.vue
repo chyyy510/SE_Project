@@ -32,17 +32,17 @@
 </template>
   
 <script>
-import { postProject } from './api/api';
+import { postEdit, postLaunch, postProject } from './api/api';
 
 export default {
   name: 'ProjectLaunch',
   props:{
     banner:{
-      type:Object,
+      type:String,
       Required:true
     },
     mode:{
-      type:Object,
+      type:String,
       Required:true
     },
     project:{
@@ -55,8 +55,8 @@ export default {
         // 在这里处理表单提交逻辑
         const access=JSON.parse(localStorage.getItem('access'));
         try{
-          await postProject(access, this.mode, this.project.title, this.project.activity_time, this.project.activity_location,
-                        this.project.person_wanted, this.project.money_per_person, this.project.description);
+          await postProject(access, this.mode, this.project.id, this.project.title, this.project.activity_time, this.project.activity_location,
+                          this.project.person_wanted, this.project.money_per_person, this.project.description);
           alert('项目已提交！');
           this.$router.push('/projects');
         }

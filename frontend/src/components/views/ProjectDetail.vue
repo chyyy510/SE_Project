@@ -8,7 +8,7 @@
     <p><strong>地点：</strong>{{ project.activity_location }}</p>
     <p><strong>人均报酬：</strong>{{ project.money_per_person }}</p>
 	  <p><strong>人数：</strong>{{ project.person_already }}/{{ project.person_wanted }}</p>
-    <div v-if="user.username==project.creator">
+    <div v-if="project.relationship=='creator'">
       <button @click="changeEditMode">编辑实验信息</button>
       <button @click="qualifyApplier">审核候选人</button>
     </div>
@@ -19,7 +19,7 @@
   </div>
   <div v-else>
     <button @click="changeEditMode">结束编辑</button>
-    <ProjectEdit :project="project" :banner="banner"/>
+    <ProjectEdit :project="project" :banner="banner" :mode="mode"/>
   </div>
 </template>
 
@@ -35,7 +35,7 @@ export default {
   data() {
     return {
       banner:'编辑项目信息',
-      mode:'create',
+      mode:'edit',
       project: {
         id:'',
         title :'',
@@ -45,7 +45,8 @@ export default {
         activity_location :'',
         money_per_person :'',
         person_applied :'',
-        person_wanted :''
+        person_wanted :'',
+        relationship :''
       },
       user: {
         avatar: '', // 用户头像URL
@@ -61,6 +62,8 @@ export default {
   created()
     {
       this.getId();
+      if(this.project.relationship=='applicant')
+        this.button_text_apply='取消申请';
       if(localStorage.getItem('user'))
       this.user = JSON.parse(localStorage.getItem('user'));
     },
@@ -88,10 +91,14 @@ export default {
     },
     async applyForProject() {
       if(localStorage.getItem("loginFlag")=='true') {
-        await postApply(this.user.name,this)
-          alert('申请成功！');
-          this.applied=true;
-          this.button_text_apply='取消申请'
+        const access=JSON.parse(localStorage.getItem('access'));
+        await postApply(access, this.project.id)
+                .catch(error => {
+                  console.error('Error Apply:', error);
+                  return;
+                });
+        alert('申请成功！');
+        location.reload();
       }
       else{
           alert("请登录以继续");
@@ -99,7 +106,7 @@ export default {
       }
     },
     qualifyApplier() {
-      this.$router.push(`/projects/${this.projectId}/qualify`);
+      this.$router.push(`/projects/${this.project.id}/qualify`);
     },
     changeEditMode() {
       this.editMode=!this.editMode;  

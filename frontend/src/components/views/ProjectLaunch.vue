@@ -14,6 +14,7 @@ export default {
         mode:'create',
         banner:'发起新项目',
         project: {
+          id :'',
           title :'',
           description :'',
           activity_time :'',
