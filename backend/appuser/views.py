@@ -37,19 +37,32 @@ class UserList(generics.ListAPIView):
     pagination_class = UserPagination
 
 
+# 通过username查找用户，返回email+用户主页信息
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
     def get(self, request, *args, **kwargs):
+        username = request.GET.get("username", "")
         try:
-            response = super().get(request, *args, **kwargs)
-            response.data["message"] = "Find the user successfully. 成功找到该用户。"
+            user = User.objects.get(username=username)
         except Exception:
             return Response(
                 {"detail": "User doesn't exist. 该用户不存在。"},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+        profile = UserProfile.objects.get(user=user)
+
+        response = Response(
+            {
+                "message": "Find the user successfully. 成功找到该用户。",
+                "email": user.email,
+                "username": username,
+                "nickname": profile.nickname,
+                # "avatar":profile.avatar,#TODO:
+                "point": profile.point,
+                "introduction": profile.introduction,
+            },
+            status=status.HTTP_200_OK,
+        )
 
         return response
 

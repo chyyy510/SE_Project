@@ -177,6 +177,38 @@ class VolunteerQualify(generics.GenericAPIView):
                 )
 
 
+# eid-> all ,check create
+class VolunteerList(generics.GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required. 该功能需要先登录。"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        eid = request.data.get("experiment")
+
+        try:
+            experiment = Experiment.objects.get(id=eid)
+        except:
+            return Response(
+                {"detail": "The experiment doesn't exist. 该实验不存在。"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if experiment.creator != user:
+            return Response(
+                {
+                    "detail": "No access to this experiment. 当前用户无权查看该实验志愿者列表。"
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        # 找所有volunteer
+        engagements = Engagement.objects.filter(experiment=experiment).order_by("id")
+
+
 class TagsView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         tags = Tags.objects.all()

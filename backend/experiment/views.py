@@ -47,7 +47,8 @@ class ExperimentCreate(generics.GenericAPIView):
     serializer_class = ExperimentCreateSerializer
 
     def post(self, request, *args, **kwargs):
-
+        print(request.headers)
+        print(request.data)
         if isinstance(request.user, AnonymousUser):
             return Response(
                 {"detail": "Authentication required. 该功能需要先登录。"},
