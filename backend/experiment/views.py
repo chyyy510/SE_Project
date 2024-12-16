@@ -71,13 +71,10 @@ class ExperimentDetail(generics.RetrieveAPIView):
                 relationship = "creator"
             else:
                 # 判断是否已参加
-                if relationship == "applicant":
-                    if Engagement.objects.filter(
-                        experiment=experiment, user=user
-                    ).exists():
-                        relationship = "applicant"
-                    else:
-                        relationship = "passer-by"
+                if Engagement.objects.filter(experiment=experiment, user=user).exists():
+                    relationship = "applicant"
+                else:
+                    relationship = "passer-by"
 
         response.data["relationship"] = relationship
 

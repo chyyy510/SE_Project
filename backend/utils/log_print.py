@@ -13,6 +13,7 @@ def log_print(*text_to_print):
         # 打开文件并将 sys.stdout 重定向到文件
         with open(file_path, "a") as f:
             sys.stdout = f
+            print("-------------------------")
             print(datetime.datetime.now())
             for item in text_to_print:
                 print(item)  # 这部分输出会写入文件

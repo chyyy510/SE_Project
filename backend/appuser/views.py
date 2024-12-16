@@ -41,10 +41,15 @@ class UserList(generics.ListAPIView):
     serializer_class = UserSerializer
     pagination_class = UserPagination
 
+    def get(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
+        return super().get(request, *args, **kwargs)
+
 
 # 通过username查找用户，返回email+用户主页信息
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     def get(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
         username = request.GET.get("username", "")
         try:
             user = User.objects.get(username=username)
@@ -64,7 +69,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
                 "email": user.email,
                 "username": username,
                 "nickname": profile.nickname,
-                "avatar": profile.avatar.url,  # TODO:
+                "avatar": profile.avatar.url,
                 "point": profile.point,
                 "introduction": profile.introduction,
             },
@@ -78,7 +83,7 @@ class UserRegister(generics.GenericAPIView):
     queryset = User.objects.all()
 
     def post(self, request, *args, **kwargs):
-        log_print(request.data)
+        log_print(request.headers, request.data)
         email = request.data.get("email")
         user_exists = User.objects.filter(email=email).exists()
 
@@ -137,7 +142,8 @@ class UserLogin(generics.GenericAPIView):
     queryset = User.objects.all()
 
     def post(self, request, *args, **kwargs):
-        log_print(request.data)
+        log_print(request.headers, request.data)
+
         email = request.data.get("email")
         password_decrypted = request.data.get("password_encrypted")
         password_decrypted = PrivacyProtection.decrypt_password(password_decrypted)
@@ -173,6 +179,7 @@ class UserLogin(generics.GenericAPIView):
 
 class UserTokenRefresh(TokenRefreshView):
     def post(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
         try:
             response = super().post(request, *args, **kwargs)
         except Exception as e:
@@ -189,6 +196,7 @@ class UserTokenRefresh(TokenRefreshView):
 # TODO:可能不再需要，或者再修改成别的功能
 class UserProfileDetail(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
         user = request.user
         if isinstance(request.user, AnonymousUser):
             return Response(
@@ -210,6 +218,7 @@ class UserProfileDetail(generics.GenericAPIView):
 
 class UserProfileAvatarUpload(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
         user = request.user
         if isinstance(request.user, AnonymousUser):
             return Response(
@@ -245,6 +254,7 @@ class UserProfileAvatarUpload(generics.GenericAPIView):
 
 class UserProfileEdit(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
         if isinstance(request.user, AnonymousUser):
             return Response(
                 {"detail": "Authentication required. 该功能需要先登录。"},
@@ -255,16 +265,20 @@ class UserProfileEdit(generics.GenericAPIView):
 
         try:
             if (username := request.data.get("username")) is not None:
+                log_print("username:", username)
                 user.username = username
                 user.save()
             if (email := request.data.get("email")) is not None:
+                log_print("email:", email)
                 user.email = email
                 user.save()
             if (
                 new_password_encrypted := request.data.get("new_password_encrypted")
             ) is not None:
+                log_print("new_pwd:", new_password_encrypted)
                 old_password_encrypted = request.data.get("old_password_encrypted")
                 if old_password_encrypted is None:
+                    log_print("old_pwd:", old_password_encrypted)
                     return Response(
                         {"detail": "Please enter old password. 请输入旧密码。"},
                         status=status.HTTP_400_BAD_REQUEST,
@@ -282,6 +296,7 @@ class UserProfileEdit(generics.GenericAPIView):
                 user.set_password(
                     PrivacyProtection.decrypt_password(new_password_encrypted)
                 )
+                user.save()
 
             return Response(
                 {"detail": "User profile edited successfully. 用户信息更新成功。"}
