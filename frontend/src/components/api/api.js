@@ -65,9 +65,10 @@ export const postQualify = (name, description) =>
                         {withCredentials: true});             
     }
 
-export const getProject = (id) => 
+export const getProject = (access, id) => 
     {
             return axios.get(`${SERVER_URL}/experiments/${id}/`,
+                            {headers: {'Authorization':`Bearer ${access}`}},
                             {withCredentials: true});        
     }
 
