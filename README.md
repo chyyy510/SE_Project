@@ -377,11 +377,11 @@ status_code=200
 
 #### experiment-search
 
-[http://backend-ip:8000/experiments/search/?title=aaa&description=bbb&orderby=ccc&sort=ddd]()
+[http://backend-ip:8000/experiments/search/?keyword=bbb&orderby=ccc&sort=ddd]()
 
-GET 查找title中包含aaa且description中包含bbb且按ccc字段降序或升序排列的实验列表
+GET 查找keyword中包含bbb且按ccc字段降序或升序排列的实验列表
 
-四个关键字可部分使用，title默认为空，description默认为空（即包含全部实验），orderby默认按id，sort可选asc或desc，默认为asc。
+三个关键字可部分使用，keyword默认为空（即包含全部实验），orderby默认按id，sort可选asc或desc，默认为asc。
 
 后端返回满足搜索条件的实验列表
 
@@ -393,36 +393,29 @@ status_code=200
     "previous": null,
     "results": [
         {
+            "activity_location": "家四",
+            "activity_time": "2024-12-16",
             "creator": 1,
-            "description": "This is another test experiment.",
-            "id": 8,
+            "description": "hhh",
+            "id": 1,
             "money_left": "0.00",
             "money_paid": "0.00",
-            "money_per_person": "10.00",
+            "money_per_person": "0.00",
             "person_already": 0,
-            "person_wanted": 20,
+            "person_wanted": 4,
             "status": "open",
-            "time_created": "2024-11-13T22:22:54.415083+08:00",
-            "time_modified": "2024-11-13T22:22:54.415104+08:00",
-            "title": "another_test_exp"
+            "time_created": "2024-12-16T15:46:00.454790+08:00",
+            "time_modified": "2024-12-16T15:46:00.454868+08:00",
+            "title": "test1"
         },
-        {
-            "creator": 1,
-            "description": "This is another test experiment.",
-            "id": 7,
-            "money_left": "0.00",
-            "money_paid": "0.00",
-            "money_per_person": "10.00",
-            "person_already": 0,
-            "person_wanted": 20,
-            "status": "open",
-            "time_created": "2024-11-13T21:27:06.787422+08:00",
-            "time_modified": "2024-11-13T21:27:06.787444+08:00",
-            "title": "another_test_exp"
-        }
+        ...
     ]
 }
 ```
+
+#### experiment-create-search
+
+[http://127.0.0.1:8000/experiments/create/search/?keyword=aaa&orderby=bbb&sort=ccc]()
 
 ### engagement
 
@@ -434,13 +427,17 @@ POST
 
 #### experiment-engage-search
 
-[http://backend-ip:8000/relations/engage/search/]()
+[http://backend-ip:8000/relations/engage/search/?keyword=aaa&orderby=bbb&sort=ccc]()
 
 ### qualification
 
 #### qualify-volunteer
 
 [http://backend-ip:8000/relations/qualify/volunteers/]()
+
+### volunteer-list
+
+[http://backend-ip:8000/relations/volunteers/list/]()
 
 
 
