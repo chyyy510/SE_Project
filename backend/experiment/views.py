@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.contrib.auth.models import AnonymousUser
+from appuser.models import User
 from experiment.models import Experiment
 from experiment.serializers import ExperimentSerializer, ExperimentCreateSerializer
 from relation.models import TagsExps
@@ -35,10 +36,34 @@ class ExperimentDetail(generics.RetrieveAPIView):
                 "Find the experiment successfully. 成功找到该实验。"
             )
         except Exception:
-            return Response(
+            response = Response(
                 {"detail": "Experiment doesn't exist. 该实验不存在。"},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+        relationship = ""
+        user = request.user
+        creator_id = response.data["creator"]
+        try:
+            creator = User.objects.get(id=creator_id)
+        except Exception:
+            return Response(
+                {"detail": "The experiment creator doesn't exist. 实验创建者不存在。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        response.data["creator"] = creator.username
+
+        if isinstance(user, AnonymousUser):
+            relationship = "unauthorized"
+        else:
+
+            if creator == user:
+                relationship = "creator"
+            else:
+                relationship = "applicant"
+
+        response.data["relationship"] = relationship
 
         return response
 

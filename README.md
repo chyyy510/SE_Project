@@ -302,23 +302,33 @@ GET 前端获取所有的实验信息
 
 GET 获取id为pk的实验详细信息
 
-status_code=200
+headers中包含Authorization，用于判断relationship
+- relationship取值
+  - 未登录：unauthorized
+  - 创建者：creator
+  - 申请者：applicant
+- creator
+  - 现在返回的是用户的username
 
+status_code=200
 ```json
 {
-    "creator": 1,
-    "description": "This is a test experiment.",
+    "activity_location": "家四",
+    "activity_time": "2024-12-16",
+    "creator": "abc",
+    "description": "hhh",
     "id": 1,
     "message": "Find the experiment successfully. 成功找到该实验。",
     "money_left": "0.00",
     "money_paid": "0.00",
-    "money_per_person": "10.00",
+    "money_per_person": "0.00",
     "person_already": 0,
-    "person_wanted": 20,
+    "person_wanted": 4,
+    "relationship": "applicant",
     "status": "open",
-    "time_created": "2024-11-13T15:52:50.431072+08:00",
-    "time_modified": "2024-11-13T15:52:50.431078+08:00",
-    "title": "test_exp"
+    "time_created": "2024-12-16T15:46:00.454790+08:00",
+    "time_modified": "2024-12-16T15:46:00.454868+08:00",
+    "title": "test1"
 }
 ```
 
