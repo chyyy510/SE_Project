@@ -25,7 +25,5 @@ class Tags(models.Model):
 
 
 class TagsExps(models.Model):
-    tags = models.ForeignKey(Tags, on_delete=models.SET_NULL, null=True)  # TODO:
-    experiment = models.ForeignKey(
-        Experiment, on_delete=models.SET_NULL, null=True
-    )  # TODO:
+    tags = models.ForeignKey(Tags, on_delete=models.CASCADE, null=True)  # TODO:
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, null=True)
