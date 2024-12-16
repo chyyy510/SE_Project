@@ -430,7 +430,7 @@ status_code=200
 
 [http://backend-ip:8000/relations/engage/]()
 
-POST 
+POST
 
 #### experiment-engage-search
 
@@ -485,7 +485,7 @@ refresh token过期:
 
 ### 所有 tag：
 
-- API：`<host>:<port>/relation/tags/`
+- API：`<host>:<port>/relations/tags/`
 - 方法：GET
 - 返回
 ```json
@@ -498,3 +498,52 @@ refresh token过期:
     }
 ]
 ```
+
+### 用户信息的更新：
+
+- API：`<host>:<port>/users/profile/edit/`
+- 方法：POST
+- 请求体：
+  ```json
+  {
+      "email": "alice@gmail.com",
+      "username": "alice",
+      "old_passowrd_encrypted": "",
+      "new_password_encrypted": ""
+  }
+  ```
+  以上字段不必同时存在。例如，如果只更新密码：
+  ```json
+  {
+      "old_passowrd_encrypted": "",
+      "new_password_encrypted": ""
+  }
+  ```
+  只更新email：
+  ```json
+  { "email": "alice@gmail.com"  }
+  ```
+
+### 实验信息更新
+
+- API：`<host>:<port>/experiments/edit/`
+- 方法：POST
+- 请求体：
+  ```json
+  {
+      "id": 1,
+      "title": "Exp 1",
+      "description": "desc 1",
+      "person_wanted": 1,
+      "money_per_person": 1,
+      "activity_time": "",
+      "activity_location": ""
+  }
+  ```
+  除 id 外，以上字段不必同时存在。如果只更新标题：
+  ```json
+  {
+    "id": 1,
+    "title": "Exp 1"
+  }
+  ```
