@@ -3,7 +3,6 @@
     <h3>{{ applier.username }}</h3>
     <p>{{ applier.description }}</p>
     <p><strong>审核状态：</strong>{{ applier.status }}</p>
-    <button @click="qualified(applier)"></button>
   </div>
 </template>
 
@@ -15,7 +14,7 @@ export default {
       type: Object,
       required: true
     }
-  }
+  },
 };
 </script>
 

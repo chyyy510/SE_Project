@@ -32,9 +32,9 @@ export const getSpecSearch = (mode, title, description, orderby, sort) =>
                         {withCredentials: true});            
     }  
 
-export const getTag = (title, description, orderby, sort) => 
+export const getTag = () => 
     {
-        return axios.get(`${SERVER_URL}/experiments/search/?title=${title}&description=${description}&orderby=${orderby}&sort=${sort}`,
+        return axios.get(`${SERVER_URL}/relations/tags`,
                         {withCredentials: true});             
     }
 
@@ -52,14 +52,19 @@ export const postQualify = (name, description) =>
 
 export const getProject = (id) => 
         {
-            return axios.get(`${SERVER_URL}/experiments/${id}`,
+            return axios.get(`${SERVER_URL}/experiments/${id}/`,
                             {withCredentials: true});        
         }
 
-export const postLaunch = (access, title, date, location, person_wanted, money_per_person, description) => 
+export const getUser = (id) => 
+    {
+        return axios.get(`${SERVER_URL}/users/${id}/`,
+                        {withCredentials: true});        
+    }
+export const postLaunch = (access, title, activity_time, location, person_wanted, money_per_person, description) => 
     {
         return axios.post(`${SERVER_URL}/experiments/create/`, 
-                        {'title': title, 'activity_time': date, 'activity_location': location, 
+                        {'title': title, 'activity_time': activity_time, 'activity_location': location, 
                         'person_wanted': person_wanted, 'money_per_person': money_per_person, 'description': description},
                         {headers: {'Authorization':`Bearer ${access}`}},
                         {withCredentials: true});

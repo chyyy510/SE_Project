@@ -4,13 +4,13 @@
     <h2>{{ project.title }}</h2>
     <p><strong>发布者：</strong>{{ project.publisherName }}</p>
     <p><strong>描述：</strong>{{ project.description }}</p>
-    <p><strong>日期：</strong>{{ project.date }}</p>
+    <p><strong>日期：</strong>{{ project.activity_time }}</p>
     <p><strong>地点：</strong>{{ project.location }}</p>
     <p><strong>人均报酬：</strong>{{ project.money_per_person }}</p>
 	  <p><strong>人数：</strong>{{ project.person_applied }}/{{ project.person_wanted }}</p>
     <div v-if="user.username==project.publisherName">
-      <button @click="changeEditMode">{{button_text_edit}}</button>
-      <button @click="qualifyApplier">{{button_text_qualify}}</button>
+      <button @click="changeEditMode">编辑实验信息</button>
+      <button @click="qualifyApplier">审核候选人</button>
     </div>
     <div v-else>
       <button @click="applyForProject">{{button_text_apply}}</button>
@@ -18,7 +18,7 @@
     
   </div>
   <div v-else>
-    <button @click="changeEditMode">{{button_text_close_edit}}</button>
+    <button @click="changeEditMode">结束编辑</button>
     <ProjectEdit :project="project" :banner="banner"/>
   </div>
 </template>
@@ -40,7 +40,7 @@ export default {
         title :'',
         publisherName :'',
         description :'',
-        date :'',
+        activity_time :'',
         location :'',
         money_per_person :'',
         person_applied :'',
@@ -54,9 +54,6 @@ export default {
       },
       applied:false,
       button_text_apply:'申请参与',
-      button_text_edit:'编辑实验信息',
-      button_text_qualify:'审核候选人',
-      button_text_close_edit:'结束编辑',
       editMode:false
     }
   },
@@ -64,7 +61,7 @@ export default {
     {
       this.getId();
       if(localStorage.getItem('user'))
-      this.user = localStorage.getItem('user');
+      this.user = JSON.parse(localStorage.getItem('user'));
     },
   methods: {
     getId(){
