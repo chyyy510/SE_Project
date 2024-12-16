@@ -1,5 +1,5 @@
 <template>
-    <ProjectEdit :project="project" :banner="banner"/>
+    <ProjectEdit :project="project" :banner="banner" :mode="mode"/>
 </template>
   
 <script>
@@ -11,12 +11,13 @@ export default {
   },
     data() {
       return {
+        mode:'create',
         banner:'发起新项目',
         project: {
           title :'',
           description :'',
           activity_time :'',
-          location :'',
+          activity_location :'',
           money_per_person :'',
           person_wanted :''
         },

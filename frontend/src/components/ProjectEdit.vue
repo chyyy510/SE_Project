@@ -12,7 +12,7 @@
         </div>
         <div class="form-group">
           <label for="location">地点</label>
-          <input type="text" id="location" v-model="project.location" required />
+          <input type="text" id="location" v-model="project.activity_location" required />
         </div>
         <div class="form-group">
           <label for="person">所需人数</label>
@@ -32,12 +32,16 @@
 </template>
   
 <script>
-import { postLaunch } from './api/api';
+import { postProject } from './api/api';
 
 export default {
   name: 'ProjectLaunch',
   props:{
     banner:{
+      type:Object,
+      Required:true
+    },
+    mode:{
       type:Object,
       Required:true
     },
@@ -50,12 +54,11 @@ export default {
       async submitForm() {
         // 在这里处理表单提交逻辑
         const access=JSON.parse(localStorage.getItem('access'));
-        console.log(access);
         try{
-          await postLaunch(access, this.project.title, this.project.activity_time, this.project.location,
+          await postProject(access, this.mode, this.project.title, this.project.activity_time, this.project.activity_location,
                         this.project.person_wanted, this.project.money_per_person, this.project.description);
-        alert('项目已提交！');
-        this.$router.push('/projects');
+          alert('项目已提交！');
+          this.$router.push('/projects');
         }
         catch(error) {
           console.log(error.response.data.detail);

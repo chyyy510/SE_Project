@@ -15,7 +15,7 @@ export default {
     },
     data(){
         return{
-            tag:null
+            tag:'',
         }
     },
     methods: {

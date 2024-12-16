@@ -2,13 +2,13 @@
   <div class="project-detail" v-if="!editMode">
     <img :src="project.publisherAvatar" alt="Publisher Avatar" class="avatar" />
     <h2>{{ project.title }}</h2>
-    <p><strong>发布者：</strong>{{ project.publisherName }}</p>
-    <p><strong>描述：</strong>{{ project.description }}</p>
+    <p><strong>发布者：</strong>{{ project.creator }}</p>
+    <p><strong>内容：</strong>{{ project.description }}</p>
     <p><strong>日期：</strong>{{ project.activity_time }}</p>
-    <p><strong>地点：</strong>{{ project.location }}</p>
+    <p><strong>地点：</strong>{{ project.activity_location }}</p>
     <p><strong>人均报酬：</strong>{{ project.money_per_person }}</p>
-	  <p><strong>人数：</strong>{{ project.person_applied }}/{{ project.person_wanted }}</p>
-    <div v-if="user.username==project.publisherName">
+	  <p><strong>人数：</strong>{{ project.person_already }}/{{ project.person_wanted }}</p>
+    <div v-if="user.username==project.creator">
       <button @click="changeEditMode">编辑实验信息</button>
       <button @click="qualifyApplier">审核候选人</button>
     </div>
@@ -35,13 +35,14 @@ export default {
   data() {
     return {
       banner:'编辑项目信息',
+      mode:'create',
       project: {
         id:'',
         title :'',
         publisherName :'',
         description :'',
         activity_time :'',
-        location :'',
+        activity_location :'',
         money_per_person :'',
         person_applied :'',
         person_wanted :''
@@ -70,7 +71,14 @@ export default {
       if (idMatch) {
         this.project.id = idMatch[1];
         console.log('Project ID:', this.project.id);
-        this.project=getProject(this.project.id);
+        
+        getProject(this.project.id)
+          .then(response => {
+          this.project=response.data;
+          })
+          .catch(error => {
+          console.error('Error fetching project:', error);
+          });
       } 
       else {
         console.log('未找到项目 ID');
@@ -79,7 +87,7 @@ export default {
       }
     },
     async applyForProject() {
-      if(localStorage.getItem("user").is_active) {
+      if(localStorage.getItem("loginFlag")=='true') {
         await postApply(this.user.name,this)
           alert('申请成功！');
           this.applied=true;
