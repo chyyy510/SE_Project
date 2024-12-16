@@ -49,7 +49,8 @@
 
 <script>
 import axios from 'axios';
-import { updateUserInfo } from '../api/api';
+import { updateUserInfo, updateUserPassword } from '../api/api';
+import JSEncrypt from 'jsencrypt';
 
 export default {
   data() {
@@ -111,30 +112,28 @@ NwIDAQAB
       this.editingValue = this.user[field];
     },
     saveField() {
+      const access=JSON.parse(localStorage.getItem('access'));
       if (this.editingField === 'password') {
-        axios.post('/api/verify-password', { oldPassword: this.getRsaCode(this.oldPassword) })//这里的逻辑后端完成之后改
-          .then(response => {
-            if (response.data.success) {
-              updateUserInfo(this.user.id, { password: this.getRsaCode(this.newPassword) })
-                .then(() => {
+        updateUserPassword(access,
+        {old_passowrd_encrypted:this.getRsaCode(this.oldPassword)},
+        {new_password_encrypted:this.getRsaCode(this.newPassword)})
+          .then(()=> {
+                 
+                  this.user[this.editingField] = this.editingValue;
+                  localStorage.setItem(this.editingField, this.editingValue);
                   alert('密码更新成功');
                   this.editingField = null; // 关闭编辑模式
                   this.oldPassword = '';
                   this.newPassword = '';
-                })
+                
+              })
                 .catch(error => {
                   console.error('更新密码失败', error);
                 });
-            } else {
-              alert('密码错误');
-            }
-          })
-          .catch(error => {
-            console.error('验证旧密码失败', error);
-          });
+            
       } else {
         // 更新其他字段逻辑
-        updateUserInfo(this.user.id, {
+        updateUserInfo(access, {
           [this.editingField]: this.editingValue
         })
           .then(() => {
