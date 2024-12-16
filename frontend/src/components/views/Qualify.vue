@@ -4,14 +4,13 @@
     <div v-else>
       <div v-for="applier in appliers" :key="applier.username" class="applier-item">
         <Applier :applier="applier" />
-        <button @click="qualified(applier)">{{ button_text_qualify }}</button>
       </div>
     </div>
   </div>
 </template>
   
 <script>
-import { getApplier, postQualify } from '../api/api';
+import { getApplier } from '../api/api';
 import Applier from '../Applier.vue';
 
 export default {
@@ -23,7 +22,7 @@ export default {
       return {
         id: '',
 				appliers:[],
-        button_text_qualify:'通过',
+        button_text_qualify:'资质审核通过',
 			}
   },
   created() {
@@ -59,14 +58,6 @@ export default {
         })
         .catch(error => {
           console.error('Error fetching appliers:', error);
-        });
-    },
-    qualified(applier)
-    {
-      const access=JSON.parse(localStorage.getItem('access'));
-      postQualify(access, this.id, applier.username)
-        .catch(error => {
-          console.error('Error qualify', error.response.data.detail);
         });
     }
   }
