@@ -14,6 +14,7 @@ from django.contrib.auth.models import AnonymousUser
 
 from rest_framework import generics
 
+from utils.log_print import log_print
 
 # Create your views here.
 
@@ -263,7 +264,7 @@ class VolunteerList(generics.GenericAPIView):
         engagements = Engagement.objects.filter(experiment=experiment).order_by("id")
         query = engagements.select_related("user").all()
         users = [engagement.user for engagement in query if engagement.user]
-        print(users)
+        log_print(users)
 
         paginator = UserUsernamePagination()
         paginated_users = paginator.paginate_queryset(users, request)
