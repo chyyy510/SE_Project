@@ -47,7 +47,6 @@ class ExperimentCreate(generics.GenericAPIView):
     serializer_class = ExperimentCreateSerializer
 
     def post(self, request, *args, **kwargs):
-
         if isinstance(request.user, AnonymousUser):
             return Response(
                 {"detail": "Authentication required. 该功能需要先登录。"},
@@ -62,6 +61,19 @@ class ExperimentCreate(generics.GenericAPIView):
         money_per_person = request.data.get("money_per_person")
         activity_time = request.data.get("activity_time", "2024-01-01")
         activity_location = request.data.get("activity_location", "北京大学")
+
+        tags = request.data.get("tags")
+
+        def int_to_bitset(n):
+            bitset = set()
+            position = 1  # 从1开始计数
+            while n > 0:
+                if n & 1:  # 如果最低位是1
+                    bitset.add(position)
+                n >>= 1  # 右移1位
+                position += 1
+            return bitset
+
         # ?creator=user
 
         # print("{}", user)
@@ -79,8 +91,13 @@ class ExperimentCreate(generics.GenericAPIView):
             activity_location=activity_location,
         )
 
+        from relation.models import TagsExps
+
+
         try:
             experiment.save()
+            for tag_id in int_to_bitset(tags):
+                TagsExps(tag = tag_id, experiment = experiment.id).save()
         except Exception:
             return Response(
                 {"detail": "Format error. 有内容不符合格式。"},
@@ -93,7 +110,6 @@ class ExperimentCreate(generics.GenericAPIView):
 
 
 class ExperimentSearch(generics.GenericAPIView):
-
     def get(self, request, *args, **kwargs):
         title = request.GET.get("title", "")
         description = request.GET.get("description", "")
@@ -121,7 +137,6 @@ class ExperimentSearch(generics.GenericAPIView):
 
 
 class ExperimentSearchInCreated(generics.GenericAPIView):
-
     def get(self, request, *args, **kwargs):
         if isinstance(request.user, AnonymousUser):
             return Response(

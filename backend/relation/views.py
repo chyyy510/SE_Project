@@ -66,7 +66,6 @@ class EngagementCreate(generics.GenericAPIView):
 
 
 class ExperimentSearchInEngaged(generics.GenericAPIView):
-
     def get(self, request, *args, **kwargs):
         if isinstance(request.user, AnonymousUser):
             return Response(
@@ -207,7 +206,8 @@ class VolunteerQualify(generics.GenericAPIView):
 
 
 class TagsView(generics.GenericAPIView):
+    queryset = Tags.objects.all().order_by("id")
+
     def get(self, request, *args, **kwargs):
-        tags = Tags.objects.all()
-        serializer = TagsSerializer(tags, many=True)
+        serializer = TagsSerializer(self.get_queryset(), many=True)
         return Response(serializer.data)  # 返回 JSON 数据
