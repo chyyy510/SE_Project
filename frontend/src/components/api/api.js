@@ -77,7 +77,21 @@ export const getUser = (id) =>
         return axios.get(`${SERVER_URL}/users/${id}/`,
                         {withCredentials: true});        
     }
-
+export const updateUserInfo = (access, userInfo) => 
+    { 
+        console.log(userInfo);
+        return axios.post(`${SERVER_URL}/users/profile/edit/`, userInfo, 
+            {headers: {'Authorization':`Bearer ${access}`}},
+            { withCredentials: true }); 
+    }
+export const updateUserPassword = (access, oldPassword,newPassword) => 
+    { 
+        console.log(access,oldPassword,newPassword);
+        return axios.post(`${SERVER_URL}/users/profile/edit/`, oldPassword,newPassword, 
+            {headers: {'Authorization':`Bearer ${access}`}},
+            { withCredentials: true }); 
+    }
+    
 export const postProject = (access, mode, id, title, activity_time, activity_location, person_wanted, money_per_person, description) => 
     {
         return axios.post(`${SERVER_URL}/experiments/${mode}/`, 
