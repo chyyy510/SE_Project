@@ -11,7 +11,7 @@
 </template>
   
 <script>
-import { getApplier } from '../api/api';
+import { getApplier, postQualify } from '../api/api';
 import Applier from '../Applier.vue';
 
 export default {
@@ -21,14 +21,13 @@ export default {
 	},
   data() {
       return {
-        project:'',
+        id: '',
 				appliers:[],
         button_text_qualify:'通过',
 			}
   },
   created() {
-    this.getId();
-    const project=getProject(this.project.id);
+    this.getInfo();
     /*const username=JSON.parse(localStorage.getItem('user')).username;
     if(username!=project.publisherName)
     {
@@ -36,17 +35,15 @@ export default {
       alert("无查看权限");
       this.$router.push('\projects');
     }*/
-    console.log('项目ID');
-    fetchAppliers();
   },
   methods:{
-    getId(){
+    getInfo(){
       const currentUrl = window.location.href;
       const idMatch = currentUrl.match(/\/projects\/(\d+)\/qualify$/);
       if (idMatch) {
-        this.project.id = idMatch[2];
-        console.log('Project ID:', this.project.id);
-        this.project=getProject(this.project.id);
+        this.id = idMatch[1];
+        console.log('Project ID:', this.id);
+        this.fetchAppliers();
       } 
       else {
         console.log('未找到项目 ID');
@@ -56,17 +53,21 @@ export default {
     },
     fetchAppliers() {
       const access=JSON.parse(localStorage.getItem('access'));
-      getApplier(access, this.project.id)
+      getApplier(access, this.id)
         .then(response => {
           this.appliers = response.data.results;
         })
         .catch(error => {
-          console.error('Error fetching projects:', error);
+          console.error('Error fetching appliers:', error);
         });
     },
     qualified(applier)
     {
-
+      const access=JSON.parse(localStorage.getItem('access'));
+      postQualify(access, this.id, applier.username)
+        .catch(error => {
+          console.error('Error qualify', error.response.data.detail);
+        });
     }
   }
 };

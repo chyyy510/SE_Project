@@ -41,10 +41,11 @@ export const getApplySearch = (access, key, orderby, sort) =>
 
 export const getApplier = (access, experiment) => 
     {
-        return axios.get(`${SERVER_URL}/relations/volunteer/list/?experiment=${experiment}`,
+        return axios.get(`${SERVER_URL}/relations/volunteers/list/?experiment=${experiment}`,
                         {headers: {'Authorization':`Bearer ${access}`}},
                         {withCredentials: true});            
     }  
+
 export const getTag = () => 
     {
         return axios.get(`${SERVER_URL}/relations/tags`,
@@ -59,15 +60,18 @@ export const postApply = (access, experiment) =>
                         {withCredentials: true});             
     }
 
-export const postQualify = (name, description) => 
+export const postQualify = (access, experiment, volunteer) => 
     {
-        return axios.post(`${SERVER_URL}/experiments/search/?title=${title}&description=${description}&orderby=${orderby}&sort=${sort}`,
+        return axios.post(`${SERVER_URL}/relations/qualify/volunteers/`,
+                        {'experiment': experiment, 'volunteer': volunteer},
+                        {headers: {'Authorization':`Bearer ${access}`}},
                         {withCredentials: true});             
     }
 
-export const getProject = (id) => 
+export const getProject = (access, id) => 
     {
             return axios.get(`${SERVER_URL}/experiments/${id}/`,
+                            {headers: {'Authorization':`Bearer ${access}`}},
                             {withCredentials: true});        
     }
 

@@ -55,32 +55,34 @@ export default {
         is_active:''
       },
       applied:false,
-      button_text_apply:'申请参与',
+      button_text_apply:'',
       editMode:false
     }
   },
   created()
     {
-      this.getId();
-      if(this.project.relationship=='applicant')
-        this.button_text_apply='取消申请';
-      if(localStorage.getItem('user'))
-      this.user = JSON.parse(localStorage.getItem('user'));
+      this.getInfo();
     },
   methods: {
-    getId(){
+    getInfo(){
       const currentUrl = window.location.href;
       const idMatch = currentUrl.match(/\/projects\/(\d+)$/);
       if (idMatch) {
         this.project.id = idMatch[1];
         console.log('Project ID:', this.project.id);
-        
-        getProject(this.project.id)
+        const access=JSON.parse(localStorage.getItem('access'));
+        getProject(access, this.project.id)
           .then(response => {
-          this.project=response.data;
+            this.project=response.data;
+            if(this.project.relationship=='applicant')
+              this.button_text_apply='取消申请';
+            else
+              this.button_text_apply='申请参与';
+            console.log("关系",this.project.relationship);
+            console.log("文本",this.button_text_apply);
           })
           .catch(error => {
-          console.error('Error fetching project:', error);
+            console.error('Error fetching project:', error);
           });
       } 
       else {
