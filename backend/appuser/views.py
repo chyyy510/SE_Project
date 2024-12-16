@@ -289,9 +289,9 @@ class UserProfileEdit(generics.GenericAPIView):
                     PrivacyProtection.decrypt_password(new_password_encrypted)
                 )
 
-                return Response(
-                    {"detail": "User profile edited successfully. 用户信息更新成功。"}
-                )
+            return Response(
+                {"detail": "User profile edited successfully. 用户信息更新成功。"}
+            )
         except Exception:
             return Response(
                 {"detail": "Format error. 有内容不符合格式。"},
