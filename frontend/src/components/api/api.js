@@ -19,15 +19,15 @@ export const postRegister = (email, username, password) =>
                         {withCredentials: true});
     }
 
-export const getSearch = (title, description, orderby, sort) => 
+export const getSearch = (key, orderby, sort) => 
     {
-        return axios.get(`${SERVER_URL}/experiments/search/?title=${title}&description=${description}&orderby=${orderby}&sort=${sort}`,
+        return axios.get(`${SERVER_URL}/experiments/search/?keyword=${key}&orderby=${orderby}&sort=${sort}`,
                         {withCredentials: true});            
     }
 
-export const getSpecSearch = (mode, title, description, orderby, sort) => 
+export const getSpecSearch = (access, mode, key, orderby, sort) => 
     {
-        return axios.get(`${SERVER_URL}/experiments/${mode}/search/?title=${title}&description=${description}&orderby=${orderby}&sort=${sort}`,
+        return axios.get(`${SERVER_URL}/relations/${mode}/search/?keyword=${key}&orderby=${orderby}&sort=${sort}`,
                         {headers: {'Authorization':`Bearer ${access}`}},
                         {withCredentials: true});            
     }  
@@ -61,10 +61,10 @@ export const getUser = (id) =>
         return axios.get(`${SERVER_URL}/users/${id}/`,
                         {withCredentials: true});        
     }
-export const postLaunch = (access, title, activity_time, location, person_wanted, money_per_person, description) => 
+export const postProject = (access, mode, title, activity_time, activity_location, person_wanted, money_per_person, description) => 
     {
-        return axios.post(`${SERVER_URL}/experiments/create/`, 
-                        {'title': title, 'activity_time': activity_time, 'activity_location': location, 
+        return axios.post(`${SERVER_URL}/experiments/${mode}/`, 
+                        {'title': title, 'activity_time': activity_time, 'activity_location': activity_location, 
                         'person_wanted': person_wanted, 'money_per_person': money_per_person, 'description': description},
                         {headers: {'Authorization':`Bearer ${access}`}},
                         {withCredentials: true});
