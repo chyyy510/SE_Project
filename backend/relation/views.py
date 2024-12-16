@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
-from relation.models import Engagement, Tags
+from relation.models import Engagement, Tags, TagsExps
 from experiment.models import Experiment
 from experiment.views import ExperimentPagination
 from relation.serializers import EngagementSerializer, TagsSerializer
@@ -66,7 +66,6 @@ class EngagementCreate(generics.GenericAPIView):
 
 
 class ExperimentSearchInEngaged(generics.GenericAPIView):
-
     def get(self, request, *args, **kwargs):
         if isinstance(request.user, AnonymousUser):
             return Response(
@@ -175,39 +174,43 @@ class VolunteerQualify(generics.GenericAPIView):
                     {"detail": "Status transition error. 不能这样转换状态。"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        # if engagement.status == "to-qualify-user":
-        #     if qualification != "to-check-result":
-        #         return Response(
-        #             {"detail": "Status transition error. 不能这样转换状态。"},
-        #             status=status.HTTP_400_BAD_REQUEST,
-        #         )
 
-        # if engagement.status == "to-check-result":
-        #     if qualification != "finish":
-        #         return Response(
-        #             {"detail": "Status transition error. 不能这样转换状态。"},
-        #             status=status.HTTP_400_BAD_REQUEST,
-        #         )
 
-        # if engagement.status == "finish":
-        #     return Response(
-        #         {"detail": "Status transition error. 不能这样转换状态。"},
-        #         status=status.HTTP_400_BAD_REQUEST,
-        #     )
+# eid-> all ,check create
+class VolunteerList(generics.GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required. 该功能需要先登录。"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
-        # engagement.status = qualification
-        # engagement.save()
+        eid = request.data.get("experiment")
 
-        # return Response(
-        #     {
-        #         "message": "Volunteer status changed successfully. 成功转换志愿者审核状态。"
-        #     },
-        #     status=status.HTTP_200_OK,
-        # )
+        try:
+            experiment = Experiment.objects.get(id=eid)
+        except:
+            return Response(
+                {"detail": "The experiment doesn't exist. 该实验不存在。"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if experiment.creator != user:
+            return Response(
+                {
+                    "detail": "No access to this experiment. 当前用户无权查看该实验志愿者列表。"
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        # 找所有volunteer
+        engagements = Engagement.objects.filter(experiment=experiment).order_by("id")
 
 
 class TagsView(generics.GenericAPIView):
+    queryset = Tags.objects.all().order_by("id")
+
     def get(self, request, *args, **kwargs):
-        tags = Tags.objects.all()
-        serializer = TagsSerializer(tags, many=True)
+        serializer = TagsSerializer(self.get_queryset(), many=True)
         return Response(serializer.data)  # 返回 JSON 数据

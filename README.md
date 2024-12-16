@@ -101,20 +101,18 @@ status_code=200
 
 #### user-detail
 
-[http://backend-ip:8000/users/\<int:pk\>/]()
+[http://backend-ip:8000/users/detail/?username=xxx]()
 
-GET 获取id为pk的用户详细信息(id是数据库自动生成的，不同于开发者分配的uid)
+GET 获取username为xxx的用户详细信息
 
 status_code=200
 ```json
 {
     "email": "123456@qq.com",
-    "id": 1,
-    "is_active": true,
-    "is_staff": false,
+    "introduction": "Nothing here.",
     "message": "Find the user successfully. 成功找到该用户。",
-    "password": "4d28edb601106a84742a3c1a394db573d5c8bf2bdc86c36a3652bdad67c7db11",
-    "uid": 1000001,
+    "nickname": "user1000001",
+    "point": 0,
     "username": "123456"
 }
 ```
@@ -230,7 +228,7 @@ status_code=200
 ```json
 {
     "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM0MTg4Njg2LCJpYXQiOjE3MzQxODY4MjYsImp0aSI6IjQ5ZTY2MmI2MTI1ODQxMDliYzU3ZGE3OWU3NjE3ZDZkIiwidXNlcl9pZCI6MX0.ftsZ8dpZ6028bRY_FqtBOt1c8BF-B0WR4sBvMXOp6sI",
-    "message": "Access token has been refreshed.access令牌已更新。"
+    "message": "Access token has been refreshed. access令牌已更新。"
 }
 ```
 
@@ -337,8 +335,13 @@ POST 前端向后端发送要创建的实验信息，进行此功能必须先登
     "description": "xxx",
     "person_wanted": 20,
     "money_per_person": 10,
+    "tags": 13
+    "activity_time": "2024-01-01",
+    "activity_location": "北京大学",
 }
 ```
+
+> 这里，15 = 0b1101，意为该实验包含 id 为 1、3、4 的 tag。
 
 后端返回创建后的详细信息：
 
@@ -356,7 +359,9 @@ status_code=200
     "status": "open",
     "time_created": "2024-11-13T22:22:54.415083+08:00",
     "time_modified": "2024-11-13T22:22:54.415104+08:00",
-    "title": "another_test_exp"
+    "title": "another_test_exp",
+    "activity_time": "2024-01-01",
+    "activity_location": "北京大学",
 }
 ```
 
@@ -409,6 +414,27 @@ status_code=200
 }
 ```
 
+### engagement
+
+#### experiment-engage
+
+[http://backend-ip:8000/relations/engage/]()
+
+POST 
+
+#### experiment-engage-search
+
+[http://backend-ip:8000/relations/engage/search/]()
+
+### qualification
+
+#### qualify-volunteer
+
+[http://backend-ip:8000/relations/qualify/volunteers/]()
+
+
+
+
 ### other
 
 所有需要登录进行的操作，若未登录或token过期，均返回401_UNAUTHORIZED错误，其中
@@ -445,4 +471,20 @@ refresh token过期:
     "code": "token_not_valid",
     "detail": "令牌无效或已过期"
 }
+```
+
+### 所有 tag：
+
+- API：`<host>:<port>/relation/tags/`
+- 方法：GET
+- 返回
+```json
+[
+    {
+        "name": "tag1"
+    },
+    {
+        "name": "tag2"
+    }
+]
 ```

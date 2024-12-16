@@ -66,6 +66,8 @@ class UserProfile(models.Model):
         validators=[MinValueValidator(0)]
     )  # 积分，发布实验时充值，完成实验获取，100:1兑换rmb
 
+    introduction = models.TextField(default="Nothing here.")
+
 
 # 以下为前后端数据传输时用的字段，不存储与数据库中
 class DataUserRegister(models.Model):

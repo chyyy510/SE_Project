@@ -1,6 +1,5 @@
 .env
 __pycache__/
-migrations/
 *.py[cod]
 .vscode/
 privacy/
