@@ -75,11 +75,12 @@ export const getProject = (access, id) =>
                             {withCredentials: true});        
     }
 
-export const getUser = (id) => 
-    {
-        return axios.get(`${SERVER_URL}/users/${id}/`,
-                        {withCredentials: true});        
-    }
+    export const getUser = (username) => 
+        {
+            console.log(`${SERVER_URL}/users/detail/?username=${username}/`);
+            return axios.get(`${SERVER_URL}/users/detail/?username=${username}`,
+                            {withCredentials: true});        
+        }
 export const updateUserInfo = (access, userInfo) => 
     { 
         console.log(userInfo);

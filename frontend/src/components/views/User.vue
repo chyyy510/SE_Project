@@ -25,22 +25,6 @@
             </div>
           </div>
         </div>
-        <!-- 添加自我介绍编辑功能 -->
-        <div class="info-item">
-          <div class="info-row">
-            <span class="label">个人简介:</span>
-            <span class="value">{{ user.introduction || '（填写你的个人简介）' }}</span>
-            <button @click="editField('introduction')" class="sort-button">修改</button>
-          </div>
-          <div v-if="editingField === 'introduction'" class="edit-section">
-            <label for="introduction">修改个人简介：</label>
-            <div class="edit-row">
-              <input type="text" v-model="editingValue" />
-              <button @click="saveField" class="sort-button">保存</button>
-              <button @click="cancelEdit" class="sort-button">取消</button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
     <button @click="logout" class="sort-button">退出登录</button>
@@ -49,7 +33,7 @@
 
 <script>
 import axios from 'axios';
-import { updateUserInfo, updateUserPassword } from '../api/api';
+import { updateUserInfo, updateUserPassword, getUser } from '../api/api';
 import JSEncrypt from 'jsencrypt';
 
 export default {
@@ -67,14 +51,27 @@ export default {
       oldPassword: '', // 旧密码
       newPassword: '', // 新密码
       fields: [
-        { name: 'username', label: '用户名' , labelchange:'修改用户名：'},
-        { name: 'password', label: '密码' , labelchange:'修改密码：'},
-        { name: 'email', label: '邮箱' , labelchange:'修改绑定邮箱：'}
+        { name: 'username', label: '用户名', labelchange: '修改用户名：' },
+        { name: 'password', label: '密码', labelchange: '修改密码：' },
+        { name: 'email', label: '邮箱', labelchange: '修改绑定邮箱：' },
+        { name: 'introduction', label: '个人简介', labelchange: '修改个人简介：' }
       ]
     };
   },
   created() {
     this.user = JSON.parse(localStorage.getItem('user'));
+    const user_name=this.user.username;
+    getUser(user_name)
+      .then(response => {
+        this.user.introduction = response.data.introduction;
+        console.log(response.data.introduction);
+        console.log(this.user.introduction);
+        this.user.username='';
+        this.user.username=user_name;
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+      });
   },
   methods: {
     getRsaCode(str) { // 加密方法
@@ -112,25 +109,21 @@ NwIDAQAB
       this.editingValue = this.user[field];
     },
     saveField() {
-      const access=JSON.parse(localStorage.getItem('access'));
+      const access = JSON.parse(localStorage.getItem('access'));
       if (this.editingField === 'password') {
+        console.log(this.oldPassword, this.newPassword);
         updateUserPassword(access,
-        {old_passowrd_encrypted:this.getRsaCode(this.oldPassword)},
-        {new_password_encrypted:this.getRsaCode(this.newPassword)})
-          .then(()=> {
-                 
-                  this.user[this.editingField] = this.editingValue;
-                  localStorage.setItem(this.editingField, this.editingValue);
-                  alert('密码更新成功');
-                  this.editingField = null; // 关闭编辑模式
-                  this.oldPassword = '';
-                  this.newPassword = '';
-                
-              })
-                .catch(error => {
-                  console.error('更新密码失败', error);
-                });
-            
+          this.getRsaCode(this.oldPassword),
+          this.getRsaCode(this.newPassword))
+          .then(() => {
+            alert('密码更新成功');
+            this.editingField = null; // 关闭编辑模式
+            this.oldPassword = '';
+            this.newPassword = '';
+          })
+          .catch(error => {
+            console.error('更新密码失败', error);
+          });
       } else {
         // 更新其他字段逻辑
         updateUserInfo(access, {
