@@ -27,7 +27,7 @@
 <script>
 import Project from './Project.vue';
 import ProjectDetail from './views/ProjectDetail.vue';
-import { getSearch, getSpecSearch, getTag } from './api/api';
+import { getSearch, getLaunchSearch, getApplySearch, getTag } from './api/api';
 
 export default {
   name: 'ProjectSearch',
@@ -36,7 +36,7 @@ export default {
     Project
   },
   props: {
-    searchTag: {
+    mode: {
       type: String,
       Required: true
     },
@@ -62,18 +62,8 @@ export default {
   fetchProjects() {
     //const tagVector = this.tags.map(tag => this.selectedTags.includes(tag) ? 1 : 0).join('');
     console.log(this.searchKey, this.sortOrder,this.sortBy);
-    console.log(this.searchTag)
-    if(this.searchTag!='') {
-      const access=JSON.parse(localStorage.getItem('access'));
-      getSpecSearch(access, this.searchTag, this.searchKey, this.sortOrder,this.sortBy)
-      .then(response => {
-        this.projects = response.data.results;
-      })
-      .catch(error => {
-        console.error('Error fetching projects:', error);
-      });
-    }
-    else {
+    console.log(this.mode)
+    if(this.mode=='') {
       getSearch(this.searchKey, this.sortOrder,this.sortBy)
         .then(response => {
           this.projects = response.data.results;
@@ -81,6 +71,25 @@ export default {
         .catch(error => {
           console.error('Error fetching projects:', error);
         });
+    }
+    else {
+      const access=JSON.parse(localStorage.getItem('access'));
+      if(this.mode=='create')
+        getLaunchSearch(access, this.searchKey, this.sortOrder,this.sortBy)
+          .then(response => {
+            this.projects = response.data.results;
+          })
+          .catch(error => {
+            console.error('Error fetching projects:', error);
+          });
+      if(this.mode=='engage')
+        getApplySearch(access, this.searchKey, this.sortOrder,this.sortBy)
+          .then(response => {
+            this.projects = response.data.results;
+          })
+          .catch(error => {
+            console.error('Error fetching projects:', error);
+          });
     }
     },
     fetchTags() {

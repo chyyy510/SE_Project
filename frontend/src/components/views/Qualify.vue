@@ -11,6 +11,7 @@
 </template>
   
 <script>
+import { getApplier } from '../api/api';
 import Applier from '../Applier.vue';
 
 export default {
@@ -26,9 +27,9 @@ export default {
 			}
   },
   created() {
-    /*this.getId();
-    //const username=JSON.parse(localStorage.getItem('user')).username;
-    //const project=getProject(this.project.id);
+    this.getId();
+    const project=getProject(this.project.id);
+    /*const username=JSON.parse(localStorage.getItem('user')).username;
     if(username!=project.publisherName)
     {
       console.log('无查看权限');
@@ -36,14 +37,14 @@ export default {
       this.$router.push('\projects');
     }*/
     console.log('项目ID');
-    this.appliers=[{username:'6',description:'666',status:'passed'},{username:'1',description:'No.1',status:'not passed'}];
+    fetchAppliers();
   },
   methods:{
     getId(){
       const currentUrl = window.location.href;
-      const idMatch = currentUrl.match(/\/projects\/(\d+)$/);
+      const idMatch = currentUrl.match(/\/projects\/(\d+)\/qualify$/);
       if (idMatch) {
-        this.project.id = idMatch[1];
+        this.project.id = idMatch[2];
         console.log('Project ID:', this.project.id);
         this.project=getProject(this.project.id);
       } 
@@ -52,6 +53,16 @@ export default {
         alert("未找到项目");
         this.$router.push('\projects');
       }
+    },
+    fetchAppliers() {
+      const access=JSON.parse(localStorage.getItem('access'));
+      getApplier(access, this.project.id)
+        .then(response => {
+          this.appliers = response.data.results;
+        })
+        .catch(error => {
+          console.error('Error fetching projects:', error);
+        });
     },
     qualified(applier)
     {

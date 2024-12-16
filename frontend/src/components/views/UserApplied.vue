@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ProjectSearch :searchTag="tag" />
+    <ProjectSearch :mode="mode" />
   </div>
 </template>
   
@@ -14,7 +14,7 @@ export default {
   },
   data() {
     return {
-      tag:'engage'
+      mode:'engage'
     };
   },
 };
