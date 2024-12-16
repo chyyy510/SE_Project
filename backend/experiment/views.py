@@ -362,6 +362,7 @@ class ExperimentClose(generics.GenericAPIView):
 
 class ExperimentEdit(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
         if isinstance(request.user, AnonymousUser):
             return Response(
                 {"detail": "Authentication required. 该功能需要先登录。"},
@@ -398,7 +399,7 @@ class ExperimentEdit(generics.GenericAPIView):
             attri["activity_location"] = activity_location
 
         try:
-            Experiment.objects.get(id=id).update(**attri)
+            Experiment.objects.filter(id=id).update(**attri)
             return Response(
                 {"detail": "Experiment info edited successfully. 实验信息更新成功。"}
             )
