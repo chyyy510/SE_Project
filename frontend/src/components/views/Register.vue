@@ -60,6 +60,8 @@ NwIDAQAB
         this.$router.push('/login');
       }
       catch(error){
+        alert(error.response.data.detail);
+        console.log(error.response.data.detail);
         return null;
       }
     }
