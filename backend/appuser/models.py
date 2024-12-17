@@ -67,21 +67,3 @@ class UserProfile(models.Model):
     )  # 积分，发布实验时充值，完成实验获取，100:1兑换rmb
 
     introduction = models.TextField(default="Nothing here.")
-
-
-# 以下为前后端数据传输时用的字段，不存储与数据库中
-class DataUserRegister(models.Model):
-    email = models.EmailField()
-    username = models.CharField(max_length=128, unique=True)
-    password_encrypted = models.CharField(max_length=1024)
-
-    class Meta:
-        managed = False
-
-
-class DataUserLogin(models.Model):
-    email = models.EmailField()
-    password_encrypted = models.CharField(max_length=1024)
-
-    class Meta:
-        managed = False

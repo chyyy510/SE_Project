@@ -2,12 +2,17 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Q
+from appuser.models import User, UserProfile
 from relation.models import Engagement, Tags, TagsExps
 from experiment.models import Experiment
 from appuser.views import UserUsernamePagination
 from experiment.views import ExperimentPagination
-from appuser.serializers import UserUsernameSerializer
-from relation.serializers import EngagementSerializer, TagsSerializer
+from appuser.serializers import UserUsernameSerializer, UsernameStatusSerializer
+from relation.serializers import (
+    EngagementSerializer,
+    TagsSerializer,
+    VolunteerListSerializer,
+)
 from experiment.serializers import ExperimentSerializer
 
 from django.contrib.auth.models import AnonymousUser
@@ -27,6 +32,7 @@ class EngagementPagination(PageNumberPagination):
 
 class EngagementCreate(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
         user = request.user
         if isinstance(request.user, AnonymousUser):
             return Response(
@@ -65,18 +71,55 @@ class EngagementCreate(generics.GenericAPIView):
             )
 
         engagement = Engagement(
-            user=user, experiment=experiment, status="user-qualification"
+            user=user, experiment=experiment, status="to-qualify-user"
         )
 
-        engagement.save()
+        experiment.person_already = experiment.person_already + 1
+        try:
+            experiment.save()
+            engagement.save()
+        except Exception:
+            return Response(
+                {"detail": "Save to database error. 保存到数据库失败。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         serializer = EngagementSerializer(engagement)
 
         return Response(serializer.data)
 
 
+class EngagementCancel(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
+
+        user = request.user
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required. 该功能需要先登录。"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        eid = request.data.get("experiment")
+
+        try:
+            experiment = Experiment.objects.get(id=eid)
+        except:
+            return Response(
+                {"detail": "The experiment doesn't exist. 该实验不存在。"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if experiment.status == "close":
+            return Response(
+                {"detail": "This experiment had been closed. 该实验已关闭。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
 class ExperimentSearchInEngaged(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
         if isinstance(request.user, AnonymousUser):
             return Response(
                 {"detail": "Authentication required. 该功能需要先登录。"},
@@ -116,6 +159,7 @@ class ExperimentSearchInEngaged(generics.GenericAPIView):
 
 class ExperimentAdvancedSearchInEngaged(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
         if isinstance(request.user, AnonymousUser):
             return Response(
                 {"detail": "Authentication required. 该功能需要先登录。"},
@@ -154,13 +198,14 @@ class ExperimentAdvancedSearchInEngaged(generics.GenericAPIView):
 
 class VolunteerQualify(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
         if isinstance(request.user, AnonymousUser):
             return Response(
                 {"detail": "Authentication required. 该功能需要先登录。"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
         user = request.user
-        experiment_id = request.data.get("experiment_id")
+        experiment_id = request.data.get("experiment")
         experiment = Experiment.objects.get(id=experiment_id)
 
         if experiment.creator != user:
@@ -177,7 +222,15 @@ class VolunteerQualify(generics.GenericAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        volunteer_id = request.data.get("volunteer_id")
+        volunteer_username = request.data.get("volunteer")
+        try:
+            volunteer_id = User.objects.get(username=volunteer_username)
+        except Exception:
+            return Response(
+                {"detail": "The volunteer doesn't exist. 该志愿者不存在。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         try:
             engagement = Engagement.objects.get(
                 user=volunteer_id, experiment=experiment_id
@@ -197,33 +250,64 @@ class VolunteerQualify(generics.GenericAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        qualification = request.data.get("qualification")
-
-        # 检查是否在三个选项里，以及转换方向
-        in_flag = False
-
-        for tp in Engagement.status_choice:
-            if tp[0] == qualification:
-                in_flag = True
-                break
-
-        if in_flag == False:  # 不在
-            return Response(
-                {"detail": "Status error. 没有这一状态。"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # 在,检查转换方向#TODO:换个更好的写法？
-        match (engagement.status, qualification):
-            case ("to-qualify-user", "to-check-result") | ("to-check-result", "finish"):
-                engagement.status = qualification
+        match engagement.status:
+            case "to-qualify-user":
+                engagement.status = "to-check-result"
                 engagement.save()
 
                 return Response(
                     {
-                        "message": "Volunteer status changed successfully. 成功转换志愿者审核状态。"
+                        "status": "to-check-result",
+                        "message": "Volunteer status changed successfully. 成功转换志愿者审核状态。",
                     },
                     status=status.HTTP_200_OK,
+                )
+            case "to-check-result":
+                engagement.status = "finish"
+
+                try:
+                    volunteer = User.objects.get(username=volunteer_id)
+                except Exception:
+                    return Response(
+                        {"detail": "Volunteer doesn't exist. 志愿者不存在。"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                point = experiment.money_per_person * 100
+                try:
+                    profile = UserProfile.objects.get(user=volunteer)
+                except Exception:
+                    return Response(
+                        {
+                            "detail": "Volunteer profile doesn't exist. 志愿者主页不存在。"
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                profile.point = profile.point + point
+
+                try:
+                    engagement.save()
+                    profile.save()
+                except Exception:
+                    return Response(
+                        {"detail": "Save to database error. 保存到数据库失败。"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                return Response(
+                    {
+                        "status": "finish",
+                        "message": "Volunteer status changed successfully and points paid. 成功转换志愿者审核状态并发放报酬。",
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            case "finish":
+                return Response(
+                    {
+                        "detail": "The volunteer has finished the experiment. 该志愿者已完成实验。"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
             case _:
                 return Response(
@@ -235,6 +319,7 @@ class VolunteerQualify(generics.GenericAPIView):
 # eid-> all ,check create
 class VolunteerList(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
         user = request.user
         if isinstance(request.user, AnonymousUser):
             return Response(
@@ -267,8 +352,10 @@ class VolunteerList(generics.GenericAPIView):
         log_print(users)
 
         paginator = UserUsernamePagination()
-        paginated_users = paginator.paginate_queryset(users, request)
-        serializer = UserUsernameSerializer(paginated_users, many=True)
+        # paginated_users = paginator.paginate_queryset(users, request)
+        # serializer = UsernameStatusSerializer(paginated_users, many=True)
+        paginated_engagements = paginator.paginate_queryset(engagements, request)
+        serializer = VolunteerListSerializer(paginated_engagements, many=all)
         return paginator.get_paginated_response(serializer.data)
 
 
@@ -276,5 +363,6 @@ class TagsView(generics.GenericAPIView):
     queryset = Tags.objects.all().order_by("id")
 
     def get(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
         serializer = TagsSerializer(self.get_queryset(), many=True)
         return Response(serializer.data)  # 返回 JSON 数据

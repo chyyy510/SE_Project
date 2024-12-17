@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from appuser.models import User, UserProfile, DataUserRegister, DataUserLogin
+from appuser.models import User, UserProfile
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -23,6 +23,11 @@ class UserUsernameSerializer(serializers.ModelSerializer):
         fields = ["username"]
 
 
+class UsernameStatusSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    status = serializers.CharField
+
+
 class UserProfileNicknameSerializer(serializers.Serializer):
     class Meta:
         model = UserProfile
@@ -33,15 +38,3 @@ class UserProfileAvatarSerializer(serializers.Serializer):
     class Meta:
         model = UserProfile
         fields = ["avatar"]
-
-
-class DataUserRegisterSerializer(serializers.Serializer):
-    class Meta:
-        model = DataUserRegister
-        fields = ["email", "username", "password_encrypted"]
-
-
-class DataUserLoginSerializer(serializers.Serializer):
-    class Meta:
-        model = DataUserLogin
-        fields = ["email", "password_encrypted"]

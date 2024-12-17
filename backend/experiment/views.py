@@ -5,6 +5,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
 from appuser.models import User
 from experiment.models import Experiment
+from relation.models import Engagement
 from experiment.serializers import ExperimentSerializer, ExperimentCreateSerializer
 from relation.models import TagsExps
 
@@ -33,7 +34,11 @@ class ExperimentDetail(generics.RetrieveAPIView):
     serializer_class = ExperimentSerializer
 
     def get(self, request, *args, **kwargs):
-        try:
+
+        eid = kwargs.get("pk")
+
+        try:  # TODO:看情况再修改
+            experiment = Experiment.objects.get(id=eid)
             response = super().get(request, *args, **kwargs)
             response.data["message"] = (
                 "Find the experiment successfully. 成功找到该实验。"
@@ -59,12 +64,17 @@ class ExperimentDetail(generics.RetrieveAPIView):
 
         if isinstance(user, AnonymousUser):
             relationship = "unauthorized"
+
         else:
 
             if creator == user:
                 relationship = "creator"
             else:
-                relationship = "applicant"
+                # 判断是否已参加
+                if Engagement.objects.filter(experiment=experiment, user=user).exists():
+                    relationship = "applicant"
+                else:
+                    relationship = "passer-by"
 
         response.data["relationship"] = relationship
 
