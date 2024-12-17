@@ -91,7 +91,8 @@ export const updateUserInfo = (access, userInfo) =>
 export const updateUserPassword = (access, oldPassword,newPassword) => 
     { 
         console.log(access,oldPassword,newPassword);
-        return axios.post(`${SERVER_URL}/users/profile/edit/`, oldPassword,newPassword, 
+        return axios.post(`${SERVER_URL}/users/profile/edit/`, 
+            {"old_password_encrypted":oldPassword, "new_password_encrypted":newPassword},
             {headers: {'Authorization':`Bearer ${access}`}},
             { withCredentials: true }); 
     }
