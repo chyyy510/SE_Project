@@ -15,7 +15,8 @@ export default {
     applier: {
       type: Object,
       required: true
-    }
+    },
+    id : ''
   },
   data() {
     return {

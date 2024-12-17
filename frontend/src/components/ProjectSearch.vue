@@ -64,7 +64,7 @@ export default {
     console.log(this.searchKey, this.sortOrder,this.sortBy);
     console.log(this.mode)
     if(this.mode=='') {
-      getSearch(this.searchKey, this.sortOrder,this.sortBy)
+      getSearch(this.searchKey, this.sortBy, this.sortOrder)
         .then(response => {
           this.projects = response.data.results;
         })
@@ -75,7 +75,7 @@ export default {
     else {
       const access=JSON.parse(localStorage.getItem('access'));
       if(this.mode=='create')
-        getLaunchSearch(access, this.searchKey, this.sortOrder,this.sortBy)
+        getLaunchSearch(access, this.searchKey, this.sortBy, this.sortOrder)
           .then(response => {
             this.projects = response.data.results;
           })
@@ -83,7 +83,7 @@ export default {
             console.error('Error fetching projects:', error);
           });
       if(this.mode=='engage')
-        getApplySearch(access, this.searchKey, this.sortOrder,this.sortBy)
+        getApplySearch(access, this.searchKey, this.sortBy, this.sortOrder)
           .then(response => {
             this.projects = response.data.results;
           })

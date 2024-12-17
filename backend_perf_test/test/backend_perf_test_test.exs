@@ -38,33 +38,21 @@ defmodule BackendPerfTestTest do
     end)
   end
 
-  test "concurrency_1_1",
-    do: concurrency_1(1)
+  @tag :first
+  test "concurrency_1" do
+    concurrency_1(1)
+    concurrency_1(2)
+    concurrency_1(4)
+    concurrency_1(8)
+  end
 
-  test "concurrency_1_2",
-    do: concurrency_1(1)
-
-  test "concurrency_1_4",
-    do: concurrency_1(4)
-
-  test "concurrency_1_8",
-    do: concurrency_1(8)
-
-  # test "concurrency_2_1",
-  #   do: concurrency_2(1)
-
-  # test "concurrency_2_8",
-  #   do: concurrency_2(8)
-
-  # test "concurrency_2_64",
-  #   do: concurrency_2(64)
-
-  # test "concurrency_2_256",
-  #   do: concurrency_2(256)
-
-  # test "concurrency_2_512",
-  #   do: concurrency_2(512)
-
-  # test "concurrency_2_1024",
-  #   do: concurrency_2(1024)
+  @tag :second
+  test "concurrency_2" do
+    concurrency_2(1)
+    concurrency_2(8)
+    concurrency_2(64)
+    concurrency_2(256)
+    concurrency_2(512)
+    concurrency_2(1024)
+  end
 end

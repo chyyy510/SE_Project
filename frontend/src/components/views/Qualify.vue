@@ -3,7 +3,7 @@
     <div v-if="appliers.length === 0">暂无人申请</div>
     <div v-else>
       <div v-for="applier in appliers" :key="applier.username" class="applier-item">
-        <Applier :applier="applier" />
+        <Applier :applier="applier" :id="id"/>
       </div>
     </div>
   </div>
