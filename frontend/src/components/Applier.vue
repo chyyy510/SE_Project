@@ -1,7 +1,7 @@
 <template>
   <div class="applier-item">
     <h3>{{ applier.username }}</h3>
-    <p>{{ applier.description }}</p>
+    <p>{{ applier.introduction }}</p>
     <p><strong>审核状态：</strong>{{ status_text }}</p>
     <button @click="qualified(applier)">{{ button_text_qualify }}</button>
   </div>
