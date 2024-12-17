@@ -34,7 +34,7 @@ export default {
       this.button_text_qualify='资质审核通过';
     }
       
-    if(this.applier.status=='to-complete-user') {
+    if(this.applier.status=='to-check-result') {
       this.status_text='待完成';
       this.button_text_qualify='成果审核通过';
     }
@@ -48,6 +48,7 @@ export default {
         .catch(error => {
           console.error('Error qualify', error.response.data.detail);
         });
+        location.reload();
     }
   }
 };
@@ -63,5 +64,13 @@ export default {
 }
 .applier-item h3 {
   margin: 0 0 10px;
+}
+button {
+  padding: 10px 20px;
+  background-color: #94070a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 </style>

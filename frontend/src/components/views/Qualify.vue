@@ -80,12 +80,4 @@ export default {
   border-radius: 5px;
   background-color: #fff;
 }
-button {
-  padding: 10px 20px;
-  background-color: #94070a;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
 </style>  
