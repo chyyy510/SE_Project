@@ -16,6 +16,7 @@ class EngagementCreateSerializer(serializers.Serializer):
 
 class VolunteerListSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source="user.username")
+    # introduction = serializers.CharField(source="user.profile.introduction")
 
     class Meta:
         model = Engagement

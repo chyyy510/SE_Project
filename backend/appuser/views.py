@@ -276,8 +276,10 @@ class UserProfileEdit(generics.GenericAPIView):
                 user.save()
             if (introduction := request.data.get("introduction")) is not None:
                 log_print("introduction:", introduction)
-                user.introduction = introduction
-                user.save()
+
+                profile = UserProfile.objects.get(user=user)
+                profile.introduction = introduction
+                profile.save()
             if (
                 new_password_encrypted := request.data.get("new_password_encrypted")
             ) is not None:
