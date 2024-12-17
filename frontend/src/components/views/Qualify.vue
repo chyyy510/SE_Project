@@ -3,7 +3,7 @@
     <div v-if="appliers.length === 0">暂无人申请</div>
     <div v-else>
       <div v-for="applier in appliers" :key="applier.username" class="applier-item">
-        <Applier :applier="applier" />
+        <Applier :applier="applier" :id="id"/>
       </div>
     </div>
   </div>
@@ -79,13 +79,5 @@ export default {
   border: 1px solid #ddd;
   border-radius: 5px;
   background-color: #fff;
-}
-button {
-  padding: 10px 20px;
-  background-color: #94070a;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
 }
 </style>  

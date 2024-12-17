@@ -1,7 +1,7 @@
 <template>
   <div class="applier-item">
     <h3>{{ applier.username }}</h3>
-    <p>{{ applier.description }}</p>
+    <p>{{ applier.introduction }}</p>
     <p><strong>审核状态：</strong>{{ status_text }}</p>
     <button @click="qualified(applier)">{{ button_text_qualify }}</button>
   </div>
@@ -15,7 +15,8 @@ export default {
     applier: {
       type: Object,
       required: true
-    }
+    },
+    id : ''
   },
   data() {
     return {
@@ -33,7 +34,7 @@ export default {
       this.button_text_qualify='资质审核通过';
     }
       
-    if(this.applier.status=='to-complete-user') {
+    if(this.applier.status=='to-check-result') {
       this.status_text='待完成';
       this.button_text_qualify='成果审核通过';
     }
@@ -47,6 +48,7 @@ export default {
         .catch(error => {
           console.error('Error qualify', error.response.data.detail);
         });
+        location.reload();
     }
   }
 };
@@ -62,5 +64,13 @@ export default {
 }
 .applier-item h3 {
   margin: 0 0 10px;
+}
+button {
+  padding: 10px 20px;
+  background-color: #94070a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 </style>

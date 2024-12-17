@@ -508,14 +508,14 @@ refresh token过期:
   {
       "email": "alice@gmail.com",
       "username": "alice",
-      "old_passowrd_encrypted": "",
+      "old_password_encrypted": "",
       "new_password_encrypted": ""
   }
   ```
   以上字段不必同时存在。例如，如果只更新密码：
   ```json
   {
-      "old_passowrd_encrypted": "",
+      "old_password_encrypted": "",
       "new_password_encrypted": ""
   }
   ```
