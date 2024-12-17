@@ -13,7 +13,7 @@ from relation.serializers import (
     TagsSerializer,
     VolunteerListSerializer,
 )
-from experiment.serializers import ExperimentSerializer
+from experiment.serializers import ExperimentSerializer, ExperimentDetailSerializer
 
 from django.contrib.auth.models import AnonymousUser
 
@@ -40,7 +40,7 @@ class EngagementCreate(generics.GenericAPIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        eid = request.data.get("experiment")
+        eid = request.data.get("experiment", 0)
 
         try:
             experiment = Experiment.objects.get(id=eid)
@@ -89,7 +89,7 @@ class EngagementCreate(generics.GenericAPIView):
         return Response(serializer.data)
 
 
-class EngagementCancel(generics.GenericAPIView):
+class EngagementCancel(generics.GenericAPIView):  # TODO:
     def post(self, request, *args, **kwargs):
         log_print(request.headers, request.data)
 
@@ -153,7 +153,7 @@ class ExperimentSearchInEngaged(generics.GenericAPIView):
         paginator = ExperimentPagination()
         paginated_experiments = paginator.paginate_queryset(experiments, request)
 
-        serializer = ExperimentSerializer(paginated_experiments, many=True)
+        serializer = ExperimentDetailSerializer(paginated_experiments, many=True)
         return paginator.get_paginated_response(serializer.data)
 
 
@@ -192,7 +192,7 @@ class ExperimentAdvancedSearchInEngaged(generics.GenericAPIView):
         paginator = ExperimentPagination()
         paginated_experiments = paginator.paginate_queryset(experiments, request)
 
-        serializer = ExperimentSerializer(paginated_experiments, many=True)
+        serializer = ExperimentDetailSerializer(paginated_experiments, many=True)
         return paginator.get_paginated_response(serializer.data)
 
 
@@ -204,9 +204,17 @@ class VolunteerQualify(generics.GenericAPIView):
                 {"detail": "Authentication required. 该功能需要先登录。"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
+        log_print("here")
         user = request.user
-        experiment_id = request.data.get("experiment")
+        experiment_id = request.data.get("experiment", 0)
+        if experiment_id == 0:
+            log_print("exception")
+            return Response(
+                {"detail": "Experiment id needed. 需指明experiment id。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         experiment = Experiment.objects.get(id=experiment_id)
+        log_print("here")
 
         if experiment.creator != user:
             return Response(
@@ -221,6 +229,7 @@ class VolunteerQualify(generics.GenericAPIView):
                 {"detail": "The experiment had been closed. 该实验已被关闭。"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        log_print("here")
 
         volunteer_username = request.data.get("volunteer")
         try:
@@ -230,7 +239,7 @@ class VolunteerQualify(generics.GenericAPIView):
                 {"detail": "The volunteer doesn't exist. 该志愿者不存在。"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
+        log_print("here")
         try:
             engagement = Engagement.objects.get(
                 user=volunteer_id, experiment=experiment_id
@@ -249,6 +258,7 @@ class VolunteerQualify(generics.GenericAPIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        log_print(engagement.status)
 
         match engagement.status:
             case "to-qualify-user":

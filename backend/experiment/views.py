@@ -6,7 +6,11 @@ from django.db.models import Q
 from appuser.models import User
 from experiment.models import Experiment
 from relation.models import Engagement
-from experiment.serializers import ExperimentSerializer, ExperimentCreateSerializer
+from experiment.serializers import (
+    ExperimentSerializer,
+    ExperimentDetailSerializer,
+    ExperimentCreateSerializer,
+)
 from relation.models import TagsExps
 
 from rest_framework import generics
@@ -39,28 +43,28 @@ class ExperimentDetail(generics.RetrieveAPIView):
 
         try:  # TODO:看情况再修改
             experiment = Experiment.objects.get(id=eid)
-            response = super().get(request, *args, **kwargs)
-            response.data["message"] = (
-                "Find the experiment successfully. 成功找到该实验。"
-            )
+
         except Exception:
-            response = Response(
+            return Response(
                 {"detail": "Experiment doesn't exist. 该实验不存在。"},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
+        serializer = ExperimentDetailSerializer(experiment)
+        response = Response(serializer.data)
+
         relationship = ""
         user = request.user
-        creator_id = response.data["creator"]
+        creator_name = response.data["creator"]
         try:
-            creator = User.objects.get(id=creator_id)
+            creator = User.objects.get(username=creator_name)
         except Exception:
             return Response(
                 {"detail": "The experiment creator doesn't exist. 实验创建者不存在。"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        response.data["creator"] = creator.username
+        response.data["message"] = "Find the experiment successfully. 成功找到该实验。"
 
         if isinstance(user, AnonymousUser):
             relationship = "unauthorized"
@@ -169,33 +173,7 @@ class ExperimentSearch(generics.GenericAPIView):
         paginator = ExperimentPagination()
         paginated_experiments = paginator.paginate_queryset(experiments, request)
 
-        serializer = ExperimentSerializer(paginated_experiments, many=True)
-        return paginator.get_paginated_response(serializer.data)
-
-
-class ExperimentAdvancedSearch(generics.GenericAPIView):
-    def get(self, request, *args, **kwargs):
-        keyword = request.GET.get("keyword", "")
-
-        orderby = request.GET.get("orderby", "id")
-
-        if not hasattr(Experiment, orderby):
-            orderby = "id"
-
-        sort = request.GET.get("sort", "asc")
-
-        if sort == "desc":
-            orderby = f"-{orderby}"  # 使用负号表示降序排序
-
-        experiments = Experiment.objects.filter(
-            Q(title__contains=keyword) | Q(description__contains=keyword)
-        ).order_by(orderby)
-
-        # 分页处理
-        paginator = ExperimentPagination()
-        paginated_experiments = paginator.paginate_queryset(experiments, request)
-
-        serializer = ExperimentSerializer(paginated_experiments, many=True)
+        serializer = ExperimentDetailSerializer(paginated_experiments, many=True)
         return paginator.get_paginated_response(serializer.data)
 
 
@@ -222,7 +200,7 @@ class ExperimentAdvancedSearch(generics.GenericAPIView):
         paginator = ExperimentPagination()
         paginated_experiments = paginator.paginate_queryset(experiments, request)
 
-        serializer = ExperimentSerializer(paginated_experiments, many=True)
+        serializer = ExperimentDetailSerializer(paginated_experiments, many=True)
         return paginator.get_paginated_response(serializer.data)
 
 
@@ -247,7 +225,7 @@ class ExperimentSearchInCreated(generics.GenericAPIView):
 
         if sort == "desc":
             orderby = f"-{orderby}"  # 使用负号表示降序排序
-
+        log_print("keyword:", keyword)
         experiments = Experiment.objects.filter(
             Q(creator=user)
             & (Q(title__contains=keyword) | Q(description__contains=keyword))
@@ -257,42 +235,7 @@ class ExperimentSearchInCreated(generics.GenericAPIView):
         paginator = ExperimentPagination()
         paginated_experiments = paginator.paginate_queryset(experiments, request)
 
-        serializer = ExperimentSerializer(paginated_experiments, many=True)
-        return paginator.get_paginated_response(serializer.data)
-
-
-class ExperimentAdvancedSearchInCreated(generics.GenericAPIView):
-    def get(self, request, *args, **kwargs):
-        if isinstance(request.user, AnonymousUser):
-            return Response(
-                {"detail": "Authentication required. 该功能需要先登录。"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-
-        user = request.user
-
-        keyword = request.GET.get("keyword", "")
-
-        orderby = request.GET.get("orderby", "id")
-
-        if not hasattr(Experiment, orderby):
-            orderby = "id"
-
-        sort = request.GET.get("sort", "asc")
-
-        if sort == "desc":
-            orderby = f"-{orderby}"  # 使用负号表示降序排序
-
-        experiments = Experiment.objects.filter(
-            Q(creator=user)
-            & (Q(title__contains=keyword) | Q(description__contains=keyword))
-        ).order_by(orderby)
-
-        # 分页处理
-        paginator = ExperimentPagination()
-        paginated_experiments = paginator.paginate_queryset(experiments, request)
-
-        serializer = ExperimentSerializer(paginated_experiments, many=True)
+        serializer = ExperimentDetailSerializer(paginated_experiments, many=True)
         return paginator.get_paginated_response(serializer.data)
 
 
@@ -327,7 +270,7 @@ class ExperimentAdvancedSearchInCreated(generics.GenericAPIView):
         paginator = ExperimentPagination()
         paginated_experiments = paginator.paginate_queryset(experiments, request)
 
-        serializer = ExperimentSerializer(paginated_experiments, many=True)
+        serializer = ExperimentDetailSerializer(paginated_experiments, many=True)
         return paginator.get_paginated_response(serializer.data)
 
 
@@ -364,10 +307,10 @@ class ExperimentClose(generics.GenericAPIView):
 
         experiment.status = "close"
         experiment.save()
-        return Response(
-            {"message": "Successfully close the experiment. 成功关闭实验。"},
-            status=status.HTTP_200_OK,
-        )
+        serializer = ExperimentDetailSerializer(experiment)
+        response = Response(serializer.data)
+        response.data["message"] = "Successfully close the experiment. 成功关闭实验。"
+        return response
 
 
 class ExperimentEdit(generics.GenericAPIView):
@@ -410,9 +353,13 @@ class ExperimentEdit(generics.GenericAPIView):
 
         try:
             Experiment.objects.filter(id=id).update(**attri)
-            return Response(
-                {"detail": "Experiment info edited successfully. 实验信息更新成功。"}
+            experiment = Experiment.objects.get(id=id)
+            serializer = ExperimentDetailSerializer(experiment)
+            response = Response(serializer.data)
+            response.data["message"] = (
+                "Experiment info edited successfully. 实验信息更新成功。"
             )
+            return response
 
         except Exception:
             return Response(

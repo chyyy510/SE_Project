@@ -5,6 +5,7 @@ from experiment.views import (
     ExperimentCreate,
     ExperimentSearch,
     ExperimentSearchInCreated,
+    ExperimentClose,
     ExperimentEdit,
 )
 
@@ -18,5 +19,6 @@ urlpatterns = [
         ExperimentSearchInCreated.as_view(),
         name="experiment-create-search",
     ),
+    path("close/", ExperimentClose.as_view(), name="experiment-close"),
     path("edit/", ExperimentEdit.as_view(), name="experiment-edit"),
 ]
