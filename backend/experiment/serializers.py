@@ -15,6 +15,7 @@ class ExperimentDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Experiment
         fields = [
+            "id",
             "title",
             "description",
             "status",
