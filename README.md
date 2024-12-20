@@ -251,6 +251,32 @@ GET 前端获取当前登录用户的主页信息TODO:
 
 需要在header中包含**Authorization:"Bearer \<之前获取的access\>"**（没有尖括号）
 
+#### user-avatar-upload
+
+[http://backend-up:8000/users/profile/update/avatar/]()
+
+POST 数据体中包含头像文件，名称为avatar
+
+status_code=200
+```json
+{
+    "avatar": "/media/avatar/user_1000002/008eulSmgy1hkazlfbtz6j32401eoe84-%E5%A4%B4%E5%83%8F.jpg", 
+    "user": "123456"
+}
+```
+
+缺少头像文件或文件不是图片类型，则返回400，分别为
+```json
+{
+    "detail": "The file is not an image. 该文件不是图片。"
+}
+```
+和
+```json
+{
+    "detail": "No avatar file uploaded. 未上传头像文件。"
+}
+```
 ### experiment
 
 #### experiment-list

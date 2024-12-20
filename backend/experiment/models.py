@@ -17,15 +17,11 @@ class Experiment(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     person_wanted = models.IntegerField(validators=[MinValueValidator(1)])  # 需求总数
     person_already = models.IntegerField(validators=[MinValueValidator(0)])  # 已招到
-    money_per_person = models.DecimalField(
-        max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal("0.01"))]
-    )
-    money_paid = models.DecimalField(
-        max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal("0.01"))]
-    )
-    money_left = models.DecimalField(
-        max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal("0.01"))]
-    )
+
+    money_per_person = models.IntegerField(validators=[MinValueValidator(0)], default=0)
+    money_paid = models.IntegerField(validators=[MinValueValidator(0)], default=0)
+    money_left = models.IntegerField(validators=[MinValueValidator(0)], default=0)
+
     time_created = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
 
