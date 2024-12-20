@@ -4,6 +4,8 @@ from django.core.validators import MinValueValidator
 
 from decimal import Decimal
 
+from utils.generate_path import GeneratePath
+
 # Create your models here.
 
 
@@ -29,6 +31,11 @@ class Experiment(models.Model):
 
     activity_location = models.CharField(max_length=128, default="北京大学")
     activity_time = models.DateField(default="2024-01-01")
+
+    image = models.ImageField(
+        upload_to=GeneratePath.generate_path_experiment,
+        default="experiment/default.jpg",
+    )
 
     def __str__(self):
         return self.title + '"' + self.description + '"'

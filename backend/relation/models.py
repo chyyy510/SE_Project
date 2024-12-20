@@ -18,7 +18,7 @@ class Engagement(models.Model):
 
 
 class Tags(models.Model):
-    name = models.CharField(max_length=10, unique=True)  # 标签名，唯一
+    name = models.CharField(max_length=12, unique=True)  # 标签名，唯一
 
     def __str__(self):
         return self.name

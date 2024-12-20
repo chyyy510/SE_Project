@@ -29,6 +29,7 @@ class ExperimentDetailSerializer(serializers.ModelSerializer):
             "time_modified",
             "activity_location",
             "activity_time",
+            "image",
         ]
 
 
