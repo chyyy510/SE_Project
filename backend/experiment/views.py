@@ -3,6 +3,9 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
+from django.core.files.storage import FileSystemStorage
+from django.conf import settings
+
 from appuser.models import User
 from experiment.models import Experiment
 from relation.models import Engagement
@@ -17,6 +20,7 @@ from rest_framework import generics
 from django.utils import timezone
 
 from utils.log_print import log_print
+from utils.generate_path import GeneratePath
 
 # Create your views here.
 
@@ -366,3 +370,55 @@ class ExperimentEdit(generics.GenericAPIView):
                 {"detail": "Format error. 有内容不符合格式。"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+class ExperimentImageUpload(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
+        user = request.user
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required. 该功能需要先登录。"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        id = request.data.get("experiment")
+        try:
+            experiment = Experiment.objects.get(id=id)
+        except Exception:
+            return Response(
+                {"detail": "The experiment doesn't exist. 该实验不存在。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if experiment.creator != user:
+            return Response(
+                {
+                    "detail": "Current user is not the experiment creator. 当前用户非实验创建者。"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        image = request.FILES.get("image")
+
+        if not image:
+            return Response(
+                {"detail": "No file uploaded. 未上传文件。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not image.content_type.startswith("image"):
+            return Response(
+                {"detail": "The file is not an image. 该文件不是图片。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        fs = FileSystemStorage(location=settings.MEDIA_ROOT)  # 设置文件存储位置
+        filename = GeneratePath.generate_path_experiment(experiment, image.name)
+        filename = fs.save(filename, image)  # 保存文件
+        file_url = fs.url(filename)
+
+        experiment.image = file_url
+
+        experiment.save()
+        serializer = ExperimentDetailSerializer(experiment)
+        return Response(serializer.data)

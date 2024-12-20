@@ -6,6 +6,7 @@ from experiment.views import (
     ExperimentSearch,
     ExperimentSearchInCreated,
     ExperimentClose,
+    ExperimentImageUpload,
     ExperimentEdit,
 )
 
@@ -21,4 +22,7 @@ urlpatterns = [
     ),
     path("close/", ExperimentClose.as_view(), name="experiment-close"),
     path("edit/", ExperimentEdit.as_view(), name="experiment-edit"),
+    path(
+        "update/image/", ExperimentImageUpload.as_view(), name="experiment-image-upload"
+    ),
 ]
