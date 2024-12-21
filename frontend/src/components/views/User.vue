@@ -12,7 +12,7 @@
           <div class="info-row">
             <span class="label">{{ field.label }}:</span>
             <span class="value">{{ field.name === 'password' ? '******' : user[field.name] }}</span>
-            <button @click="editField(field.name)" class="sort-button">修改</button>
+            <button v-if="field.name !== 'email'" @click="editField(field.name)" class="sort-button">修改</button>
           </div>
           <div v-if="editingField === field.name" class="edit-section">
             <label :for="field.name">{{ field.labelchange }}</label>
@@ -25,6 +25,19 @@
             </div>
           </div>
         </div>
+        <div class="info-item">
+          <div class="info-row">
+            <span class="label">邮箱:</span>
+            <span class="value">{{ user.email }}</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-row">
+            <span class="label">个人点数:</span>
+            <span class="value">{{ user.points }}</span>
+            <button @click="rechargePoints" class="sort-button">充值</button>
+          </div>
+        </div>
       </div>
     </div>
     <button @click="logout" class="sort-button">退出登录</button>
@@ -33,7 +46,7 @@
 
 <script>
 import axios from 'axios';
-import { updateUserInfo, updateUserPassword, getUser } from '../api/api';
+import { updateUserInfo, updateUserPassword, getUser, postUserAvatar } from '../api/api';
 import JSEncrypt from 'jsencrypt';
 
 export default {
@@ -43,7 +56,8 @@ export default {
         avatar: '', // 用户头像URL
         username: '', // 用户名
         email: '', // 邮箱
-        introduction: '' // 个人简介
+        introduction: '', // 个人简介
+        points: 0 // 个人点数
       },
       defaultAvatar: require('../../assets/logo.png'),
       editingField: null, // 当前正在编辑的字段
@@ -53,26 +67,25 @@ export default {
       fields: [
         { name: 'username', label: '用户名', labelchange: '修改用户名：' },
         { name: 'password', label: '密码', labelchange: '修改密码：' },
-        { name: 'email', label: '邮箱', labelchange: '修改绑定邮箱：' },
         { name: 'introduction', label: '个人简介', labelchange: '修改个人简介：' }
       ]
     };
   },
-  created() {
+  /*created() {
     this.user = JSON.parse(localStorage.getItem('user'));
-    const user_name=this.user.username;
+    const user_name = this.user.username;
     getUser(user_name)
       .then(response => {
         this.user.introduction = response.data.introduction;
         console.log(response.data.introduction);
         console.log(this.user.introduction);
-        this.user.username='';
-        this.user.username=user_name;
+        this.user.username = '';
+        this.user.username = user_name;
       })
       .catch(error => {
         console.error('Error fetching user data:', error);
       });
-  },
+  },*/
   methods: {
     getRsaCode(str) { // 加密方法
       let pubKey = `-----BEGIN PUBLIC KEY-----
@@ -96,7 +109,7 @@ NwIDAQAB
       const file = event.target.files[0];
       const formData = new FormData();
       formData.append('avatar', file);
-      axios.post('/api/upload-avatar', formData)
+      postUserAvatar(access, formData)
         .then(response => {
           this.user.avatar = response.data.avatarUrl;
         })
@@ -146,6 +159,9 @@ NwIDAQAB
       this.oldPassword = '';
       this.newPassword = '';
     },
+    rechargePoints() {
+      this.$router.push('/recharge');
+    },//充值逻辑在这里
     logout() {
       localStorage.setItem('loginFlag', 'false');
       localStorage.setItem('user', null);
@@ -162,6 +178,7 @@ NwIDAQAB
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 10px;
+  margin-bottom: 10px;
   position: relative;
 }
 .avatar-section {
@@ -188,6 +205,7 @@ NwIDAQAB
 .info-row {
   display: flex;
   align-items: center;
+  margin-bottom: 30px;
 }
 .info-row .label {
   width: 80px;
