@@ -57,7 +57,7 @@ export default {
         username: '', // 用户名
         email: '', // 邮箱
         introduction: '', // 个人简介
-        points: 0 // 个人点数
+        points: '' // 个人点数
       },
       defaultAvatar: require('../../assets/logo.png'),
       editingField: null, // 当前正在编辑的字段
@@ -71,7 +71,7 @@ export default {
       ]
     };
   },
-  /*created() {
+  created() {
     this.user = JSON.parse(localStorage.getItem('user'));
     const user_name = this.user.username;
     getUser(user_name)
@@ -85,7 +85,7 @@ export default {
       .catch(error => {
         console.error('Error fetching user data:', error);
       });
-  },*/
+  },
   methods: {
     getRsaCode(str) { // 加密方法
       let pubKey = `-----BEGIN PUBLIC KEY-----
@@ -160,7 +160,7 @@ NwIDAQAB
       this.newPassword = '';
     },
     rechargePoints() {
-      this.$router.push('/recharge');
+      this.$router.push('/pay');
     },//充值逻辑在这里
     logout() {
       localStorage.setItem('loginFlag', 'false');

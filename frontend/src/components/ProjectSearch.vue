@@ -61,9 +61,9 @@ export default {
   },
   methods: {
     fetchProjects() {
-      this.projects = [{ id: '1', title: '项目标题1', description: '项目描述1', date: '2024-12-22', location: '北京', money_per_person: '100元', person_applied: '5', person_wanted: '10', tag: '测试标签1'  }, 
-      { id: '2', title: '项目标题2', description: '项目描述2', date: '2024-12-23', location: '上海', money_per_person: '200元', person_applied: '3', person_wanted: '8', tag: '测试标签2'  }]; 
-      /*
+      //this.projects = [{ id: '1', title: '项目标题1', description: '项目描述1', date: '2024-12-22', location: '北京', money_per_person: '100元', person_applied: '5', person_wanted: '10', tag: '测试标签1'  }, 
+      //{ id: '2', title: '项目标题2', description: '项目描述2', date: '2024-12-23', location: '上海', money_per_person: '200元', person_applied: '3', person_wanted: '8', tag: '测试标签2'  }]; 
+      
       console.log(this.searchKey, this.sortOrder, this.sortBy);
       console.log(this.mode);
       if (this.mode == '') {
@@ -92,7 +92,7 @@ export default {
             .catch(error => {
               console.error('Error fetching projects:', error);
             });
-      }*/
+      }
     },
     fetchTags() {
       this.tags = [ { name: '标签1' }, { name: '标签2' }, { name: '标签3' } ];

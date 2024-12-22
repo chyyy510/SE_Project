@@ -3,7 +3,7 @@ import Header from '../Header.vue';
 import axiosInstance from './index'
 
 const axios = axiosInstance
-const SERVER_URL = 'http://127.0.0.1:8000';
+const SERVER_URL = 'http://10.129.241.91:8000';
 
 export const postLogin = (email, password) => {
   return axios.post(`${SERVER_URL}/users/login/`,

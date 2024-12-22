@@ -10,6 +10,7 @@ import UserApplied from '@/components/views/UserApplied.vue'
 import UserLaunched from '@/components/views/UserLaunched.vue'
 import Projects from '@/components/views/Projects.vue'
 import Qualify from '@/components/views/Qualify.vue'
+import Charge from '@/components/views/Charge.vue'
 
 Vue.use(Router)
 
@@ -67,6 +68,14 @@ export default new Router({
       path: '/user/applied',
       name: 'UserApplied',
       component: UserApplied,
+      meta:{
+        requiresLogin: 'true'
+      }
+    },
+    {
+      path: '/pay',
+      name: 'Charge',
+      component: Charge,
       meta:{
         requiresLogin: 'true'
       }
