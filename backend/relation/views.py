@@ -413,13 +413,9 @@ class VolunteerList(generics.GenericAPIView):
 
         # 找所有volunteer
         engagements = Engagement.objects.filter(experiment=experiment).order_by("id")
-        query = engagements.select_related("user").all()
-        users = [engagement.user for engagement in query if engagement.user]
-        log_print(users)
 
         paginator = UserUsernamePagination()
-        # paginated_users = paginator.paginate_queryset(users, request)
-        # serializer = UsernameStatusSerializer(paginated_users, many=True)
+
         paginated_engagements = paginator.paginate_queryset(engagements, request)
         serializer = VolunteerListSerializer(paginated_engagements, many=all)
         return paginator.get_paginated_response(serializer.data)

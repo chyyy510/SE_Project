@@ -54,6 +54,7 @@ source .venv/bin/activate # 假设使用 bash/zsh
 ```bash
 pip install mysqlclient
 ```
+
 如果安装失败，则请见下方的从源代码构建 `mysqlclient` 指南。
 
 ##### Windows
@@ -88,7 +89,7 @@ python manage.py runserver 0.0.0.0:8000
 
 ## 数据传输标准
 
-返回的详细信息，如果出错则统一为detail，正常则统一为message。
+返回的详细信息，如果出错则统一为 detail，正常则统一为 message。
 
 ### User
 
@@ -99,31 +100,32 @@ python manage.py runserver 0.0.0.0:8000
 GET 获取当前所有用户的信息列表
 
 status_code=200
+
 ```json
 {
-    "count": 2,
-    "next": null,
-    "previous": null,
-    "results": [
-        {
-            "email": "123456@qq.com",
-            "id": 1,
-            "is_active": true,
-            "is_staff": false,
-            "password": "4d28edb601106a84742a3c1a394db573d5c8bf2bdc86c36a3652bdad67c7db11",
-            "uid": 1000001,
-            "username": "123456"
-        },
-        {
-             "email": "test@qq.con",
-            "id": 2,
-            "is_active": true,
-            "is_staff": false,
-            "password": "1015c01afd731ee9494902a36d98aca8615f37a695a1ce7e99627c37ba015c85",
-            "uid": 1000002,
-            "username": "test"
-        }
-    ]
+  "count": 2,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "email": "123456@qq.com",
+      "id": 1,
+      "is_active": true,
+      "is_staff": false,
+      "password": "4d28edb601106a84742a3c1a394db573d5c8bf2bdc86c36a3652bdad67c7db11",
+      "uid": 1000001,
+      "username": "123456"
+    },
+    {
+      "email": "test@qq.con",
+      "id": 2,
+      "is_active": true,
+      "is_staff": false,
+      "password": "1015c01afd731ee9494902a36d98aca8615f37a695a1ce7e99627c37ba015c85",
+      "uid": 1000002,
+      "username": "test"
+    }
+  ]
 }
 ```
 
@@ -131,28 +133,31 @@ status_code=200
 
 [http://backend-ip:8000/users/detail/?username=xxx]()
 
-GET 获取username为xxx的用户详细信息
-- avatar: 头像url
+GET 获取 username 为 xxx 的用户详细信息
+
+- avatar: 头像 url
 
 status_code=200
+
 ```json
 {
-    "avatar": "/media/avatar/user_0/default_avatar.png",
-    "email": "123456@qq.com",
-    "introduction": "Nothing here.",
-    "message": "Find the user successfully. 成功找到该用户。",
-    "nickname": "user1000002",
-    "point": 0,
-    "username": "123456"
+  "avatar": "/media/avatar/user_0/default_avatar.png",
+  "email": "123456@qq.com",
+  "introduction": "Nothing here.",
+  "message": "Find the user successfully. 成功找到该用户。",
+  "nickname": "user1000002",
+  "point": 0,
+  "username": "123456"
 }
 ```
 
 若该用户不存在，则返回
 
 status_code=404
+
 ```json
 {
-    "detail": "User doesn't exist. 该用户不存在。"
+  "detail": "User doesn't exist. 该用户不存在。"
 }
 ```
 
@@ -161,41 +166,46 @@ status_code=404
 [http://backend-ip:8000/users/register/]()
 
 POST 向后端提交注册信息 TODO:暂定只需传递以下字段
+
 ```json
 {
-    "email": "Alice@gmail.com",
-    "username": "Alice",
-    "password_encrypted": "wevn852",
+  "email": "Alice@gmail.com",
+  "username": "Alice",
+  "password_encrypted": "wevn852"
 }
 ```
 
-若数据库中已有email或username，返回错误
+若数据库中已有 email 或 username，返回错误
 
 status_code=400
+
 ```json
 {
-    "detail": "Email already exists.邮箱已存在。"
+  "detail": "Email already exists.邮箱已存在。"
 }
 ```
+
 或
+
 ```json
 {
-    "detail": "Username already exists.用户名已存在。"
+  "detail": "Username already exists.用户名已存在。"
 }
 ```
 
 成功注册则返回
 
 status_code=200
+
 ```json
 {
-    "email": "Alice@gmail.com",
-    "id": 9,
-    "is_active": true,
-    "is_staff": false,
-    "password": "de06629acd0fcd41f25333870f8749fbfacad8f78ee10603aa6c0c9d1f370676",
-    "uid": 1000008,
-    "username": "Alice"
+  "email": "Alice@gmail.com",
+  "id": 9,
+  "is_active": true,
+  "is_staff": false,
+  "password": "de06629acd0fcd41f25333870f8749fbfacad8f78ee10603aa6c0c9d1f370676",
+  "uid": 1000008,
+  "username": "Alice"
 }
 ```
 
@@ -204,39 +214,45 @@ status_code=200
 [http://backend-ip:8000/users/login/]()
 
 POST 向后端提交登录信息 TODO:暂定只需传递以下字段
+
 ```json
 {
-    "email": "Alice@gmail.com",
-    "password_encrypted": "wevn852",
+  "email": "Alice@gmail.com",
+  "password_encrypted": "wevn852"
 }
 ```
 
 登录成功后端返回
 
 status_code=200
+
 ```json
 {
-    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5NzQ3NTc2LCJpYXQiOjE3Mjk3NDcyNzYsImp0aSI6ImJhMWRhOTMyMWJmYjQyOWVhZTJiNDBmOGFhOTdhZDY2IiwidXNlcl9pZCI6MX0.YKAtBt7fAzr8Q8cenyrJfrCAuMWb41co22okeZ1zuoo",
-    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyOTgzMzY3NiwiaWF0IjoxNzI5NzQ3Mjc2LCJqdGkiOiI3YjdmYzc4YzU1MTc0ODUzOGY1ZGFmMDA2MTk0Y2ExYyIsInVzZXJfaWQiOjF9.TWVHrAkGZlQFEhEGgENiA_V75Fh_EVRcr1kdAiusF_0",
-    "user": {
-        "email": "Alice@gmail.com",
-        "is_active": true,
-        "username": "Alice"
-    }
+  "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5NzQ3NTc2LCJpYXQiOjE3Mjk3NDcyNzYsImp0aSI6ImJhMWRhOTMyMWJmYjQyOWVhZTJiNDBmOGFhOTdhZDY2IiwidXNlcl9pZCI6MX0.YKAtBt7fAzr8Q8cenyrJfrCAuMWb41co22okeZ1zuoo",
+  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyOTgzMzY3NiwiaWF0IjoxNzI5NzQ3Mjc2LCJqdGkiOiI3YjdmYzc4YzU1MTc0ODUzOGY1ZGFmMDA2MTk0Y2ExYyIsInVzZXJfaWQiOjF9.TWVHrAkGZlQFEhEGgENiA_V75Fh_EVRcr1kdAiusF_0",
+  "user": {
+    "email": "Alice@gmail.com",
+    "is_active": true,
+    "username": "Alice"
+  }
 }
 ```
+
 登录失败后端返回
 
 status_code=400
+
 ```json
 {
-    "detail": "Invalid email.邮箱不存在。"
+  "detail": "Invalid email.邮箱不存在。"
 }
 ```
+
 或
+
 ```json
 {
-    "detail": "Invalid password.密码错误。"
+  "detail": "Invalid password.密码错误。"
 }
 ```
 
@@ -244,30 +260,32 @@ status_code=400
 
 [http://backend-ip:8000/users/token/refresh/]()
 
-POST 向后端提交之前获取的refresh
+POST 向后端提交之前获取的 refresh
 
 ```json
 {
-    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyOTgzMzY3NiwiaWF0IjoxNzI5NzQ3Mjc2LCJqdGkiOiI3YjdmYzc4YzU1MTc0ODUzOGY1ZGFmMDA2MTk0Y2ExYyIsInVzZXJfaWQiOjF9.TWVHrAkGZlQFEhEGgENiA_V75Fh_EVRcr1kdAiusF_0"
+  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyOTgzMzY3NiwiaWF0IjoxNzI5NzQ3Mjc2LCJqdGkiOiI3YjdmYzc4YzU1MTc0ODUzOGY1ZGFmMDA2MTk0Y2ExYyIsInVzZXJfaWQiOjF9.TWVHrAkGZlQFEhEGgENiA_V75Fh_EVRcr1kdAiusF_0"
 }
 ```
 
-后端返回更新后的access
+后端返回更新后的 access
 
 status_code=200
+
 ```json
 {
-    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM0MTg4Njg2LCJpYXQiOjE3MzQxODY4MjYsImp0aSI6IjQ5ZTY2MmI2MTI1ODQxMDliYzU3ZGE3OWU3NjE3ZDZkIiwidXNlcl9pZCI6MX0.ftsZ8dpZ6028bRY_FqtBOt1c8BF-B0WR4sBvMXOp6sI",
-    "message": "Access token has been refreshed. access令牌已更新。"
+  "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM0MTg4Njg2LCJpYXQiOjE3MzQxODY4MjYsImp0aSI6IjQ5ZTY2MmI2MTI1ODQxMDliYzU3ZGE3OWU3NjE3ZDZkIiwidXNlcl9pZCI6MX0.ftsZ8dpZ6028bRY_FqtBOt1c8BF-B0WR4sBvMXOp6sI",
+  "message": "Access token has been refreshed. access令牌已更新。"
 }
 ```
 
-若refresh错误，后端返回
+若 refresh 错误，后端返回
 
 status_code=401
+
 ```json
 {
-    "detail": "Token is invalid or expired.令牌无效或已过期。"
+  "detail": "Token is invalid or expired.令牌无效或已过期。"
 }
 ```
 
@@ -275,36 +293,41 @@ status_code=401
 
 [http://backend-ip:8000/users/profile/]()
 
-GET 前端获取当前登录用户的主页信息TODO:
+GET 前端获取当前登录用户的主页信息 TODO:
 
-需要在header中包含**Authorization:"Bearer \<之前获取的access\>"**（没有尖括号）
+需要在 header 中包含**Authorization:"Bearer \<之前获取的 access\>"**（没有尖括号）
 
 #### user-avatar-upload
 
 [http://backend-up:8000/users/profile/update/avatar/]()
 
-POST 数据体中包含头像文件，名称为avatar
+POST 数据体中包含头像文件，名称为 avatar
 
 status_code=200
+
 ```json
 {
-    "avatar": "/media/avatar/user_1000002/008eulSmgy1hkazlfbtz6j32401eoe84-%E5%A4%B4%E5%83%8F.jpg", 
-    "user": "123456"
+  "avatar": "/media/avatar/user_1000002/008eulSmgy1hkazlfbtz6j32401eoe84-%E5%A4%B4%E5%83%8F.jpg",
+  "user": "123456"
 }
 ```
 
-缺少头像文件或文件不是图片类型，则返回400，分别为
+缺少头像文件或文件不是图片类型，则返回 400，分别为
+
 ```json
 {
-    "detail": "The file is not an image. 该文件不是图片。"
+  "detail": "The file is not an image. 该文件不是图片。"
 }
 ```
+
 和
+
 ```json
 {
-    "detail": "No avatar file uploaded. 未上传头像文件。"
+  "detail": "No avatar file uploaded. 未上传头像文件。"
 }
 ```
+
 ### experiment
 
 #### experiment-list
@@ -356,36 +379,41 @@ GET 前端获取所有的实验信息
 
 [http://backend-ip:8000/experiments/\<int:pk\>/]()
 
-GET 获取id为pk的实验详细信息
+GET 获取 id 为 pk 的实验详细信息
 
-headers中包含Authorization，用于判断relationship
-- relationship取值
+headers 中包含 Authorization，用于判断 relationship
+
+- relationship 取值
   - 未登录：unauthorized
   - 创建者：creator
-  - 已申请者：applicant
+  - 已申请者：根据其参与程度细分
+    - to-qualify-user
+    - to-check-result
+    - finish
   - 非创建也未申请：passer-by
 - creator
-  - 现在返回的是用户的username
+  - 现在返回的是用户的 username
 
 status_code=200
+
 ```json
 {
-    "activity_location": "家四",
-    "activity_time": "2024-12-16",
-    "creator": "abc",
-    "description": "hhh",
-    "id": 1,
-    "message": "Find the experiment successfully. 成功找到该实验。",
-    "money_left": "0.00",
-    "money_paid": "0.00",
-    "money_per_person": "0.00",
-    "person_already": 0,
-    "person_wanted": 4,
-    "relationship": "applicant",
-    "status": "open",
-    "time_created": "2024-12-16T15:46:00.454790+08:00",
-    "time_modified": "2024-12-16T15:46:00.454868+08:00",
-    "title": "test1"
+  "activity_location": "家四",
+  "activity_time": "2024-12-16",
+  "creator": "abc",
+  "description": "hhh",
+  "id": 1,
+  "message": "Find the experiment successfully. 成功找到该实验。",
+  "money_left": "0.00",
+  "money_paid": "0.00",
+  "money_per_person": "0.00",
+  "person_already": 0,
+  "person_wanted": 4,
+  "relationship": "xxx",
+  "status": "open",
+  "time_created": "2024-12-16T15:46:00.454790+08:00",
+  "time_modified": "2024-12-16T15:46:00.454868+08:00",
+  "title": "test1"
 }
 ```
 
@@ -396,15 +424,16 @@ status_code=200
 POST 前端向后端发送要创建的实验信息，进行此功能必须先登录
 
 前端发送：
+
 ```json
 {
-    "title": "xxx",
-    "description": "xxx",
-    "person_wanted": 20,
-    "money_per_person": 10,
-    "tags": 13,
-    "activity_time": "2024-01-01",
-    "activity_location": "北京大学",
+  "title": "xxx",
+  "description": "xxx",
+  "person_wanted": 20,
+  "money_per_person": 10,
+  "tags": 13,
+  "activity_time": "2024-01-01",
+  "activity_location": "北京大学"
 }
 ```
 
@@ -413,22 +442,23 @@ POST 前端向后端发送要创建的实验信息，进行此功能必须先登
 后端返回创建后的详细信息：
 
 status_code=200
+
 ```json
 {
-    "creator": 1,
-    "description": "This is another test experiment.",
-    "id": 8,
-    "money_left": "0.00",
-    "money_paid": "0.00",
-    "money_per_person": "10.00",
-    "person_already": 0,
-    "person_wanted": 20,
-    "status": "open",
-    "time_created": "2024-11-13T22:22:54.415083+08:00",
-    "time_modified": "2024-11-13T22:22:54.415104+08:00",
-    "title": "another_test_exp",
-    "activity_time": "2024-01-01",
-    "activity_location": "北京大学",
+  "creator": 1,
+  "description": "This is another test experiment.",
+  "id": 8,
+  "money_left": "0.00",
+  "money_paid": "0.00",
+  "money_per_person": "10.00",
+  "person_already": 0,
+  "person_wanted": 20,
+  "status": "open",
+  "time_created": "2024-11-13T22:22:54.415083+08:00",
+  "time_modified": "2024-11-13T22:22:54.415104+08:00",
+  "title": "another_test_exp",
+  "activity_time": "2024-01-01",
+  "activity_location": "北京大学"
 }
 ```
 
@@ -436,13 +466,14 @@ status_code=200
 
 [http://backend-ip:8000/experiments/search/?keyword=bbb&orderby=ccc&sort=ddd]()
 
-GET 查找keyword中包含bbb且按ccc字段降序或升序排列的实验列表
+GET 查找 keyword 中包含 bbb 且按 ccc 字段降序或升序排列的实验列表
 
-三个关键字可部分使用，keyword默认为空（即包含全部实验），orderby默认按id，sort可选asc或desc，默认为asc。
+三个关键字可部分使用，keyword 默认为空（即包含全部实验），orderby 默认按 id，sort 可选 asc 或 desc，默认为 asc。
 
 后端返回满足搜索条件的实验列表
 
 status_code=200
+
 ```json
 {
     "count": 2,
@@ -496,44 +527,76 @@ POST
 
 [http://backend-ip:8000/relations/volunteers/list/?experiment=xxx]()
 
+GET 设置 xxx 为 experiment id，获取所有已申请该实验的志愿者详细信息。
 
+后端返回志愿者列表
 
+status_code=200
+
+```json
+{
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "user": {
+                "email": "abcd@abcd.com",
+                "username": "abc",
+                "userprofile": {
+                    "id": 1,
+                    "nickname": "user1000001",
+                    "avatar": "/media/avatar/user_0/default_avatar.png",
+                    "point": 200,
+                    "introduction": "Nothing here.",
+                    "user": 1
+                }
+            },
+            "status": "finish"
+        },
+    ...
+    ]
+}
+```
 
 ### other
 
-所有需要登录进行的操作，若未登录或token过期，均返回401_UNAUTHORIZED错误，其中
+所有需要登录进行的操作，若未登录或 token 过期，均返回 401_UNAUTHORIZED 错误，其中
 
 若未登录
 
 status_code=401
+
 ```json
 {
-    "detail": "Authentication required. 该功能需要先登录。"
+  "detail": "Authentication required. 该功能需要先登录。"
 }
 ```
 
 若令牌无效或过期
 
 status_code=401
+
 ```json
 {
-    "code": "token_not_valid",
-    "detail": "此令牌对任何类型的令牌无效",
-    "messages": [
-        {
-            "message": "令牌无效或已过期",
-            "token_class": "AccessToken",
-            "token_type": "access"
-        }
-    ]
+  "code": "token_not_valid",
+  "detail": "此令牌对任何类型的令牌无效",
+  "messages": [
+    {
+      "message": "令牌无效或已过期",
+      "token_class": "AccessToken",
+      "token_type": "access"
+    }
+  ]
 }
 ```
 
-refresh token过期:
+refresh token 过期:
+
 ```json
 {
-    "code": "token_not_valid",
-    "detail": "令牌无效或已过期"
+  "code": "token_not_valid",
+  "detail": "令牌无效或已过期"
 }
 ```
 
@@ -542,14 +605,15 @@ refresh token过期:
 - API：`<host>:<port>/relations/tags/`
 - 方法：GET
 - 返回
+
 ```json
 [
-    {
-        "name": "tag1"
-    },
-    {
-        "name": "tag2"
-    }
+  {
+    "name": "tag1"
+  },
+  {
+    "name": "tag2"
+  }
 ]
 ```
 
@@ -560,22 +624,22 @@ refresh token过期:
 - 请求体：
   ```json
   {
-      "email": "alice@gmail.com",
-      "username": "alice",
-      "old_password_encrypted": "",
-      "new_password_encrypted": ""
+    "email": "alice@gmail.com",
+    "username": "alice",
+    "old_password_encrypted": "",
+    "new_password_encrypted": ""
   }
   ```
   以上字段不必同时存在。例如，如果只更新密码：
   ```json
   {
-      "old_password_encrypted": "",
-      "new_password_encrypted": ""
+    "old_password_encrypted": "",
+    "new_password_encrypted": ""
   }
   ```
-  只更新email：
+  只更新 email：
   ```json
-  { "email": "alice@gmail.com"  }
+  { "email": "alice@gmail.com" }
   ```
 
 ### 实验信息更新
@@ -585,13 +649,13 @@ refresh token过期:
 - 请求体：
   ```json
   {
-      "id": 1,
-      "title": "Exp 1",
-      "description": "desc 1",
-      "person_wanted": 1,
-      "money_per_person": 1,
-      "activity_time": "",
-      "activity_location": ""
+    "id": 1,
+    "title": "Exp 1",
+    "description": "desc 1",
+    "person_wanted": 1,
+    "money_per_person": 1,
+    "activity_time": "",
+    "activity_location": ""
   }
   ```
   除 id 外，以上字段不必同时存在。如果只更新标题：

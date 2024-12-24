@@ -64,7 +64,7 @@ export default {
   },
   created() {
     this.getInfo();
-    this.project.tag='tag1';//test
+    //this.project.tag='tag1';//test
   },
   methods: {
     getInfo() {
