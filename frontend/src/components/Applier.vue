@@ -1,7 +1,8 @@
 <template>
   <div class="applier-item">
-    <h3>{{ applier.username }}</h3>
-    <p>{{ applier.introduction }}</p>
+    <h3>{{ applier.user.username }}</h3>
+    <p>{{ applier.user.userprofile.introduction }}</p>
+    <p><strong>联系方式：</strong>{{ applier.user.email }}</p>
     <p><strong>审核状态：</strong>{{ status_text }}</p>
     <button @click="qualified(applier)">{{ button_text_qualify }}</button>
   </div>
@@ -44,7 +45,7 @@ export default {
     qualified(applier)
     {
       const access=JSON.parse(localStorage.getItem('access'));
-      postQualify(access, this.id, applier.username)
+      postQualify(access, this.id, applier.user.username)
         .catch(error => {
           console.error('Error qualify', error.response.data.detail);
         });
