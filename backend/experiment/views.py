@@ -8,13 +8,14 @@ from django.conf import settings
 
 from appuser.models import User
 from experiment.models import Experiment
-from relation.models import Engagement
+from relation.models import Engagement, Tags, TagsExps
+
 from experiment.serializers import (
     ExperimentSerializer,
     ExperimentDetailSerializer,
     ExperimentCreateSerializer,
 )
-from relation.models import TagsExps
+from relation.serializers import TagsSerializer
 
 from rest_framework import generics
 from django.utils import timezone
@@ -56,6 +57,13 @@ class ExperimentDetail(generics.RetrieveAPIView):
 
         serializer = ExperimentDetailSerializer(experiment)
         response = Response(serializer.data)
+
+        # 获取对应标签并转为二进制
+        tagsexps = TagsExps.objects.filter(experiment=experiment).order_by("id")
+        tags_id = tagsexps.values_list("tags", flat=True)
+        tags = Tags.objects.filter(id__in=tags_id).distinct()
+        serializer_tag = TagsSerializer(tags, many=True)
+        response.data["tags"] = serializer_tag.data
 
         relationship = ""
         user = request.user

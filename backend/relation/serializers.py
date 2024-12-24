@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from relation.models import Engagement, Tags
+from relation.models import Engagement, Tags, TagsExps
 
 from appuser.serializers import UserAndUserProfileSerializer
 
@@ -27,4 +27,10 @@ class VolunteerListSerializer(serializers.ModelSerializer):
 class TagsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tags
+        fields = "__all__"
+
+
+class TagsExpsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TagsExps
         fields = "__all__"
