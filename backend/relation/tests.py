@@ -8,6 +8,8 @@ from relation.models import Engagement
 
 from decimal import Decimal
 
+import inspect
+
 
 # Create your tests here.
 class EngagementTestCase(TestCase):
@@ -118,7 +120,9 @@ class EngagementTestCase(TestCase):
         self.engage2.save()
 
     def test_engage_success(self):
-        # print("\n\033[37;42mtest_engage_success...\033[0m")
+
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
+
         self.client.force_authenticate(user=self.volunteer1)
 
         response = self.client.post(
@@ -128,7 +132,7 @@ class EngagementTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_engage_failed_not_login(self):
-        # print("\n\033[37;42mtest_engage_failed_not_login...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
 
         response = self.client.post(
             reverse("experiment-engage"), {"experiment": self.exp3_open_no_engage.id}
@@ -137,7 +141,7 @@ class EngagementTestCase(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_engage_failed_dont_exist(self):
-        # print("\n\033[37;42mtest_engage_failed_dont_exist...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         self.client.force_authenticate(user=self.volunteer1)
 
         response = self.client.post(reverse("experiment-engage"), {"experiment": 0})
@@ -145,7 +149,7 @@ class EngagementTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_engage_failed_closed(self):
-        # print("\n\033[37;42mtest_engage_failed_closed...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         self.client.force_authenticate(user=self.volunteer1)
 
         response = self.client.post(
@@ -155,7 +159,7 @@ class EngagementTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_engage_failed_engaged(self):
-        # print("\n\033[37;42mtest_engage_failed_engaged...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         self.client.force_authenticate(user=self.volunteer1)
 
         response = self.client.post(
@@ -165,11 +169,39 @@ class EngagementTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_engage_cancel_success(self):  # TODO:
-        # print("\n\033[37;42mtest_engage_cancel_success...\033[0m")
-        return
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
+        self.client.force_authenticate(user=self.volunteer1)
+        response = self.client.post(
+            reverse("experiment-engage-cancel"),
+            {"experiment": self.exp1_open_engaged.id},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.exp1_open_engaged.refresh_from_db()
+        self.assertEqual(self.exp1_open_engaged.person_already, 1)
+
+    def test_engage_cancel_failed_not_login(self):
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
+        response = self.client.post(
+            reverse("experiment-engage-cancel"),
+            {"experiment": self.exp1_open_engaged.id},
+        )
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_engage_cancel_failed_exp_not_exist(self):
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
+        self.client.force_authenticate(user=self.volunteer1)
+        max_id = Experiment.objects.all().aggregate(models.Max("id"))["id__max"]
+        response = self.client.post(
+            reverse("experiment-engage-cancel"),
+            {"experiment": max_id + 1},
+        )
+
+        self.assertEqual(response.status_code, 404)
 
     def test_engage_experiment_search_success(self):
-        # print("\n\033[37;42mtest_engage_experiment_search_success...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         self.client.force_authenticate(user=self.volunteer1)
         response = self.client.get(reverse("experiment-engage-search"))
 
@@ -177,13 +209,13 @@ class EngagementTestCase(TestCase):
         self.assertEqual(response.json().get("count"), 1)
 
     def test_engage_experiment_search_failed_not_login(self):
-        # print("\n\033[37;42mtest_engage_experiment_search_failed_not_login...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         response = self.client.get(reverse("experiment-engage-search"))
 
         self.assertEqual(response.status_code, 401)
 
     def test_qualify_volunteer_success(self):
-        # print("\n\033[37;42mtest_qualify_volunteer_success...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         self.client.force_authenticate(user=self.publisher)
         response = self.client.post(
             reverse("qualify-volunteer"),
@@ -197,7 +229,7 @@ class EngagementTestCase(TestCase):
         self.assertEqual(response.json().get("status"), "to-check-result")
 
     def test_volunteer_list_success(self):
-        # print("\n\033[37;42mtest_volunteer_list_success...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         self.client.force_authenticate(user=self.publisher)
         response = self.client.get(
             reverse("volunteer-list"), {"experiment": self.exp1_open_engaged.id}

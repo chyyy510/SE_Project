@@ -7,6 +7,8 @@ from experiment.models import Experiment
 
 from decimal import Decimal
 
+import inspect
+
 
 # Create your tests here.
 class ExperimentTestCase(TestCase):
@@ -73,27 +75,29 @@ class ExperimentTestCase(TestCase):
 
     def test_experiments_list_success(self):
         response = self.client.get(reverse("experiment-list"))
-        # print("\n\033[37;42mtest successful experiment list...\033[0m")
-        # print(response.content)
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
+        print(response.content)
         self.assertEqual(response.status_code, 200)
 
     def test_experiments_detail_success(self):
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         max_id = Experiment.objects.all().aggregate(models.Max("id"))["id__max"]
         response = self.client.get(reverse("experiment-detail", kwargs={"pk": max_id}))
-        # print("\n\033[37;42mtest successful experiment detail...\033[0m")
-        # print(response.content)
+
+        print(response.content)
         self.assertEqual(response.status_code, 200)
 
     def test_experiments_detail_failed(self):
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         max_id = Experiment.objects.all().aggregate(models.Max("id"))["id__max"]
         response = self.client.get(
             reverse("experiment-detail", kwargs={"pk": max_id + 1})
         )
-        # print("\n\033[37;42mtest experiment detail -dont exist...\033[0m")
-        # print(response.content)
+        print(response.content)
         self.assertEqual(response.status_code, 404)
 
     def test_experiments_create_success(self):
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         publisher = User.objects.get(username="publisher")
         self.client.force_authenticate(user=publisher)
 
@@ -110,6 +114,7 @@ class ExperimentTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_experiments_create_failed_date_format(self):
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         publisher = User.objects.get(username="publisher")
         self.client.force_authenticate(user=publisher)
 
@@ -127,6 +132,7 @@ class ExperimentTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_experiments_create_failed_not_login(self):
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         response = self.client.post(
             reverse("experiment-create"),
             data={
@@ -140,7 +146,7 @@ class ExperimentTestCase(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_experiments_search_success(self):
-        # print("\n\033[37;42mtest successful experiment search...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         response = self.client.get(
             reverse("experiment-search"),
             data={
@@ -151,22 +157,22 @@ class ExperimentTestCase(TestCase):
             },
         ).json()
 
-        # print("\n\033[32mresponse:\033[0m")
-        # print(response)
+        print("\n\033[32mresponse:\033[0m")
+        print(response)
         self.assertEqual(response.get("count"), 2)
 
-        # print("\n\033[32mresults:\033[0m")
+        print("\n\033[32mresults:\033[0m")
         results = response.get("results")
-        # print(results)
+        print(results)
 
-        # print("\n\033[32mfirst item:\033[0m")
+        print("\n\033[32mfirst item:\033[0m")
         item = results[0]
-        # print(item)
+        print(item)
 
         self.assertEqual(item["title"], "tesy")
 
     def test_experiments_create_search_success(self):
-        # print("\n\033[37;42mtest_experiments_create_search_success...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         publisher = User.objects.get(username="publisher")
         self.client.force_authenticate(user=publisher)
         response = self.client.get(reverse("experiment-create-search"))
@@ -180,14 +186,14 @@ class ExperimentTestCase(TestCase):
         self.assertEqual(response.json().get("count"), 2)
 
     def test_experiments_create_search_failed_not_login(self):
-        # print("\n\033[37;42mtest_experiments_create_search_failed_not_login...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
 
         response = self.client.get(reverse("experiment-create-search"))
 
         self.assertEqual(response.status_code, 401)
 
     def test_experiments_close_success(self):
-        # print("\n\033[37;42mtest_experiments_close_success...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         publisher = User.objects.get(username="publisher")
         self.client.force_authenticate(user=publisher)
         max_id = Experiment.objects.filter(status="open").aggregate(models.Max("id"))[
@@ -199,7 +205,7 @@ class ExperimentTestCase(TestCase):
         self.assertEqual(response.json().get("status"), "close")
 
     def test_experiments_close_failed_already_close(self):
-        # print("\n\033[37;42mtest_experiments_close_failed_already_close...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         publisher = User.objects.get(username="publisher")
         self.client.force_authenticate(user=publisher)
         max_id = Experiment.objects.filter(status="close").aggregate(models.Max("id"))[
@@ -210,7 +216,7 @@ class ExperimentTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_experiments_close_failed_not_login(self):
-        # print("\n\033[37;42mtest_experiments_close_failed_not_login...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
 
         max_id = Experiment.objects.filter(status="open").aggregate(models.Max("id"))[
             "id__max"
@@ -220,7 +226,7 @@ class ExperimentTestCase(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_experiments_close_failed_not_exist(self):
-        # print("\n\033[37;42mtest_experiments_close_failed_not_exist...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         publisher = User.objects.get(username="publisher")
         self.client.force_authenticate(user=publisher)
         max_id = Experiment.objects.all().aggregate(models.Max("id"))["id__max"] + 1
@@ -229,7 +235,7 @@ class ExperimentTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_experiments_close_failed_not_accessible(self):
-        # print("\n\033[37;42mtest_experiments_close_failed_not_accessible...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         volunteer = User.objects.get(username="volunteer")
         self.client.force_authenticate(user=volunteer)
         max_id = Experiment.objects.filter(status="open").aggregate(models.Max("id"))[
@@ -240,7 +246,7 @@ class ExperimentTestCase(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_experiments_edit_success(self):
-        # print("\n\033[37;42mtest_experiments_edit_success...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         publisher = User.objects.get(username="publisher")
         self.client.force_authenticate(user=publisher)
         max_id = Experiment.objects.filter(status="open").aggregate(models.Max("id"))[
@@ -263,12 +269,12 @@ class ExperimentTestCase(TestCase):
         self.assertEqual(result.get("title"), "new title")
         self.assertEqual(result["description"], "new description")
         self.assertEqual(result["person_wanted"], 200)
-        self.assertEqual(result["money_per_person"], "30.00")
+        self.assertEqual(result["money_per_person"], 30)
         self.assertEqual(result["activity_time"], "2035-12-12")
         self.assertEqual(result["activity_location"], "China")
 
     def test_experiments_edit_failed_no_id(self):
-        # print("\n\033[37;42mtest_experiments_edit_failed_no_id...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         publisher = User.objects.get(username="publisher")
         self.client.force_authenticate(user=publisher)
 
@@ -276,7 +282,7 @@ class ExperimentTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_experiments_edit_failed_not_login(self):
-        # print("\n\033[37;42mtest_experiments_edit_failed_not_login...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
 
         max_id = Experiment.objects.filter(status="open").aggregate(models.Max("id"))[
             "id__max"
@@ -288,7 +294,7 @@ class ExperimentTestCase(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_experiments_edit_failed_not_creator(self):
-        # print("\n\033[37;42mtest_experiments_edit_failed_not_creator...\033[0m")
+        print("\n\033[37;42m{}...\033[0m".format(inspect.currentframe().f_code.co_name))
         volunteer = User.objects.get(username="volunteer")
         self.client.force_authenticate(user=volunteer)
         max_id = Experiment.objects.filter(status="open").aggregate(models.Max("id"))[

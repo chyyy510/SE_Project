@@ -89,7 +89,7 @@ class EngagementCreate(generics.GenericAPIView):
         return Response(serializer.data)
 
 
-class EngagementCancel(generics.GenericAPIView):  # TODO:
+class EngagementCancel(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         log_print(request.headers, request.data)
 
@@ -115,6 +115,53 @@ class EngagementCancel(generics.GenericAPIView):  # TODO:
                 {"detail": "This experiment had been closed. 该实验已关闭。"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        try:
+            engagement = Engagement.objects.get(experiment=experiment, user=user)
+        except Engagement.DoesNotExist:
+            return Response(
+                {
+                    "detail": "The volunteer didn't engage in the experiment. 该志愿者并未参与此实验。"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Engagement.MultipleObjectsReturned:
+            return Response(
+                {
+                    "detail": "Same volunteer engaged in the experiment multiple times. 该志愿者重复参与了此实验。"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as e:
+            return Response(
+                {
+                    "detail": "An unexpected error occurred. 出现了一个意外的错误。{}".format(
+                        str(e)
+                    )
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        if engagement.status == "to-check-result":
+            return Response(
+                {"detail": "On going, not allowed to cancel. 进行中，不允许取消。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        elif engagement.status == "finish":
+            return Response(
+                {"detail": "Finish, not allowed to cancel. 已完成，不允许取消。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # 可以取消，处理相关影响。TODO:
+
+        engagement.delete()
+        experiment.person_already -= 1
+        experiment.save()
+        serializer = ExperimentDetailSerializer(experiment)
+        response = Response(serializer.data)
+        response["message"] = "Successfully cancel the engagement. 成功取消参与。"
+        return response
 
 
 class ExperimentSearchInEngaged(generics.GenericAPIView):

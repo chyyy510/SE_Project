@@ -1,6 +1,7 @@
 from django.urls import path
 from relation.views import (
     EngagementCreate,
+    EngagementCancel,
     ExperimentSearchInEngaged,
     VolunteerQualify,
     VolunteerList,
@@ -14,6 +15,7 @@ urlpatterns = [
         ExperimentSearchInEngaged.as_view(),
         name="experiment-engage-search",
     ),
+    path("engage/cancel/", EngagementCancel.as_view(), name="experiment-engage-cancel"),
     path(
         "qualify/volunteers/",
         VolunteerQualify.as_view(),
