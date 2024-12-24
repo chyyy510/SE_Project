@@ -242,7 +242,8 @@ class UserProfileAvatarUpload(generics.GenericAPIView):
         fs = FileSystemStorage(location=settings.MEDIA_ROOT)  # 设置文件存储位置
         filename = GeneratePath.generate_path_avatar(request, image.name)
         filename = fs.save(filename, image)  # 保存文件
-        file_url = fs.url(filename)
+        file_url = fs.url(filename).replace(settings.MEDIA_URL, "", 1)
+        log_print(file_url)
 
         profile = UserProfile.objects.get(user=user)
         profile.avatar = file_url

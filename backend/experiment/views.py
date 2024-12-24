@@ -134,6 +134,8 @@ class ExperimentCreate(generics.GenericAPIView):
 
         tags = request.data.get("tags", 0)
 
+        log_print(tags)
+
         def int_to_bitset(n):
             bitset = set()
             position = 1
