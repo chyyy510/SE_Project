@@ -77,9 +77,13 @@ export default {
         getProject(access, this.project.id)
           .then(response => {
             this.project = response.data;
-            if (this.project.relationship == 'applicant')
+            if (this.project.relationship == 'passerby')
+              this.button_text_apply = '申请参与';
+            if (this.project.relationship == 'to-qualify-user')
               this.button_text_apply = '取消申请';
-            else
+            if(this.project.relationship == 'to-check-result')
+              this.button_text_apply = '审核已通过';
+            if(this.project.relationship == 'to-check-result')
               this.button_text_apply = '申请参与';
             console.log("关系", this.project.relationship);
             console.log("文本", this.button_text_apply);
@@ -96,12 +100,28 @@ export default {
     async applyForProject() {
       if (localStorage.getItem("loginFlag") == 'true') {
         const access = JSON.parse(localStorage.getItem('access'));
-        await postApply(access, this.project.id)
-          .catch(error => {
-            console.error('Error Apply:', error);
-            return;
-          });
-        alert('申请成功！');
+        if(this.button_text_apply=='申请参与')
+        {
+          await postApply(access, this.project.id)
+            .catch(error => {
+              console.error('Error Apply:', error);
+              alert('申请失败！',error.response.data.detail);
+              return;
+            });
+            alert('申请成功！');
+        }
+        else
+        {
+          await postDisApply(access, this.project.id)
+            .catch(error => {
+              console.error('Error Apply:', error);
+              alert('取消申请失败！', error.response.data.detail);
+              return;
+            });
+            alert('取消申请成功！');
+        }
+        
+        
         location.reload();
       } else {
         alert("请登录以继续");

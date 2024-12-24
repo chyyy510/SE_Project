@@ -1,5 +1,3 @@
-import { error } from 'shelljs';
-import Header from '../Header.vue';
 import axiosInstance from './index'
 
 const axios = axiosInstance
@@ -52,6 +50,13 @@ export const postApply = (access, experiment) => {
     { withCredentials: true });
 }
 
+export const postDisApply = (access, experiment) => {
+  return axios.post(`${SERVER_URL}/relations/engage/cancel`,
+    { "experiment": experiment },
+    { headers: { 'Authorization': `Bearer ${access}` } },
+    { withCredentials: true });
+}
+
 export const postQualify = (access, experiment, volunteer) => {
   return axios.post(`${SERVER_URL}/relations/qualify/volunteers/`,
     { 'experiment': experiment, 'volunteer': volunteer },
@@ -95,12 +100,12 @@ export const postUserAvatar = (access, data) => {
   
 };
 
-
-export const postProject = (access, mode, id, title, activity_time, activity_location, person_wanted, money_per_person, description) => {
+export const postProject = (access, mode, id, title, activity_time, activity_location, person_wanted, money_per_person, description, tags) => {
   return axios.post(`${SERVER_URL}/experiments/${mode}/`,
     {
       'id': id, 'title': title, 'activity_time': activity_time, 'activity_location': activity_location,
-      'person_wanted': person_wanted, 'money_per_person': money_per_person, 'description': description
+      'person_wanted': person_wanted, 'money_per_person': money_per_person, 'description': description,
+      'tags': tags
     },
     { headers: { 'Authorization': `Bearer ${access}` } },
     { withCredentials: true });

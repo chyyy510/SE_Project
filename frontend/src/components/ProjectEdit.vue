@@ -37,7 +37,7 @@
   </div>
 </template>
 <script>
-import { postEdit, postLaunch, postProject } from './api/api';
+import { getTag, postProject } from './api/api';
 
 export default {
   name: 'ProjectEdit',
@@ -57,17 +57,28 @@ export default {
   },
   data() {
     return {
-      tags: [
-        { name: '标签1' },
-        { name: '标签2' },
-        { name: '标签3' }
-      ],//test
+      tags: [],
       selectedTags: []
     };
   },
+  created() {
+    this.fetchTags();
+  },
   methods: {
+    fetchTags() {
+      /*this.tags = [ { name: '标签1' }, { name: '标签2' }, { name: '标签3' } ];*/
+      getTag()
+        .then(response => {
+          this.tags = response.data;
+          console.log(this.tags);
+        })
+        .catch(error => {
+          console.error('Error fetching tags:', error);
+        });
+    },
     toggleTag(tag) {
       const index = this.selectedTags.indexOf(tag);
+      console.log(index);
       if (index === -1) {
         this.selectedTags.push(tag);
       } else {
@@ -80,7 +91,7 @@ export default {
       const access = JSON.parse(localStorage.getItem('access'));
       try {
         await postProject(access, this.mode, this.project.id, this.project.title, this.project.activity_time, this.project.activity_location,
-          this.project.person_wanted, this.project.money_per_person, this.project.description);//等后端更新post函数：添加提交标签选项
+          this.project.person_wanted, this.project.money_per_person, this.project.description, project.tags);//等后端更新post函数：添加提交标签选项
         alert('项目已提交！');
         this.$router.push('/projects');
       } catch (error) {
