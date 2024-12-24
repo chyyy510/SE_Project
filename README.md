@@ -541,6 +541,7 @@ status_code=200
     "results": [
         {
             "user": {
+                "email": "abcd@abcd.com",
                 "username": "abc",
                 "userprofile": {
                     "id": 1,
