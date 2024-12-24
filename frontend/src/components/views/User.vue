@@ -76,10 +76,10 @@ export default {
     const user_name = this.user.username;
     getUser(user_name)
       .then(response => {
+        console.log(response.data);
         this.user.introduction = response.data.introduction;
-        console.log(response.data.introduction);
-        console.log(this.user.introduction);
-        this.user.avatar=response.data.avatar;
+        this.user.avatar = `http://10.129.241.91:8000${response.data.avatar}`;
+        console.log(this.user.avatar);
         this.user.username = '';
         this.user.username = user_name;
         
@@ -104,6 +104,21 @@ NwIDAQAB
       let data = encryptStr.encrypt(str.toString());  // 进行加密
       return data;
     },
+    refreshUserInfo(Avatar) {
+      const user_name = this.user.username;
+      getUser(user_name)
+        .then(response => {
+          console.log(response.data);
+          this.user.introduction = response.data.introduction;
+          this.user.avatar = Avatar;
+          console.log(this.user.avatar);
+          this.user.username = '';
+          this.user.username = user_name;
+        })
+        .catch(error => {
+          console.error('Error fetching user data:', error);
+        });
+    },
     triggerFileInput() {
       this.$refs.fileInput.click();
     },
@@ -120,7 +135,8 @@ NwIDAQAB
       console.log('FormData内容:', formData.get('avatar')); // 添加日志
       postUserAvatar(access, formData)
           .then(response => {
-            this.user.avatar = response.data.avatar;
+            const Avatar = `http://10.129.241.91:8000${response.data.avatar}`;
+            this.refreshUserInfo(Avatar);
             console.log(this.user.avatar);
           })
           .catch(error => {
