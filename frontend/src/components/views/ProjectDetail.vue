@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { getProject, postApply } from '../api/api';
+import { getProject, postApply, postDisApply } from '../api/api';
 import ProjectEdit from '../ProjectEdit.vue';
 
 export default {
@@ -77,14 +77,14 @@ export default {
         getProject(access, this.project.id)
           .then(response => {
             this.project = response.data;
-            if (this.project.relationship == 'passerby')
+            if (this.project.relationship == 'passer-by')
               this.button_text_apply = '申请参与';
             if (this.project.relationship == 'to-qualify-user')
               this.button_text_apply = '取消申请';
             if(this.project.relationship == 'to-check-result')
               this.button_text_apply = '审核已通过';
-            if(this.project.relationship == 'to-check-result')
-              this.button_text_apply = '申请参与';
+            if(this.project.relationship == 'finish')
+              this.button_text_apply = '已完成';
             console.log("关系", this.project.relationship);
             console.log("文本", this.button_text_apply);
           })
@@ -100,28 +100,25 @@ export default {
     async applyForProject() {
       if (localStorage.getItem("loginFlag") == 'true') {
         const access = JSON.parse(localStorage.getItem('access'));
-        if(this.button_text_apply=='申请参与')
+        if(this.project.relationship=='passer-by')
         {
           await postApply(access, this.project.id)
             .catch(error => {
               console.error('Error Apply:', error);
               alert('申请失败！',error.response.data.detail);
-              return;
             });
             alert('申请成功！');
         }
-        else
+        if(this.project.relationship=='to-qualify-user')
         {
           await postDisApply(access, this.project.id)
             .catch(error => {
+              console.log(error.response.data.detail);
               console.error('Error Apply:', error);
               alert('取消申请失败！', error.response.data.detail);
-              return;
             });
             alert('取消申请成功！');
         }
-        
-        
         location.reload();
       } else {
         alert("请登录以继续");

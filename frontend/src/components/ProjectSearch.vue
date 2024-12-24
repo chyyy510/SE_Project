@@ -95,11 +95,7 @@ export default {
       }
     },
     fetchTags() {
-<<<<<<< HEAD
       /*this.tags = [ { name: '标签1' }, { name: '标签2' }, { name: '标签3' } ];*/
-=======
-      //this.tags = [ { name: '标签1' }, { name: '标签2' }, { name: '标签3' } ];
->>>>>>> 0789e422341c9a14394cdf7fc8802b20de9876d3
       getTag()
         .then(response => {
           this.tags = response.data;

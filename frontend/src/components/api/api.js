@@ -51,7 +51,7 @@ export const postApply = (access, experiment) => {
 }
 
 export const postDisApply = (access, experiment) => {
-  return axios.post(`${SERVER_URL}/relations/engage/cancel`,
+  return axios.post(`${SERVER_URL}/relations/engage/cancel/`,
     { "experiment": experiment },
     { headers: { 'Authorization': `Bearer ${access}` } },
     { withCredentials: true });
