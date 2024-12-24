@@ -19,7 +19,7 @@
     <div v-if="projects.length === 0">没有找到相关活动</div>
     <div v-else>
       <div v-for="project in projects" :key="project.id" @click="showProjectDetail(project)" class="project-item">
-        <Project :project="project" />
+        <Project :project="project" /> 
       </div>
     </div>
   </div>
@@ -95,15 +95,15 @@ export default {
       }
     },
     fetchTags() {
-      this.tags = [ { name: '标签1' }, { name: '标签2' }, { name: '标签3' } ];
-     /* getTag()
+      /*this.tags = [ { name: '标签1' }, { name: '标签2' }, { name: '标签3' } ];*/
+      getTag()
         .then(response => {
           this.tags = response.data;
           console.log(this.tags);
         })
         .catch(error => {
           console.error('Error fetching tags:', error);
-        });*/
+        });
     },
     toggleTag(tag) {
       const index = this.selectedTags.indexOf(tag);
