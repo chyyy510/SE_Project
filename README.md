@@ -393,27 +393,39 @@ headers 中包含 Authorization，用于判断 relationship
   - 非创建也未申请：passer-by
 - creator
   - 现在返回的是用户的 username
+- 可以显示 tags 的详细信息
 
 status_code=200
 
 ```json
 {
+  "id": 2,
+  "title": "test3",
+  "description": "hhh",
+  "status": "open",
+  "creator": "abc",
+  "person_wanted": 4,
+  "person_already": 2,
+  "money_per_person": 1,
+  "money_paid": 0,
+  "money_left": 0,
+  "time_created": "2024-12-16T15:47:25.074657+08:00",
+  "time_modified": "2024-12-17T11:02:35.277523+08:00",
   "activity_location": "家四",
   "activity_time": "2024-12-16",
-  "creator": "abc",
-  "description": "hhh",
-  "id": 1,
+  "image": "/media/experiment/default.jpg",
+  "tags": [
+    {
+      "id": 1,
+      "name": "tag1"
+    },
+    {
+      "id": 2,
+      "name": "tag2"
+    }
+  ],
   "message": "Find the experiment successfully. 成功找到该实验。",
-  "money_left": "0.00",
-  "money_paid": "0.00",
-  "money_per_person": "0.00",
-  "person_already": 0,
-  "person_wanted": 4,
-  "relationship": "xxx",
-  "status": "open",
-  "time_created": "2024-12-16T15:46:00.454790+08:00",
-  "time_modified": "2024-12-16T15:46:00.454868+08:00",
-  "title": "test1"
+  "relationship": "to-qualify-user"
 }
 ```
 
