@@ -173,4 +173,7 @@ button {
 button:hover {
   background-color: #94070a;
 }
+button:finished {
+  cursor: auto;
+}
 </style>

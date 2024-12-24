@@ -91,7 +91,7 @@ export default {
       const access = JSON.parse(localStorage.getItem('access'));
       try {
         await postProject(access, this.mode, this.project.id, this.project.title, this.project.activity_time, this.project.activity_location,
-          this.project.person_wanted, this.project.money_per_person, this.project.description, project.tags);//等后端更新post函数：添加提交标签选项
+          this.project.person_wanted, this.project.money_per_person, this.project.description);//等后端更新post函数：添加提交标签选项
         alert('项目已提交！');
         this.$router.push('/projects');
       } catch (error) {
