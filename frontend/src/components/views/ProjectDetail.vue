@@ -16,7 +16,12 @@
       <button @click="qualifyApplier">审核候选人</button>
     </div>
     <div v-else>
-      <button @click="applyForProject">{{button_text_apply}}</button>
+      <div v-if="project.relationship=='passer-by'||project.relationship=='to-qualify-user'">
+        <button @click="applyForProject">{{button_text_apply}}</button>
+      </div>
+      <div v-else >
+        <button class="applied">{{button_text_apply}}</button>
+      </div>
     </div>
   </div>
   <div v-else>
@@ -173,7 +178,7 @@ button {
 button:hover {
   background-color: #94070a;
 }
-button:finished {
-  cursor: auto;
+button.applied {
+  cursor: default;
 }
 </style>

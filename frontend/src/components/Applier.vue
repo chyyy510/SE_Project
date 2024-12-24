@@ -4,7 +4,12 @@
     <p>{{ applier.user.userprofile.introduction }}</p>
     <p><strong>联系方式：</strong>{{ applier.user.email }}</p>
     <p><strong>审核状态：</strong>{{ status_text }}</p>
-    <button @click="qualified(applier)">{{ button_text_qualify }}</button>
+    <div v-if="applier.status=='finish'">
+      <button class="finish">{{ button_text_qualify }}</button>
+    </div>
+    <div v-else>
+      <button @click="qualified(applier)">{{ button_text_qualify }}</button>
+    </div>
   </div>
 </template>
 
@@ -73,5 +78,9 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+button.finish {
+  cursor: default;
 }
 </style>
