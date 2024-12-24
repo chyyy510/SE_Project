@@ -79,8 +79,10 @@ export default {
         this.user.introduction = response.data.introduction;
         console.log(response.data.introduction);
         console.log(this.user.introduction);
+        this.user.avatar=response.data.avatar;
         this.user.username = '';
         this.user.username = user_name;
+        
       })
       .catch(error => {
         console.error('Error fetching user data:', error);
@@ -106,16 +108,24 @@ NwIDAQAB
       this.$refs.fileInput.click();
     },
     uploadAvatar(event) {
+      const access = JSON.parse(localStorage.getItem('access'));
       const file = event.target.files[0];
+      if (!file) {
+        console.error('未选择文件');
+        return;
+      }
+
       const formData = new FormData();
       formData.append('avatar', file);
+      console.log('FormData内容:', formData.get('avatar')); // 添加日志
       postUserAvatar(access, formData)
-        .then(response => {
-          this.user.avatar = response.data.avatarUrl;
-        })
-        .catch(error => {
-          console.error('上传头像失败', error);
-        });
+          .then(response => {
+            this.user.avatar = response.data.avatar;
+            console.log(this.user.avatar);
+          })
+          .catch(error => {
+            console.error('上传头像失败', error);
+          });
     },
     editField(field) {
       this.editingField = field;
