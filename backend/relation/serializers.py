@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from relation.models import Engagement, Tags
 
+from appuser.serializers import UserAndUserProfileSerializer
+
 
 class EngagementSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,12 +17,11 @@ class EngagementCreateSerializer(serializers.Serializer):
 
 
 class VolunteerListSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source="user.username")
-    # introduction = serializers.CharField(source="user.profile.introduction")
+    user = UserAndUserProfileSerializer()
 
     class Meta:
         model = Engagement
-        fields = ["username", "status"]
+        fields = ["user", "status"]
 
 
 class TagsSerializer(serializers.ModelSerializer):
