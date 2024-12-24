@@ -22,6 +22,7 @@ from django.utils import timezone
 
 from utils.log_print import log_print
 from utils.generate_path import GeneratePath
+from utils.get_set_bits_positions import get_set_bits_positions
 
 # Create your views here.
 
@@ -188,6 +189,8 @@ class ExperimentCreate(generics.GenericAPIView):
 
 class ExperimentSearch(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
+
+        tags = request.GET.get("tags", 0)
         keyword = request.GET.get("keyword", "")
 
         orderby = request.GET.get("orderby", "id")
@@ -200,7 +203,22 @@ class ExperimentSearch(generics.GenericAPIView):
         if sort == "desc":
             orderby = f"-{orderby}"  # 使用负号表示降序排序
 
-        experiments = Experiment.objects.filter(
+        # 先筛符合tag的
+
+        pre_set = set(Experiment.objects.values_list("id", flat=True))
+
+        pos = get_set_bits_positions(int(tags))
+
+        for tag in pos:
+            tagsexps = TagsExps.objects.filter(tags=tag).select_related("experiment")
+            now_set = {instance.experiment.id for instance in tagsexps}
+            log_print(type(pre_set), type(now_set))
+            pre_set = pre_set.intersection(now_set)
+        log_print(pre_set)
+
+        final_set = Experiment.objects.filter(id__in=pre_set)
+
+        experiments = final_set.filter(
             Q(title__contains=keyword) | Q(description__contains=keyword)
         ).order_by(orderby)
 
@@ -248,7 +266,7 @@ class ExperimentSearchInCreated(generics.GenericAPIView):
             )
 
         user = request.user
-
+        tags = request.GET.get("tags", 0)
         keyword = request.GET.get("keyword", "")
 
         orderby = request.GET.get("orderby", "id")
@@ -261,7 +279,22 @@ class ExperimentSearchInCreated(generics.GenericAPIView):
         if sort == "desc":
             orderby = f"-{orderby}"  # 使用负号表示降序排序
         log_print("keyword:", keyword)
-        experiments = Experiment.objects.filter(
+        # 先筛符合tag的
+
+        pre_set = set(Experiment.objects.values_list("id", flat=True))
+
+        pos = get_set_bits_positions(int(tags))
+
+        for tag in pos:
+            tagsexps = TagsExps.objects.filter(tags=tag).select_related("experiment")
+            now_set = {instance.experiment.id for instance in tagsexps}
+            log_print(type(pre_set), type(now_set))
+            pre_set = pre_set.intersection(now_set)
+        log_print(pre_set)
+
+        final_set = Experiment.objects.filter(id__in=pre_set)
+
+        experiments = final_set.filter(
             Q(creator=user)
             & (Q(title__contains=keyword) | Q(description__contains=keyword))
         ).order_by(orderby)
