@@ -34,7 +34,7 @@
         <div class="info-item">
           <div class="info-row">
             <span class="label">个人点数:</span>
-            <span class="value">{{ user.points }}</span>
+            <span class="value">{{ user.point }} 摆币</span>
             <button @click="rechargePoints" class="sort-button">充值</button>
           </div>
         </div>
@@ -45,7 +45,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { updateUserInfo, updateUserPassword, getUser, postUserAvatar } from '../api/api';
 import JSEncrypt from 'jsencrypt';
 
@@ -57,7 +56,7 @@ export default {
         username: '', // 用户名
         email: '', // 邮箱
         introduction: '', // 个人简介
-        points: '' // 个人点数
+        point: '' // 个人点数
       },
       defaultAvatar: require('../../assets/logo.png'),
       editingField: null, // 当前正在编辑的字段
@@ -78,11 +77,11 @@ export default {
       .then(response => {
         console.log(response.data);
         this.user.introduction = response.data.introduction;
-        this.user.avatar = `http://10.129.241.91:8000${response.data.avatar}`;
+        this.user.avatar = `http://10.129.241.91:8000/${response.data.avatar}`;
         console.log(this.user.avatar);
         this.user.username = '';
-        this.user.username = user_name;
-        
+        this.user.username = user_name;//解决异步冲突
+        this.user.point = response.data.point
       })
       .catch(error => {
         console.error('Error fetching user data:', error);
@@ -135,7 +134,7 @@ NwIDAQAB
       console.log('FormData内容:', formData.get('avatar')); // 添加日志
       postUserAvatar(access, formData)
           .then(response => {
-            const Avatar = `http://10.129.241.91:8000${response.data.avatar}`;
+            const Avatar = `http://10.129.241.91:8000/${response.data.avatar}`;
             this.refreshUserInfo(Avatar);
             console.log(this.user.avatar);
           })
