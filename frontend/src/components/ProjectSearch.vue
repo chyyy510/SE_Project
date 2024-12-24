@@ -1,7 +1,9 @@
 <template>
   <div class="project-list">
-    <input type="text" v-model="searchKey" placeholder="搜索关键字..."/>
-    <button @click="fetchProjects()" class="search-button">搜索</button>
+    <div class="search-container">
+      <input type="text" v-model="searchKey" placeholder="搜索关键字..." class="search-input"/>
+      <button @click="fetchProjects()" class="search-button">搜索</button>
+    </div>
     <div class="sort-buttons">
       <div class="sift-buttons">
         <button @click="toggleTagBox" :class="{ 'active': showTagBox }" class="tag-button">按标签筛选</button>
@@ -22,7 +24,6 @@
     </div>
   </div>
 </template>
-
 
 <script>
 import Project from './Project.vue';
@@ -59,48 +60,50 @@ export default {
     this.fetchProjects();
   },
   methods: {
-  fetchProjects() {
-    //const tagVector = this.tags.map(tag => this.selectedTags.includes(tag) ? 1 : 0).join('');
-    console.log(this.searchKey, this.sortOrder,this.sortBy);
-    console.log(this.mode)
-    if(this.mode=='') {
-      getSearch(this.searchKey, this.sortBy, this.sortOrder)
-        .then(response => {
-          this.projects = response.data.results;
-        })
-        .catch(error => {
-          console.error('Error fetching projects:', error);
-        });
-    }
-    else {
-      const access=JSON.parse(localStorage.getItem('access'));
-      if(this.mode=='create')
-        getLaunchSearch(access, this.searchKey, this.sortBy, this.sortOrder)
+    fetchProjects() {
+      //this.projects = [{ id: '1', title: '项目标题1', description: '项目描述1', date: '2024-12-22', location: '北京', money_per_person: '100元', person_applied: '5', person_wanted: '10', tag: '测试标签1'  }, 
+      //{ id: '2', title: '项目标题2', description: '项目描述2', date: '2024-12-23', location: '上海', money_per_person: '200元', person_applied: '3', person_wanted: '8', tag: '测试标签2'  }]; 
+      
+      console.log(this.searchKey, this.sortOrder, this.sortBy);
+      console.log(this.mode);
+      if (this.mode == '') {
+        getSearch(this.searchKey, this.sortBy, this.sortOrder)
           .then(response => {
             this.projects = response.data.results;
           })
           .catch(error => {
             console.error('Error fetching projects:', error);
           });
-      if(this.mode=='engage')
-        getApplySearch(access, this.searchKey, this.sortBy, this.sortOrder)
-          .then(response => {
-            this.projects = response.data.results;
-          })
-          .catch(error => {
-            console.error('Error fetching projects:', error);
-          });
-    }
+      } else {
+        const access = JSON.parse(localStorage.getItem('access'));
+        if (this.mode == 'create')
+          getLaunchSearch(access, this.searchKey, this.sortBy, this.sortOrder)
+            .then(response => {
+              this.projects = response.data.results;
+            })
+            .catch(error => {
+              console.error('Error fetching projects:', error);
+            });
+        if (this.mode == 'engage')
+          getApplySearch(access, this.searchKey, this.sortBy, this.sortOrder)
+            .then(response => {
+              this.projects = response.data.results;
+            })
+            .catch(error => {
+              console.error('Error fetching projects:', error);
+            });
+      }
     },
     fetchTags() {
-      getTag()
+      this.tags = [ { name: '标签1' }, { name: '标签2' }, { name: '标签3' } ];
+     /* getTag()
         .then(response => {
           this.tags = response.data;
           console.log(this.tags);
         })
         .catch(error => {
           console.error('Error fetching tags:', error);
-      });
+        });*/
     },
     toggleTag(tag) {
       const index = this.selectedTags.indexOf(tag);
@@ -123,7 +126,7 @@ export default {
       this.fetchProjects();
     },
     showProjectDetail(project) {
-      this.$router.push({path: `/projects/${project.id}`,params:{projectId: project.id}});
+      this.$router.push({ path: `/projects/${project.id}`, params: { projectId: project.id } });
     },
     launchProject() {
       this.$router.push('/projects/launch');
@@ -141,13 +144,24 @@ export default {
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-input[type="text"] {
-  width: 100%;
-  padding: 10px;
+.search-container {
+  display: flex;
   margin-bottom: 20px;
+}
+.search-input {
+  flex: 1;
+  padding: 10px;
   box-sizing: border-box;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 5px 0 0 5px;
+}
+.search-button {
+  padding: 10px 20px;
+  background-color: #94070a;
+  color: white;
+  border: none;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
 }
 .sort-buttons {
   display: flex;
@@ -201,13 +215,5 @@ input[type="text"] {
 }
 .project-item:hover {
   background-color: #f0f0f0;
-}
-.search-button {
-  padding: 10px 20px;
-  background-color: #94070a;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
 }
 </style>
