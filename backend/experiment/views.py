@@ -79,10 +79,31 @@ class ExperimentDetail(generics.RetrieveAPIView):
                 relationship = "creator"
             else:
                 # 判断是否已参加
-                if Engagement.objects.filter(experiment=experiment, user=user).exists():
-                    relationship = "applicant"
-                else:
+                try:
+                    engagement = Engagement.objects.get(
+                        experiment=experiment, user=user
+                    )
+                except Engagement.DoesNotExist:
                     relationship = "passer-by"
+                    response.data["relationship"] = relationship
+
+                    return response
+
+                except Engagement.MultipleObjectsReturned:
+                    return Response(
+                        {"detail": "Multiple engagements. 该用户重复参与了该实验。"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                except Exception as e:
+                    return Response(
+                        {
+                            "detail": "An unexpected error occurred. 出现了一个意外的错误。{}".format(
+                                str(e)
+                            )
+                        },
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    )
+                relationship = engagement.status
 
         response.data["relationship"] = relationship
 

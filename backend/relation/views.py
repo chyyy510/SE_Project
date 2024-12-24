@@ -258,6 +258,15 @@ class VolunteerQualify(generics.GenericAPIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        except Exception as e:
+            return Response(
+                {
+                    "detail": "An unexpected error occurred. 出现了一个意外的错误。{}".format(
+                        str(e)
+                    )
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
         log_print(engagement.status)
 
         match engagement.status:
