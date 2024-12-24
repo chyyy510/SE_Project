@@ -2,7 +2,19 @@
 
 ## 后端的运行
 
-需要安装 MySQL，创建 `pku_backend` 数据库。在项目根目录创建 `.env` 文件写入数据库密码。
+### 配置文件
+
+需要安装 MySQL，创建 `pku_backend` 数据库。在项目根目录创建 `.env` 文件写入数据库密码。`.env` 的示例如下：
+
+```ini
+DATABASE_NAME=pku_backend
+DATABASE_HOST=127.0.0.1
+DATABASE_PORT=3306
+DATABASE_PASSWORD=123456
+DATABASE_USERNAME=root
+PRIVATE_KEY_PATH=<path to private key>
+LOGFILE_PATH=<path to log>
+```
 
 如果你不想安装 MySQL 可以直接连接至校园网内的测试数据库。在 `backend/backend/settings.py` 修改：
 
@@ -19,43 +31,59 @@ DATABASES = {
 }
 ```
 
-### Windows
+### 依赖项的安装
+
+#### 除了 `mysqlclient` 的所有依赖项：
 
 ```bash
-pip install pycryptodomex django djangorestframework djangorestframework-simplejwt django-cors-headers Pillow python-decouple mysqlclient
+pip install pycryptodomex django djangorestframework djangorestframework-simplejwt django-cors-headers Pillow python-decouple
 ```
+
+如果你使用 Linux（仅在 Ubuntu 24.04 测试），建议使用虚拟环境：
+
+```bash
+sudo apt install python3-pip python3.12-venv
+python3 -m venv .venv
+source .venv/bin/activate # 假设使用 bash/zsh
+```
+
+#### 安装 `mysqlclient`
+
+首先尝试：
+
+```bash
+pip install mysqlclient
+```
+如果安装失败，则请见下方的从源代码构建 `mysqlclient` 指南。
+
+##### Windows
+
+1. 安装 `https://mariadb.com/downloads/connectors/`
+2. 设置 `MYSQLCLIENT_CONNECTOR`。如果你安装的是 64 位版本 MariaDB C Connector，且使用 PowerShell：
+
+```pwsh
+$env:MYSQLCLIENT_CONNECTOR='C:\Program Files\MariaDB\MariaDB Connector C 64-bit\'
+```
+
+此时再尝试：
+
+```bash
+pip install mysqlclient
+```
+
+##### Linux（仅在 Ubuntu 24.04 测试）
+
+```bash
+sudo apt install pkg-config python3-dev default-libmysqlclient-dev build-essential libssl-dev
+export MYSQLCLIENT_CFLAGS=$(mysql_config --cflags)
+export MYSQLCLIENT_LDFLAGS=$(mysql_config --libs)
+pip install mysqlclient
+```
+
+### 启动服务器
 
 ```bash
 python manage.py runserver 0.0.0.0:8000
-```
-
-### Linux（仅在 Ubuntu 24.04 测试）
-
-在你的**虚拟环境**中：
-
-```bash
-pip install pycryptodomex django djangorestframework djangorestframework-simplejwt django-cors-headers Pillow python-decouple pymysql
-```
-
-如果没有 `pip`，可以 `sudo apt install python3-pip` 安装。然后 `sudo apt install python<版本>-venv` 安装 `venv`（`<版本>` 替换为 Python 版本，对于 Ubuntu 24.04 来说是 3.12）。
-
-创建虚拟环境，`<虚拟环境路径>` 替换为你想要的路径。一般情况下是 `.venv`：
-
-```bash
-python3 -m venv <虚拟环境路径>
-```
-
-接下来激活虚拟环境，如果你用 bash/zsh 可以：
-
-```bash
-source .venv/bin/activate
-```
-
-最后：
-
-
-```bash
-python3 manage.py runserver 0.0.0.0:8000
 ```
 
 ## 数据传输标准
