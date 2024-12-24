@@ -24,7 +24,8 @@ export default {
   },
 	methods: {
 		pay() {
-
+      alert("充！值！成！功！")
+      this.$router.push('/user');
 		}
 	}
 };
