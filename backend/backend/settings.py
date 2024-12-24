@@ -27,8 +27,8 @@ SECRET_KEY = "django-insecure-vhyiojdg^-*uof^ib4e@xf8xyfi@bi3mx)$udk&u8en_v+2!48
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),  # 访问令牌的过期时间
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # 刷新令牌的过期时间
+    "ACCESS_TOKEN_LIFETIME": None,  # 访问令牌的过期时间
+    "REFRESH_TOKEN_LIFETIME": None,  # 刷新令牌的过期时间
     #    "ROTATE_REFRESH_TOKENS": False,  # 是否轮换刷新令牌
     #    "BLACKLIST_AFTER_ROTATION": True,  # 刷新令牌过期后是否将其加入黑名单
     #   "ALGORITHM": "HS256",  # 使用的加密算法
