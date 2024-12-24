@@ -60,7 +60,7 @@ class UserProfile(models.Model):
     nickname = models.CharField(max_length=128)
     avatar = models.ImageField(
         upload_to=GeneratePath.generate_path_avatar,
-        default="avatar/user_0/default_avatar.png",
+        default="media/avatar/user_0/default_avatar.png",
     )
     point = models.IntegerField(
         validators=[MinValueValidator(0)]
