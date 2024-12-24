@@ -445,7 +445,9 @@ class ExperimentImageUpload(generics.GenericAPIView):
 
         fs = FileSystemStorage(location=settings.MEDIA_ROOT)  # 设置文件存储位置
         filename = GeneratePath.generate_path_experiment(experiment, image.name)
-        filename = fs.save(filename, image)  # 保存文件
+        filename = fs.save(filename, image).replace(
+            settings.MEDIA_URL, "", 1
+        )  # 保存文件
         file_url = fs.url(filename)
 
         experiment.image = file_url
