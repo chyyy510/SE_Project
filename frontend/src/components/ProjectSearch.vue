@@ -85,7 +85,7 @@ export default {
     } else {
       const access = JSON.parse(localStorage.getItem('access'));
       if (this.mode == 'create')
-        getLaunchSearch(access, this.searchKey, this.sortBy, this.sortOrder, url)
+        getLaunchSearch(access, this.searchKey, this.sortBy, this.sortOrder, url,this.index)
           .then(response => {
             this.projects = response.data.results;
             this.previous = response.data.previous;
@@ -95,7 +95,7 @@ export default {
             console.error('Error fetching projects:', error);
           });
       if (this.mode == 'engage')
-        getApplySearch(access, this.searchKey, this.sortBy, this.sortOrder, url)
+        getApplySearch(access, this.searchKey, this.sortBy, this.sortOrder, url,this.index)
           .then(response => {
             this.projects = response.data.results;
             this.previous = response.data.previous;
@@ -104,8 +104,8 @@ export default {
           .catch(error => {
             console.error('Error fetching projects:', error);
           });
-    }
-  },
+      }
+    },
   fetchPreviousPage() {
     if (this.previous) {
       this.fetchProjects(this.previous);
