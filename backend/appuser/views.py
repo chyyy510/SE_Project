@@ -18,6 +18,7 @@ from utils.generate_info import GenerateInfo
 from utils.generate_path import GeneratePath
 from utils.log_print import log_print
 
+from utils.payment import Payment
 
 # Create your views here.
 
@@ -320,3 +321,91 @@ class UserProfileEdit(generics.GenericAPIView):
                 {"detail": "Format error. 有内容不符合格式。"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+class UserPay(generics.GenericAPIView):
+
+    def post(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required. 该功能需要先登录。"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        user = request.user
+
+        amount = request.data.get("amount")  # TODO:积分数吧，限制为整数
+
+        if not amount.isdigit():
+            return Response(
+                {"detail": "Amount must be an integer"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        amount = int(amount)
+        if amount <= 0:
+            return Response(
+                {"detail": "Invalid amount. 金额不合法。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # 直接支付成功，point增加
+        profile = UserProfile.objects.get(user=user)
+        profile.point += amount
+        profile.save()
+
+        return Response(
+            {"message": "Pay successfully. 成功充值。"}, status=status.HTTP_200_OK
+        )
+
+        # 以下是调用支付宝接口，暂时不管TODO:
+        order_id = GenerateInfo.generate_trade_no(user.id)
+
+        try:
+            pay_url = Payment.create_recharge_order(
+                amount=amount / 100, order_id=order_id
+            )
+        except:
+            return Response(
+                {"detail": "Payment error. 支付出错。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response(
+            {"message": "Redirecting to Alipay payment page"},
+            status=302,
+            headers={"Location": pay_url},
+        )
+
+
+class UserPayCallback(generics.GenericAPIView):
+
+    def post(self, request, *args, **kwargs):
+        data = request.POST.dict()  # 接收支付宝 POST 数据
+
+        # 验证签名
+        if not Payment.handle_alipay_callback(data):
+            return Response("fail")  # 签名验证失败，返回 'fail'
+        # 签名验证通过，处理具体业务逻辑
+        trade_status = data.get("trade_status")  # 获取交易状态
+        order_id = data.get("out_trade_no")  # 获取订单号
+
+        if trade_status == "TRADE_SUCCESS":
+            # 交易支付成功，更新订单状态为已支付
+            print(f"订单 {order_id} 支付成功！")
+            # TODO: 更新数据库订单状态
+        elif trade_status == "TRADE_FINISHED":
+            # 交易已完成，不可退款
+            print(f"订单 {order_id} 交易已完成！")
+            # TODO: 处理完成状态的订单逻辑
+        elif trade_status == "WAIT_BUYER_PAY":
+            # 交易创建，等待买家付款
+            print(f"订单 {order_id} 等待付款")
+        elif trade_status == "TRADE_CLOSED":
+            # 交易关闭
+            print(f"订单 {order_id} 已关闭！")
+        else:
+            print(f"订单 {order_id} 未知状态: {trade_status}")
+
+        return Response("success")  # 必须返回 'success'，否则支付宝会重试回调

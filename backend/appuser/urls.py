@@ -8,6 +8,8 @@ from appuser.views import (
     UserProfileDetail,
     UserProfileAvatarUpload,
     UserProfileEdit,
+    UserPay,
+    UserPayCallback,
 )
 
 urlpatterns = [
@@ -23,4 +25,6 @@ urlpatterns = [
         name="avatar-upload",
     ),
     path("profile/edit/", UserProfileEdit.as_view(), name="user-profile-edit"),
+    path("pay/", UserPay.as_view(), name="user-pay"),
+    path("pay-callback/", UserPayCallback.as_view(), name="user-pay-callback"),
 ]
