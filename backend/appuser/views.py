@@ -18,7 +18,7 @@ from utils.generate_info import GenerateInfo
 from utils.generate_path import GeneratePath
 from utils.log_print import log_print
 
-# from utils.payment import Payment
+from utils.payment import Payment
 
 # Create your views here.
 
@@ -361,8 +361,7 @@ class UserPay(generics.GenericAPIView):
 
         # 以下是调用支付宝接口，暂时不管TODO:
 
-
-"""        order_id = GenerateInfo.generate_trade_no(user.id)
+        """order_id = GenerateInfo.generate_trade_no(user.id)
 
         try:
             pay_url = Payment.create_recharge_order(
@@ -415,3 +414,45 @@ class UserPayCallback(generics.GenericAPIView):
 
         return Response("success")  # 必须返回 'success'，否则支付宝会重试回调
 """
+
+
+class UserCashOut(generics.GenericAPIView):
+
+    def post(self, request, *args, **kwargs):
+        log_print(request.headers, request.data)
+        if isinstance(request.user, AnonymousUser):
+            return Response(
+                {"detail": "Authentication required. 该功能需要先登录。"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        user = request.user
+
+        amount = request.data.get("amount")  # TODO:积分数吧，限制为整数
+
+        if not amount.isdigit():
+            return Response(
+                {"detail": "Amount must be an integer"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        amount = int(amount)
+        if amount <= 0:
+            return Response(
+                {"detail": "Invalid amount. 金额不合法。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # 直接成功
+        profile = UserProfile.objects.get(user=user)
+        if amount > profile.point:
+            return Response(
+                {"detail": "Invalid amount. 金额不合法。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        profile.point -= amount
+        profile.save()
+
+        return Response(
+            {"message": "Cash out successfully. 成功提现。"}, status=status.HTTP_200_OK
+        )
