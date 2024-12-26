@@ -8,6 +8,7 @@
           <input type="number" id="number" v-model="pay_amount" required />
         </div>
         <button type="submit">充值</button>
+        <button type="submit">提现</button>
       </form>
     </div>
 </template>
@@ -24,7 +25,6 @@ export default {
   },
 	methods: {
 		pay() {
-      alert("充！值！成！功！")
       this.$router.push('/user');
 		}
 	}
@@ -61,6 +61,8 @@ export default {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  margin-bottom:5px;
+  
   }
   button:hover {
     background-color: #0056b3;
