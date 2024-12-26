@@ -483,6 +483,20 @@ class ExperimentEdit(generics.GenericAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        tags = request.data.get("tags", 0)
+
+        tags = int(tags)
+
+        def int_to_bitset(n):
+            bitset = set()
+            position = 1
+            while n > 0:
+                if n & 1:
+                    bitset.add(position)
+                n >>= 1
+                position += 1
+            return bitset
+
         try:
             Experiment.objects.filter(id=id).update(**attri)
             profile.point -= total_money_delta
@@ -496,13 +510,28 @@ class ExperimentEdit(generics.GenericAPIView):
             response.data["message"] = (
                 "Experiment info edited successfully. 实验信息更新成功。"
             )
-            return response
 
         except Exception:
             return Response(
                 {"detail": "Format error. 有内容不符合格式。"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        # tags
+        tags_set = int_to_bitset(tags)
+
+        for tagsexps in TagsExps.objects.filter(experiment=experiment):
+            if tagsexps.id not in tags_set:
+                tagsexps.delete()
+        for tag in tags_set:
+            real_tag = Tags.objects.get(id=tag)
+            if not TagsExps.objects.filter(
+                tags=real_tag, experiment=experiment
+            ).exists():
+                tagsexps = TagsExps(tags=real_tag, experiment=experiment)
+                tagsexps.save()
+
+        return response
 
 
 class ExperimentImageUpload(generics.GenericAPIView):
