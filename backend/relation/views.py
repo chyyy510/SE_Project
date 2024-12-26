@@ -179,7 +179,7 @@ class ExperimentSearchInEngaged(generics.GenericAPIView):
         experiment_ids = engagements.values_list("experiment_id", flat=True).distinct()
 
         # 根据 experiment_id 查询对应的 Experiment 信息
-        experiments = Experiment.objects.filter(id__in=experiment_ids)
+        # experiments = Experiment.objects.filter(id__in=experiment_ids)
         tags = request.GET.get("tags", 0)
         keyword = request.GET.get("keyword", "")
 
@@ -205,7 +205,9 @@ class ExperimentSearchInEngaged(generics.GenericAPIView):
             pre_set = pre_set.intersection(now_set)
         log_print(pre_set)
 
-        final_set = Experiment.objects.filter(id__in=pre_set)
+        final_set = Experiment.objects.filter(
+            Q(id__in=pre_set) & Q(id__in=experiment_ids)
+        )
         experiments = final_set.filter(
             Q(title__contains=keyword) | Q(description__contains=keyword)
         ).order_by(orderby)
