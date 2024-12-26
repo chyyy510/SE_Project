@@ -20,6 +20,7 @@ from django.contrib.auth.models import AnonymousUser
 from rest_framework import generics
 
 from utils.log_print import log_print
+from utils.get_set_bits_positions import get_set_bits_positions
 
 # Create your views here.
 
@@ -179,7 +180,7 @@ class ExperimentSearchInEngaged(generics.GenericAPIView):
 
         # 根据 experiment_id 查询对应的 Experiment 信息
         experiments = Experiment.objects.filter(id__in=experiment_ids)
-
+        tags = request.GET.get("tags", 0)
         keyword = request.GET.get("keyword", "")
 
         orderby = request.GET.get("orderby", "id")
@@ -191,7 +192,20 @@ class ExperimentSearchInEngaged(generics.GenericAPIView):
 
         if sort == "desc":
             orderby = f"-{orderby}"  # 使用负号表示降序排序
+        # 先筛符合tag的
 
+        pre_set = set(Experiment.objects.values_list("id", flat=True))
+
+        pos = get_set_bits_positions(int(tags))
+
+        for tag in pos:
+            tagsexps = TagsExps.objects.filter(tags=tag).select_related("experiment")
+            now_set = {instance.experiment.id for instance in tagsexps}
+            log_print(type(pre_set), type(now_set))
+            pre_set = pre_set.intersection(now_set)
+        log_print(pre_set)
+
+        final_set = Experiment.objects.filter(id__in=pre_set)
         experiments = experiments.filter(
             Q(title__contains=keyword) | Q(description__contains=keyword)
         ).order_by(orderby)
