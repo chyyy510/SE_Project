@@ -475,7 +475,7 @@ class ExperimentEdit(generics.GenericAPIView):
         ) * money_per_person - (
             experiment.person_wanted - experiment.person_already
         ) * experiment.money_per_person
-        print(total_money_delta)
+        log_print(total_money_delta)
         profile = UserProfile.objects.get(user=user)
         if total_money_delta > profile.point:
             return Response(
