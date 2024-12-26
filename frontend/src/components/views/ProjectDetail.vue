@@ -109,8 +109,7 @@ export default {
               this.button_text_apply = '审核已通过';
             if(this.project.relationship == 'finish')
               this.button_text_apply = '已完成';
-            console.log("关系", this.project.relationship);
-            console.log("文本", this.button_text_apply);
+            console.log("Tag", this.project.tags);
           })
           .catch(error => {
             console.error('Error fetching project:', error);

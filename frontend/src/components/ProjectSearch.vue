@@ -14,15 +14,17 @@
       </div>
     </div>
     <div v-if="showTagBox" class="tag-box">
-      <div v-for="tag in tags">
-        <span  @click="toggleTag(tag)" :class="{ selected: selectedTags.includes(tag) }">{{ tag.name }}</span>
-      </div>
+      <span v-for="tag in tags" @click="toggleTag(tag)" :class="{ selected: selectedTags.includes(tag) }">{{ tag.name }}</span>
     </div>
     <div v-if="projects.length === 0">没有找到相关活动</div>
     <div v-else>
       <div v-for="project in projects" :key="project.id" @click="showProjectDetail(project)" class="project-item">
         <Project :project="project" /> 
       </div>
+    </div>
+    <div class="pagination-buttons">
+      <button @click="fetchPreviousPage" :disabled="!previous" class="pagination-button">上一页</button>
+      <button @click="fetchNextPage" :disabled="!next" class="pagination-button">下一页</button>
     </div>
   </div>
 </template>
@@ -47,6 +49,8 @@ export default {
   data() {
     return {
       searchKey: '',
+      previous: '',
+      next: '',
       projects: [],
       tags: [],
       selectedTags: [],
@@ -62,42 +66,57 @@ export default {
     this.fetchProjects();
   },
   methods: {
-    fetchProjects() {
-      //this.projects = [{ id: '1', title: '项目标题1', description: '项目描述1', date: '2024-12-22', location: '北京', money_per_person: '100元', person_applied: '5', person_wanted: '10', tag: '测试标签1'  }, 
-      //{ id: '2', title: '项目标题2', description: '项目描述2', date: '2024-12-23', location: '上海', money_per_person: '200元', person_applied: '3', person_wanted: '8', tag: '测试标签2'  }]; 
-      console.error()
-      console.log(this.searchKey, this.sortOrder, this.sortBy);
-      console.log(this.mode);
-      if (this.mode == '') {
-        getSearch(this.searchKey, this.sortBy, this.sortOrder)
+  fetchProjects(url = null) {
+    console.error()
+    console.log(this.searchKey, this.sortOrder, this.sortBy);
+    console.log(this.mode);
+    if (this.mode == '') {
+      getSearch(this.searchKey, this.sortBy, this.sortOrder, url)
+        .then(response => {
+          this.projects = response.data.results;
+          this.previous = response.data.previous;
+          this.next = response.data.next;
+          console.log(response.data.previous, response.data.next);
+        })
+        .catch(error => {
+          console.error('Error fetching projects:', error);
+        });
+    } else {
+      const access = JSON.parse(localStorage.getItem('access'));
+      if (this.mode == 'create')
+        getLaunchSearch(access, this.searchKey, this.sortBy, this.sortOrder, url)
           .then(response => {
             this.projects = response.data.results;
+            this.previous = response.data.previous;
+            this.next = response.data.next;
           })
           .catch(error => {
             console.error('Error fetching projects:', error);
           });
-      } else {
-        const access = JSON.parse(localStorage.getItem('access'));
-        if (this.mode == 'create')
-          getLaunchSearch(access, this.searchKey, this.sortBy, this.sortOrder)
-            .then(response => {
-              this.projects = response.data.results;
-            })
-            .catch(error => {
-              console.error('Error fetching projects:', error);
-            });
-        if (this.mode == 'engage')
-          getApplySearch(access, this.searchKey, this.sortBy, this.sortOrder)
-            .then(response => {
-              this.projects = response.data.results;
-            })
-            .catch(error => {
-              console.error('Error fetching projects:', error);
-            });
-      }
-    },
+      if (this.mode == 'engage')
+        getApplySearch(access, this.searchKey, this.sortBy, this.sortOrder, url)
+          .then(response => {
+            this.projects = response.data.results;
+            this.previous = response.data.previous;
+            this.next = response.data.next;
+          })
+          .catch(error => {
+            console.error('Error fetching projects:', error);
+          });
+    }
+  },
+  fetchPreviousPage() {
+    if (this.previous) {
+      this.fetchProjects(this.previous);
+    }
+  },
+  fetchNextPage() {
+    if (this.next) {
+      this.fetchProjects(this.next);
+    }
+  },
+
     fetchTags() {
-      /*this.tags = [ { name: '标签1' }, { name: '标签2' }, { name: '标签3' } ];*/
       getTag()
         .then(response => {
           this.tags = response.data;
@@ -217,5 +236,22 @@ export default {
 }
 .project-item:hover {
   background-color: #f0f0f0;
+}
+.pagination-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.pagination-button {
+  padding: 10px 20px;
+  background-color: #94070a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.pagination-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 </style>

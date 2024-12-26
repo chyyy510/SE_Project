@@ -8,11 +8,6 @@
     <p><strong>地点：</strong>{{ project.activity_location }}</p>
     <p><strong>人均报酬：</strong>{{ project.money_per_person }}</p>
     <p><strong>人数：</strong>{{ project.person_already }}/{{ project.person_wanted }}</p>
-    <div class="tag-box">
-      <div v-for="tag in tags">
-        <span>{{ tag.name }}</span>
-      </div>
-    </div>
   </div>
 </template>
 

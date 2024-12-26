@@ -15,10 +15,10 @@ export const postRegister = (email, username, password) => {
     { withCredentials: true });
 }
 
-export const getSearch = (key, orderby, sort) => {
-  return axios.get(`${SERVER_URL}/experiments/search/?keyword=${key}&orderby=${orderby}&sort=${sort}`,
-    { withCredentials: true });
-}
+export const getSearch = (key, orderby, sort, url = null) => {
+  const requestUrl = url || `${SERVER_URL}/experiments/search/?keyword=${key}&orderby=${orderby}&sort=${sort}`;
+  return axios.get(requestUrl, { withCredentials: true });
+};
 
 export const getLaunchSearch = (access, key, orderby, sort) => {
   return axios.get(`${SERVER_URL}/experiments/create/search/?keyword=${key}&orderby=${orderby}&sort=${sort}`,
@@ -112,10 +112,8 @@ export const postProjectImage = (access, data) => {
 export const postProject = (access, mode, id, title, activity_time, activity_location, 
                             person_wanted, money_per_person, description, tags) => {
   return axios.post(`${SERVER_URL}/experiments/${mode}/`,
-    {
-      'id': id, 'title': title, 'activity_time': activity_time, 'activity_location': activity_location,
-      'person_wanted': person_wanted, 'money_per_person': money_per_person, 'description': description, 'tags': tags
-    },
+    {'id': id, 'title': title, 'activity_time': activity_time, 'activity_location': activity_location,
+      'person_wanted': person_wanted, 'money_per_person': money_per_person, 'description': description, 'tags': tags},
     { headers: { 'Authorization': `Bearer ${access}` } },
     { withCredentials: true });
 }
