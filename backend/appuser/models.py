@@ -67,3 +67,13 @@ class UserProfile(models.Model):
     )  # 积分，发布实验时充值，完成实验获取，100:1兑换rmb
 
     introduction = models.TextField(default="Nothing here.")
+
+
+class UserOrder(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE
+    )  # 一个订单未结束则不允许继续？
+    status_choice = {("finish", "已完成"), ("ongoing", "进行中")}
+    status = models.CharField(max_length=12, choices=status_choice)
+    time_created = models.DateTimeField(auto_now=True)  # 5min未完成也标记成结束
+    count = models.IntegerField(validators=[MinValueValidator(0)])  # 当前是第几个订单
