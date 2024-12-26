@@ -76,8 +76,10 @@ class ExperimentDetail(generics.RetrieveAPIView):
                 {"detail": "The experiment creator doesn't exist. 实验创建者不存在。"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        avatar = creator.userprofile.avatar.url
 
         response.data["message"] = "Find the experiment successfully. 成功找到该实验。"
+        response.data["avatar"] = avatar
 
         if isinstance(user, AnonymousUser):
             relationship = "unauthorized"
