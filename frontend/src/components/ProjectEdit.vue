@@ -34,7 +34,11 @@
       </div>
       <div class="form-group">
         <label for="image">添加图片</label>
-        <input type="file" id="image" @change="handleImageUpload" />
+        <div class="file-input-container">
+          <input type="file" id="image" @change="handleImageUpload" class="file-input" />
+          <label for="image" class="file-input-label">选择文件</label>
+          <span v-if="imageFileName" class="file-name">{{ imageFileName }}</span>
+        </div>
       </div>
       <button type="submit">提交</button>
     </form>
@@ -64,7 +68,8 @@ export default {
     return {
       tags: [],
       index: 0,
-      imageFile: null // 用于存储上传的图片文件
+      imageFile: null, // 用于存储上传的图片文件
+      imageFileName: '' // 用于存储图片文件名
     };
   },
   created() {
@@ -90,6 +95,7 @@ export default {
     },
     handleImageUpload(event) {
       this.imageFile = event.target.files[0];
+      this.imageFileName = this.imageFile.name; // 设置图片文件名
     },
     async uploadImage(access) {
       const formData = new FormData();
@@ -180,5 +186,32 @@ button:hover {
   background-color: #94070a;
   color: #fff;
   border-color: #94070a;
+}
+.file-input-container {
+  position: relative;
+  display: inline-block;
+}
+.file-input {
+  display: none;
+}
+.file-input-label {
+  display: inline-block;
+  padding: 5px 10px;
+  margin: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #94070a;
+  color: #fff;
+  border-color: #94070a;
+}
+.file-input-label:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+.file-name {
+  display: inline-block;
+  margin-left: 10px;
+  color: #94070a;
 }
 </style>

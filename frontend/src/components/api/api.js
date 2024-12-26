@@ -15,10 +15,10 @@ export const postRegister = (email, username, password) => {
     { withCredentials: true });
 }
 
-export const getSearch = (key, orderby, sort) => {
-  return axios.get(`${SERVER_URL}/experiments/search/?keyword=${key}&orderby=${orderby}&sort=${sort}`,
-    { withCredentials: true });
-}
+export const getSearch = (key, orderby, sort, url = null) => {
+  const requestUrl = url || `${SERVER_URL}/experiments/search/?keyword=${key}&orderby=${orderby}&sort=${sort}`;
+  return axios.get(requestUrl, { withCredentials: true });
+};
 
 export const getLaunchSearch = (access, key, orderby, sort) => {
   return axios.get(`${SERVER_URL}/experiments/create/search/?keyword=${key}&orderby=${orderby}&sort=${sort}`,
