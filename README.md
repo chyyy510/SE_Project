@@ -33,7 +33,7 @@ DATABASES = {
 
 ### 依赖项的安装
 
-#### 除了 `mysqlclient` 的所有依赖项：
+#### 依赖项，不包含 `mysqlclient` 和 `python-alipay-sdk`：
 
 ```bash
 pip install pycryptodomex django djangorestframework djangorestframework-simplejwt django-cors-headers Pillow python-decouple
@@ -59,8 +59,8 @@ pip install mysqlclient
 
 ##### Windows
 
-1. 安装 `https://mariadb.com/downloads/connectors/`
-2. 设置 `MYSQLCLIENT_CONNECTOR`。如果你安装的是 64 位版本 MariaDB C Connector，且使用 PowerShell：
+1. 安装 [MariaDB C Connector](https://mariadb.com/downloads/connectors/)
+2. 设置 `MYSQLCLIENT_CONNECTOR`。如果你安装的是 64 位版本 MariaDB C Connector，安装到默认位置，且使用 PowerShell：
 
 ```pwsh
 $env:MYSQLCLIENT_CONNECTOR='C:\Program Files\MariaDB\MariaDB Connector C 64-bit\'
@@ -79,6 +79,23 @@ sudo apt install pkg-config python3-dev default-libmysqlclient-dev build-essenti
 export MYSQLCLIENT_CFLAGS=$(mysql_config --cflags)
 export MYSQLCLIENT_LDFLAGS=$(mysql_config --libs)
 pip install mysqlclient
+```
+
+#### 安装 `python-alipay-sdk`
+
+##### Windows
+
+```bash
+pip install python-alipay-sdk
+```
+
+##### Linux（仅在 Ubuntu 24.04 测试）
+
+首先安装 [Rust](https://www.rust-lang.org/) 工具链。然后：
+
+```bash
+sudo apt install lib-ffi
+pip install python-alipay-sdk
 ```
 
 ### 启动服务器
