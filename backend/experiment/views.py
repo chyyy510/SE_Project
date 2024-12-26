@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 
-from appuser.models import User
+from appuser.models import User, UserProfile
 from experiment.models import Experiment
 from relation.models import Engagement, Tags, TagsExps
 
@@ -138,12 +138,24 @@ class ExperimentCreate(generics.GenericAPIView):
 
         title = request.data.get("title")
         description = request.data.get("description", "")
-        person_wanted = request.data.get("person_wanted", 1)
-        money_per_person = request.data.get("money_per_person", 1)
+        person_wanted = request.data.get("person_wanted", "1")
+        if not person_wanted.isdigit():
+            return Response(
+                {"detail": "Person_wanted must be an integer"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        money_per_person = request.data.get("money_per_person", "1")
+        if not person_wanted.isdigit():
+            return Response(
+                {"detail": "Money_per_person must be an integer"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         activity_time = request.data.get("activity_time", "2024-01-01")
         activity_location = request.data.get("activity_location", "北京大学")
         image = request.data.get("image", "experiment/default.jpg")
         # TODO:类型检查
+
+        total_money = int(money_per_person) * int(person_wanted)
 
         tags = request.data.get("tags", 0)
 
@@ -171,11 +183,19 @@ class ExperimentCreate(generics.GenericAPIView):
             person_wanted=person_wanted,
             person_already=0,
             money_per_person=money_per_person,
-            money_paid=0,  # TODO:
-            money_left=0,  # TODO:
+            money_paid=total_money,  # TODO:
+            money_left=total_money,  # TODO:
             activity_time=activity_time,
             activity_location=activity_location,
         )
+
+        profile = UserProfile.objects.get(user=user)
+
+        if profile.point < total_money:
+            return Response(
+                {"detail": "No enough money. 用户余额不足。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         try:
             experiment.save()
@@ -186,6 +206,10 @@ class ExperimentCreate(generics.GenericAPIView):
 
             experiment.image = image
             experiment.save()
+
+            profile.point -= total_money
+            profile.save()
+
         except Exception:
             return Response(
                 {"detail": "Format error. 有内容不符合格式。"},
@@ -384,7 +408,14 @@ class ExperimentClose(generics.GenericAPIView):
             )
 
         experiment.status = "close"
+
+        # 剩的钱还回去
+        profile = UserProfile.objects.get(user=user)
+        profile.point += experiment.money_left
+        profile.save()
+        experiment.money_left = 0
         experiment.save()
+
         serializer = ExperimentDetailSerializer(experiment)
         response = Response(serializer.data)
         response.data["message"] = "Successfully close the experiment. 成功关闭实验。"
@@ -429,9 +460,33 @@ class ExperimentEdit(generics.GenericAPIView):
         if (activity_location := request.data.get("activity_location")) is not None:
             attri["activity_location"] = activity_location
 
+        person_wanted = int(person_wanted)
+        experiment = Experiment.objects.get(id=id)
+        if person_wanted < experiment.person_wanted:
+            return Response(
+                {"detail": "Too less people. 不允许比现有人数少。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        money_per_person = int(money_per_person)
+
+        total_money_delta = (money_per_person - experiment.money_per_person) * (
+            person_wanted - experiment.person_already
+        )
+        profile = UserProfile.objects.get(user=user)
+        if total_money_delta > profile.point:
+            return Response(
+                {"detail": "No enough point. 余额不足。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         try:
             Experiment.objects.filter(id=id).update(**attri)
-            experiment = Experiment.objects.get(id=id)
+            profile -= total_money_delta
+            experiment.money_left += total_money_delta
+            experiment.money_paid += total_money_delta
+            experiment.save()
+            profile.save()
             serializer = ExperimentDetailSerializer(experiment)
             response = Response(serializer.data)
             response.data["message"] = (

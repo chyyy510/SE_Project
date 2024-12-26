@@ -353,7 +353,7 @@ class VolunteerQualify(generics.GenericAPIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                point = experiment.money_per_person * 100
+                point = experiment.money_per_person  # * 100
                 try:
                     profile = UserProfile.objects.get(user=volunteer)
                 except Exception:
@@ -365,10 +365,12 @@ class VolunteerQualify(generics.GenericAPIView):
                     )
 
                 profile.point = profile.point + point
+                experiment.money_left -= point
 
                 try:
                     engagement.save()
                     profile.save()
+                    experiment.save()
                 except Exception:
                     return Response(
                         {"detail": "Save to database error. 保存到数据库失败。"},

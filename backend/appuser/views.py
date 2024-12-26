@@ -18,7 +18,7 @@ from utils.generate_info import GenerateInfo
 from utils.generate_path import GeneratePath
 from utils.log_print import log_print
 
-from utils.payment import Payment
+# from utils.payment import Payment
 
 # Create your views here.
 
@@ -360,7 +360,9 @@ class UserPay(generics.GenericAPIView):
         )
 
         # 以下是调用支付宝接口，暂时不管TODO:
-        order_id = GenerateInfo.generate_trade_no(user.id)
+
+
+"""        order_id = GenerateInfo.generate_trade_no(user.id)
 
         try:
             pay_url = Payment.create_recharge_order(
@@ -376,13 +378,16 @@ class UserPay(generics.GenericAPIView):
             {"message": "Redirecting to Alipay payment page"},
             status=302,
             headers={"Location": pay_url},
-        )
+        )"""
 
 
 class UserPayCallback(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
-        data = request.POST.dict()  # 接收支付宝 POST 数据
+        return Response("success")  # 必须返回 'success'，否则支付宝会重试回调
+
+
+"""        data = request.POST.dict()  # 接收支付宝 POST 数据
 
         # 验证签名
         if not Payment.handle_alipay_callback(data):
@@ -409,3 +414,4 @@ class UserPayCallback(generics.GenericAPIView):
             print(f"订单 {order_id} 未知状态: {trade_status}")
 
         return Response("success")  # 必须返回 'success'，否则支付宝会重试回调
+"""
