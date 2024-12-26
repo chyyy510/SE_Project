@@ -134,7 +134,7 @@ NwIDAQAB
       console.log('FormData内容:', formData.get('avatar')); // 添加日志
       postUserAvatar(access, formData)
           .then(response => {
-            const Avatar = `http://10.129.241.91:8000/${response.data.avatar}`;
+            const Avatar = `http://10.129.241.91:8000/media/${response.data.avatar}`;
             this.refreshUserInfo(Avatar);
             console.log(this.user.avatar);
           })
