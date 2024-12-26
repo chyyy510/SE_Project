@@ -142,6 +142,8 @@ class ExperimentCreate(generics.GenericAPIView):
         money_per_person = request.data.get("money_per_person", 1)
         activity_time = request.data.get("activity_time", "2024-01-01")
         activity_location = request.data.get("activity_location", "北京大学")
+        image = request.data.get("image", "experiment/default.jpg")
+        # TODO:类型检查
 
         tags = request.data.get("tags", 0)
 
@@ -181,6 +183,9 @@ class ExperimentCreate(generics.GenericAPIView):
                 tag = Tags.objects.get(id=tag_id)
                 tagsexps = TagsExps(tags=tag, experiment=experiment)
                 tagsexps.save()
+
+            experiment.image = image
+            experiment.save()
         except Exception:
             return Response(
                 {"detail": "Format error. 有内容不符合格式。"},
