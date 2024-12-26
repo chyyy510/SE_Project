@@ -99,7 +99,16 @@ export const postUserAvatar = (access, data) => {
   });
   
 };
+export const postProjectImage = (access, data) => {
+  console.log(data); // 调试点
 
+  return axios.post(`${SERVER_URL}/experiments/update/image/`, data, {
+    headers: {
+      'Authorization': `Bearer ${access}`,
+    },
+    withCredentials: true
+  });
+};
 export const postProject = (access, mode, id, title, activity_time, activity_location, 
                           person_wanted, money_per_person, description) => {
   return axios.post(`${SERVER_URL}/experiments/${mode}/`,

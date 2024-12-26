@@ -23,6 +23,14 @@
         <button class="applied">{{button_text_apply}}</button>
       </div>
     </div>
+    <!-- 新增图片展示 -->
+    <div class="image-container" @click="showImage = true">
+      <img :src="project.image" alt="Project Image" class="project-image" />
+    </div>
+    <!-- 图片放大显示 -->
+    <div v-if="showImage" class="image-modal" @click="showImage = false">
+      <img :src="project.image" alt="Project Image" class="project-image-large" />
+    </div>
   </div>
   <div v-else>
     <button @click="changeEditMode">结束编辑</button>
@@ -54,7 +62,8 @@ export default {
         person_applied: '',
         person_wanted: '',
         relationship: '',
-        tag: ''
+        tag: '',
+        image: '' // 新增图片字段
       },
       user: {
         avatar: '', // 用户头像URL
@@ -64,7 +73,8 @@ export default {
       },
       applied: false,
       button_text_apply: '',
-      editMode: false
+      editMode: false,
+      showImage: false // 控制图片放大显示
     }
   },
   created() {
@@ -82,6 +92,7 @@ export default {
         getProject(access, this.project.id)
           .then(response => {
             this.project = response.data;
+            this.project.image=`http://10.129.241.91:8000/${response.data.image}`
             if (this.project.relationship == 'passer-by')
               this.button_text_apply = '申请参与';
             if (this.project.relationship == 'to-qualify-user')
@@ -180,5 +191,28 @@ button:hover {
 }
 button.applied {
   cursor: default;
+}
+.image-container {
+  margin-top: 20px;
+  text-align: center;
+}
+.project-image {
+  max-width: 100%;
+  cursor: pointer;
+}
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.project-image-large {
+  max-width: 90%;
+  max-height: 90%;
 }
 </style>

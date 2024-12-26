@@ -32,33 +32,39 @@
           <span v-for="tag in tags" @click="toggleTag(tag)" :class="{ selected: selectedTags.includes(tag) }">{{ tag.name }}</span>
         </div>
       </div>
+      <div class="form-group">
+        <label for="image">添加图片</label>
+        <input type="file" id="image" @change="handleImageUpload" />
+      </div>
       <button type="submit">提交</button>
     </form>
   </div>
 </template>
+
 <script>
-import { getTag, postProject } from './api/api';
+import { getTag, postProject, postProjectImage } from './api/api';
 
 export default {
   name: 'ProjectEdit',
   props: {
     banner: {
       type: String,
-      Required: true
+      required: true
     },
     mode: {
       type: String,
-      Required: true
+      required: true
     },
     project: {
       type: Object,
-      Required: true
+      required: true
     }
   },
   data() {
     return {
       tags: [],
-      selectedTags: []
+      selectedTags: [],
+      imageFile: null // 用于存储上传的图片文件
     };
   },
   created() {
@@ -66,7 +72,6 @@ export default {
   },
   methods: {
     fetchTags() {
-      /*this.tags = [ { name: '标签1' }, { name: '标签2' }, { name: '标签3' } ];*/
       getTag()
         .then(response => {
           this.tags = response.data;
@@ -85,15 +90,35 @@ export default {
         this.selectedTags.splice(index, 1);
       }
     },
+    handleImageUpload(event) {
+      this.imageFile = event.target.files[0];
+    },
+    async uploadImage(access) {
+      const formData = new FormData();
+      formData.append('image', this.imageFile);
+      formData.append('experiment', this.project.id);
+      console.log(formData.get('image')); // 调试点
+
+      try {
+        const response = await postProjectImage(access, formData);
+        console.log('上传图片成功:', response.data); // 输出成功的响应信息
+      } catch (error) {
+        console.error('上传图片失败:', error.response ? error.response.data : error.message); // 输出错误信息
+      }
+    },
     async submitForm() {
       this.project.tags = this.selectedTags;
-      // 在这里处理表单提交逻辑
       const access = JSON.parse(localStorage.getItem('access'));
       try {
         await postProject(access, this.mode, this.project.id, this.project.title, this.project.activity_time, this.project.activity_location,
-          this.project.person_wanted, this.project.money_per_person, this.project.description);//等后端更新post函数：添加提交标签选项
+          this.project.person_wanted, this.project.money_per_person, this.project.description);
+        if (this.imageFile) {
+          await this.uploadImage(access);
+        }
         alert('项目已提交！');
-        this.$router.push('/projects');
+        if (this.$router.currentRoute.path !== '/projects') {
+          this.$router.push('/projects');
+        }
       } catch (error) {
         console.log(error.response.data.detail);
         return null;
@@ -102,6 +127,7 @@ export default {
   }
 };
 </script>
+
 <style scoped>
 .launch-project {
   max-width: 600px;
@@ -116,7 +142,6 @@ textarea {
   width: 500px; /* 固定宽度 */
   resize: vertical;
 }
-
 .form-group {
   margin-bottom: 15px;
 }
