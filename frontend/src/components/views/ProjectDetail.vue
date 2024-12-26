@@ -62,12 +62,8 @@ export default {
         person_applied: '',
         person_wanted: '',
         relationship: '',
-<<<<<<< HEAD
-        tags: []
-=======
-        tag: '',
+        tags: [],
         image: '' // 新增图片字段
->>>>>>> 587f8d26a67781d284fc0d0c51ed9595b70fe071
       },
       user: {
         avatar: '', // 用户头像URL

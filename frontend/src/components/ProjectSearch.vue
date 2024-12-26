@@ -14,7 +14,9 @@
       </div>
     </div>
     <div v-if="showTagBox" class="tag-box">
-      <span v-for="tag in tags" @click="toggleTag(tag)" :class="{ selected: selectedTags.includes(tag) }">{{ tag.name }}</span>
+      <div v-for="tag in tags">
+        <span  @click="toggleTag(tag)" :class="{ selected: selectedTags.includes(tag) }">{{ tag.name }}</span>
+      </div>
     </div>
     <div v-if="projects.length === 0">没有找到相关活动</div>
     <div v-else>
