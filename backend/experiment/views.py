@@ -470,9 +470,12 @@ class ExperimentEdit(generics.GenericAPIView):
 
         money_per_person = int(money_per_person)
 
-        total_money_delta = (money_per_person - experiment.money_per_person) * (
+        total_money_delta = (
             person_wanted - experiment.person_already
-        )
+        ) * money_per_person - (
+            experiment.person_wanted - experiment.person_already
+        ) * experiment.money_per_person
+        print(total_money_delta)
         profile = UserProfile.objects.get(user=user)
         if total_money_delta > profile.point:
             return Response(
@@ -482,7 +485,8 @@ class ExperimentEdit(generics.GenericAPIView):
 
         try:
             Experiment.objects.filter(id=id).update(**attri)
-            profile -= total_money_delta
+            profile.point -= total_money_delta
+            experiment = Experiment.objects.get(id=id)
             experiment.money_left += total_money_delta
             experiment.money_paid += total_money_delta
             experiment.save()
