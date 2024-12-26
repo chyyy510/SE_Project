@@ -29,7 +29,7 @@
       <div class="form-group">
         <label>添加标签</label>
         <div class="tag-box">
-          <span v-for="tag in tags" @click="toggleTag(tag)" :class="{ selected: selectedTags.includes(tag) }">{{ tag.name }}</span>
+          <span v-for="tag in tags" @click="toggleTag(tag)" :class="{ selected: project.tags.includes(tag) }">{{ tag.name }}</span>
         </div>
       </div>
       <button type="submit">提交</button>
@@ -58,7 +58,7 @@ export default {
   data() {
     return {
       tags: [],
-      selectedTags: []
+      index: 0
     };
   },
   created() {
@@ -75,28 +75,24 @@ export default {
         .catch(error => {
           console.error('Error fetching tags:', error);
         });
+      for(tag in this.project.tags)
+      this.index &= 1<<this.tags.indexOf(tag);
     },
     toggleTag(tag) {
-      const index = this.selectedTags.indexOf(tag);
-      console.log(index);
-      if (index === -1) {
-        this.selectedTags.push(tag);
-      } else {
-        this.selectedTags.splice(index, 1);
-      }
+      const index = this.tags.indexOf(tag);
+      this.index ^= 1<<index;
     },
     async submitForm() {
-      this.project.tags = this.selectedTags;
       // 在这里处理表单提交逻辑
       const access = JSON.parse(localStorage.getItem('access'));
       try {
         await postProject(access, this.mode, this.project.id, this.project.title, this.project.activity_time, this.project.activity_location,
-          this.project.person_wanted, this.project.money_per_person, this.project.description);//等后端更新post函数：添加提交标签选项
+          this.project.person_wanted, this.project.money_per_person, this.project.description, this.project.tags);//等后端更新post函数：添加提交标签选项
         alert('项目已提交！');
         this.$router.push('/projects');
       } catch (error) {
         console.log(error.response.data.detail);
-        return null;
+        alert('项目提交失败！');
       }
     }
   }

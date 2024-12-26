@@ -54,7 +54,7 @@ export default {
         person_applied: '',
         person_wanted: '',
         relationship: '',
-        tag: ''
+        tags: []
       },
       user: {
         avatar: '', // 用户头像URL

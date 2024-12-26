@@ -20,7 +20,8 @@ export default {
           activity_time :'',
           activity_location :'',
           money_per_person :'',
-          person_wanted :''
+          person_wanted :'',
+          tags :[]
         },
       };
     }
