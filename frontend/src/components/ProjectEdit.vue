@@ -29,7 +29,7 @@
       <div class="form-group">
         <label>添加标签</label>
         <div class="tag-box">
-          <span v-for="tag in tags" @click="toggleTag(tag)" :class="{ selected: selectedTags.includes(tag) }">{{ tag.name }}</span>
+          <span v-for="tag in tags" @click="toggleTag(tag)" :class="{ selected:  index & (1<<(tags.indexOf(tag)))}">{{ tag.name }}</span>
         </div>
       </div>
       <div class="form-group">
@@ -63,7 +63,7 @@ export default {
   data() {
     return {
       tags: [],
-      selectedTags: [],
+      index: 0,
       imageFile: null // 用于存储上传的图片文件
     };
   },
@@ -80,15 +80,13 @@ export default {
         .catch(error => {
           console.error('Error fetching tags:', error);
         });
+      for(tag in this.project.tags)
+      this.index &= 1<<this.tags.indexOf(tag);
     },
     toggleTag(tag) {
-      const index = this.selectedTags.indexOf(tag);
-      console.log(index);
-      if (index === -1) {
-        this.selectedTags.push(tag);
-      } else {
-        this.selectedTags.splice(index, 1);
-      }
+      const idx = this.tags.indexOf(tag);
+      this.index ^= 1<<idx;
+      console.log("Index",this.index);
     },
     handleImageUpload(event) {
       this.imageFile = event.target.files[0];
@@ -107,11 +105,10 @@ export default {
       }
     },
     async submitForm() {
-      this.project.tags = this.selectedTags;
       const access = JSON.parse(localStorage.getItem('access'));
       try {
         await postProject(access, this.mode, this.project.id, this.project.title, this.project.activity_time, this.project.activity_location,
-          this.project.person_wanted, this.project.money_per_person, this.project.description);
+          this.project.person_wanted, this.project.money_per_person, this.project.description, this.index);
         if (this.imageFile) {
           await this.uploadImage(access);
         }
@@ -121,7 +118,7 @@ export default {
         }
       } catch (error) {
         console.log(error.response.data.detail);
-        return null;
+        alert('项目提交失败！');
       }
     }
   }
