@@ -141,12 +141,12 @@ status_code=200
 
 ```json
 {
-  "avatar": "/media/avatar/user_0/default_avatar.png",
+  "avatar": "/media/avatar/user_1000002/image-2.png",
   "email": "123456@qq.com",
-  "introduction": "Nothing here.",
+  "introduction": "Nothing here.hhh",
   "message": "Find the user successfully. 成功找到该用户。",
   "nickname": "user1000002",
-  "point": 0,
+  "point": 648833,
   "username": "123456"
 }
 ```
@@ -199,13 +199,12 @@ status_code=200
 
 ```json
 {
-  "email": "Alice@gmail.com",
-  "id": 9,
+  "email": "11111@qq.com",
+  "id": 12,
   "is_active": true,
   "is_staff": false,
-  "password": "de06629acd0fcd41f25333870f8749fbfacad8f78ee10603aa6c0c9d1f370676",
-  "uid": 1000008,
-  "username": "Alice"
+  "uid": 1000012,
+  "username": "testttt"
 }
 ```
 
