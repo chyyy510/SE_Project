@@ -14,7 +14,7 @@
       </div>
     </div>
     <div v-if="showTagBox" class="tag-box">
-      <span v-for="tag in tags" @click="toggleTag(tag)" :class="{ selected: selectedTags.includes(tag) }">{{ tag.name }}</span>
+      <span v-for="tag in tags" @click="toggleTag(tag)" :class="{ selected: index&(1<<(tag.id-1)) }">{{ tag.name }}</span>
     </div>
     <div v-if="projects.length === 0">没有找到相关活动</div>
     <div v-else>
@@ -53,6 +53,7 @@ export default {
       next: '',
       projects: [],
       tags: [],
+      index:0,
       selectedTags: [],
       sortOrder: 'asc', // 默认排序顺序
       sortBy: 'id', // 默认排序依据
@@ -71,7 +72,7 @@ export default {
     console.log(this.searchKey, this.sortOrder, this.sortBy);
     console.log(this.mode);
     if (this.mode == '') {
-      getSearch(this.searchKey, this.sortBy, this.sortOrder, url)
+      getSearch(this.searchKey, this.sortBy, this.sortOrder, url,this.index)
         .then(response => {
           this.projects = response.data.results;
           this.previous = response.data.previous;
@@ -115,24 +116,18 @@ export default {
       this.fetchProjects(this.next);
     }
   },
-
     fetchTags() {
       getTag()
         .then(response => {
           this.tags = response.data;
-          console.log(this.tags);
+          console.log('Tag',this.tags);
         })
         .catch(error => {
           console.error('Error fetching tags:', error);
         });
     },
     toggleTag(tag) {
-      const index = this.selectedTags.indexOf(tag);
-      if (index === -1) {
-        this.selectedTags.push(tag);
-      } else {
-        this.selectedTags.splice(index, 1);
-      }
+      this.index^=1<<(tag.id-1);
       this.fetchProjects();
     },
     toggleTagBox() {

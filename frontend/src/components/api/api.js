@@ -15,19 +15,21 @@ export const postRegister = (email, username, password) => {
     { withCredentials: true });
 }
 
-export const getSearch = (key, orderby, sort, url = null) => {
-  const requestUrl = url || `${SERVER_URL}/experiments/search/?keyword=${key}&orderby=${orderby}&sort=${sort}`;
+export const getSearch = (key, orderby, sort, url = null,index) => {
+  const requestUrl = url || `${SERVER_URL}/experiments/search/?keyword=${key}&orderby=${orderby}&sort=${sort}&tags=${index}`;
   return axios.get(requestUrl, { withCredentials: true });
 };
 
-export const getLaunchSearch = (access, key, orderby, sort) => {
-  return axios.get(`${SERVER_URL}/experiments/create/search/?keyword=${key}&orderby=${orderby}&sort=${sort}`,
+export const getLaunchSearch = (access, key, orderby, sort,url=null,index) => {
+  const requestUrl = url || `${SERVER_URL}/experiments/create/search/?keyword=${key}&orderby=${orderby}&sort=${sort}&tags=${index}`
+  return axios.get(requestUrl,
     { headers: { 'Authorization': `Bearer ${access}` } },
     { withCredentials: true });
 }
 
-export const getApplySearch = (access, key, orderby, sort) => {
-  return axios.get(`${SERVER_URL}/relations/engage/search/?keyword=${key}&orderby=${orderby}&sort=${sort}`,
+export const getApplySearch = (access, key, orderby, sort,url=null,index) => {
+   const requestUrl = url || `${SERVER_URL}/relations/engage/search/?keyword=${key}&orderby=${orderby}&sort=${sort}&tags=${index}`
+  return axios.get(requestUrl,
     { headers: { 'Authorization': `Bearer ${access}` } },
     { withCredentials: true });
 }
