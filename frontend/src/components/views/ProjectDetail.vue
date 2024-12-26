@@ -3,7 +3,9 @@
     <img :src="project.publisherAvatar" alt="Publisher Avatar" class="avatar" />
     <div class="project-header">
       <h2>{{ project.title }}</h2>
-      <span class="project-tag">{{ project.tag }}</span> <!-- 在这里展示 tag -->
+      <div class="project-tags">
+        <span v-for="tag in project.tags" :key="tag.id" class="project-tag">{{ tag.name }}</span>
+      </div>
     </div>
     <p><strong>发布者：</strong>{{ project.creator }}</p>
     <p><strong>内容：</strong>{{ project.description }}</p>
@@ -24,7 +26,7 @@
       </div>
     </div>
     <!-- 新增图片展示 -->
-    <div class="image-container" @click="showImage = true">
+    <div v-if="project.image" class="image-container" @click="showImage = true">
       <img :src="project.image" alt="Project Image" class="project-image" />
     </div>
     <!-- 图片放大显示 -->
@@ -55,6 +57,7 @@ export default {
         id: '',
         title: '',
         publisherName: '',
+        publisherAvatar:'',
         description: '',
         activity_time: '',
         activity_location: '',
@@ -62,12 +65,8 @@ export default {
         person_applied: '',
         person_wanted: '',
         relationship: '',
-<<<<<<< HEAD
-        tags: []
-=======
-        tag: '',
+        tags: [], // 新增 tags 字段
         image: '' // 新增图片字段
->>>>>>> 587f8d26a67781d284fc0d0c51ed9595b70fe071
       },
       user: {
         avatar: '', // 用户头像URL
@@ -96,7 +95,12 @@ export default {
         getProject(access, this.project.id)
           .then(response => {
             this.project = response.data;
-            this.project.image=`http://10.129.241.91:8000/${response.data.image}`
+            this.project.image = response.data.image ? `http://10.129.241.91:8000/${response.data.image}` : null;
+            this.project.publisherAvatar = response.data.avatar ? `http://10.129.241.91:8000/${response.data.avatar}` : null;
+            this.project.tags = response.data.tags || [];
+            //this.project.tags=[{"id": 1,"name": "tag1"},{"id": 2,"name": "tag2"}];//test
+    
+            console.log(this.project.tags);
             if (this.project.relationship == 'passer-by')
               this.button_text_apply = '申请参与';
             if (this.project.relationship == 'to-qualify-user')
@@ -175,12 +179,17 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+}
 .project-tag {
   background-color: #94070a;
   color: white;
   padding: 5px 10px;
   border-radius: 5px;
   margin-left: 10px; /* 确保标签与标题之间有间距 */
+  margin-top: 5px; /* 确保标签之间有间距 */
 }
 button {
   padding: 10px 20px;
