@@ -112,10 +112,8 @@ export const postProjectImage = (access, data) => {
 export const postProject = (access, mode, id, title, activity_time, activity_location, 
                             person_wanted, money_per_person, description, tags) => {
   return axios.post(`${SERVER_URL}/experiments/${mode}/`,
-    {
-      'id': id, 'title': title, 'activity_time': activity_time, 'activity_location': activity_location,
-      'person_wanted': person_wanted, 'money_per_person': money_per_person, 'description': description, 'tags': tags
-    },
+    {'id': id, 'title': title, 'activity_time': activity_time, 'activity_location': activity_location,
+      'person_wanted': person_wanted, 'money_per_person': money_per_person, 'description': description, 'tags': tags},
     { headers: { 'Authorization': `Bearer ${access}` } },
     { withCredentials: true });
 }

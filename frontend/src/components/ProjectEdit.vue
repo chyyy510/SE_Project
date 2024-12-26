@@ -29,7 +29,7 @@
       <div class="form-group">
         <label>添加标签</label>
         <div class="tag-box">
-          <span v-for="tag in tags" @click="toggleTag(tag)" :class="{ selected:  index & (1<<(tags.indexOf(tag)))}">{{ tag.name }}</span>
+          <span v-for="tag in tags" @click="toggleTag(tag)" :class="{ selected:  index & (1<<(tag.id-1))}">{{ tag.name }}</span>
         </div>
       </div>
       <div class="form-group">
@@ -71,22 +71,22 @@ export default {
     this.fetchTags();
   },
   methods: {
+    toggleTag(tag) {
+      this.index ^= 1<<(tag.id-1);
+      console.log("Index",this.index);
+    },
     fetchTags() {
       getTag()
         .then(response => {
           this.tags = response.data;
-          console.log(this.tags);
+          console.log('Tag',this.tags);
+          console.log('ProjectTag',this.project.tags);
+          for(var i=0;i<this.project.tags.length;i++)
+            this.index |= 1<<(this.project.tags[i].id-1);
         })
         .catch(error => {
           console.error('Error fetching tags:', error);
         });
-      for(tag in this.project.tags)
-      this.index &= 1<<this.tags.indexOf(tag);
-    },
-    toggleTag(tag) {
-      const idx = this.tags.indexOf(tag);
-      this.index ^= 1<<idx;
-      console.log("Index",this.index);
     },
     handleImageUpload(event) {
       this.imageFile = event.target.files[0];
