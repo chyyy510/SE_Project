@@ -114,7 +114,11 @@ export default {
       const access = JSON.parse(localStorage.getItem('access'));
       try {
         await postProject(access, this.mode, this.project.id, this.project.title, this.project.activity_time, this.project.activity_location,
-          this.project.person_wanted, this.project.money_per_person, this.project.description, this.index);
+          this.project.person_wanted, this.project.money_per_person, this.project.description, this.index).
+          then(response=>{
+            console.log(response.data);
+            this.project.id=response.data.id;
+          });
         if (this.imageFile) {
           await this.uploadImage(access);
         }
