@@ -206,7 +206,7 @@ class ExperimentSearchInEngaged(generics.GenericAPIView):
         log_print(pre_set)
 
         final_set = Experiment.objects.filter(id__in=pre_set)
-        experiments = experiments.filter(
+        experiments = final_set.filter(
             Q(title__contains=keyword) | Q(description__contains=keyword)
         ).order_by(orderby)
 
