@@ -137,15 +137,16 @@ class ExperimentCreate(generics.GenericAPIView):
         user = request.user
 
         title = request.data.get("title")
-        description = request.data.get("description")
-        person_wanted = request.data.get("person_wanted")
-        money_per_person = request.data.get("money_per_person")
+        description = request.data.get("description", "")
+        person_wanted = request.data.get("person_wanted", 1)
+        money_per_person = request.data.get("money_per_person", 1)
         activity_time = request.data.get("activity_time", "2024-01-01")
         activity_location = request.data.get("activity_location", "北京大学")
 
         tags = request.data.get("tags", 0)
 
         log_print(tags)
+        tags = int(tags)
 
         def int_to_bitset(n):
             bitset = set()
@@ -177,7 +178,9 @@ class ExperimentCreate(generics.GenericAPIView):
         try:
             experiment.save()
             for tag_id in int_to_bitset(tags):
-                TagsExps(tags=tag_id, experiment=experiment.id).save()
+                tag = Tags.objects.get(id=tag_id)
+                tagsexps = TagsExps(tags=tag, experiment=experiment)
+                tagsexps.save()
         except Exception:
             return Response(
                 {"detail": "Format error. 有内容不符合格式。"},
