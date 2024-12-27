@@ -1,7 +1,4 @@
-defmodule BackendPerfTest do
-end
-
-defmodule BackendPerfTest.Client do
+defmodule BackendPerf.Client do
   @public_key """
   -----BEGIN PUBLIC KEY-----
   MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmIzophqDebSpnL77RK0l
@@ -59,51 +56,6 @@ defmodule BackendPerfTest.Client do
            activity_location: "tmp"
          }),
          [{"Authorization", "Bearer #{access}"}, {"Content-Type", "application/json"}]
-       ).status_code ==
-         500,
-       do: raise("500")
-  end
-
-  def client_2(id, host) do
-    tmp = :crypto.strong_rand_bytes(8) |> Base.encode16()
-    username = "#{tmp}_#{id}"
-    email = "#{tmp}-#{id}@#{tmp}.com"
-    password = :crypto.strong_rand_bytes(10) |> Base.encode64()
-
-    if HTTPoison.request!(
-         :post,
-         "#{host}/users/register",
-         Jason.encode!(%{username: username, nickname: username, email: email, password: password}),
-         [{"Content-Type", "application/json"}]
-       ).status_code == 500,
-       do: raise("500")
-
-    token =
-      HTTPoison.request!(
-        :post,
-        "#{host}/users/login",
-        Jason.encode!(%{email: email, password: password}),
-        [{"Content-Type", "application/json"}]
-      ).body
-      |> Jason.decode!()
-      |> Map.get("token")
-
-    if HTTPoison.request!(:get, "#{host}/users/profile", "", [
-         {"token", "#{token}"}
-       ]).status_code ==
-         500,
-       do: raise("500")
-
-    if HTTPoison.request!(
-         :post,
-         "#{host}/experiments/create",
-         Jason.encode!(%{
-           title: username,
-           description: username,
-           person_wanted: 10,
-           money_per_person: 10,
-         }),
-         [{"token", "#{token}"}, {"Content-Type", "application/json"}]
        ).status_code ==
          500,
        do: raise("500")

@@ -1,11 +1,11 @@
-defmodule BackendPerfTest.MixProject do
+defmodule BackendPerf.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :backend_perf_test,
+      app: :backend_perf,
       version: "0.1.0",
-      elixir: "~> 1.17",
+      elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]

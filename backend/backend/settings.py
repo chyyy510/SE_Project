@@ -107,11 +107,11 @@ from decouple import config
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "pku_backend",
-        "USER": "root",
+        "NAME": config("DATABASE_NAME"),
+        "USER": config("DATABASE_USERNAME"),
         "PASSWORD": config("DATABASE_PASSWORD"),
-        "HOST": "127.0.0.1",
-        "PORT": "3306",
+        "HOST": config("DATABASE_HOST"),
+        "PORT": config("DATABASE_PORT"),
     }
 }
 

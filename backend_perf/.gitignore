@@ -2,8 +2,8 @@
 /cover/
 /deps/
 /doc/
-/.elixir_ls/
 /.fetch
+/config/config.exs
 erl_crash.dump
 *.ez
 backend_perf_test-*.tar

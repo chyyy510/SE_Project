@@ -2,6 +2,8 @@
 
 ## 后端的运行
 
+推荐使用无 GIL、带 JIT 的 Python 3.13t（需自行编译）。
+
 ### 配置文件
 
 需要安装 MySQL，创建 `pku_backend` 数据库。在项目根目录创建 `.env` 文件写入数据库密码。`.env` 的示例如下：
@@ -42,7 +44,7 @@ pip install pycryptodomex django djangorestframework djangorestframework-simplej
 如果你使用 Linux（仅在 Ubuntu 24.04 测试），建议使用虚拟环境：
 
 ```bash
-sudo apt install python3-pip python3.12-venv
+sudo apt install python3-pip python3.12-venv # Ubuntu 24.04 官方源只有 Python 3.12。Python 3.13 请自行编译。
 python3 -m venv .venv
 source .venv/bin/activate # 假设使用 bash/zsh
 ```
@@ -83,11 +85,7 @@ pip install mysqlclient
 
 #### 安装 `python-alipay-sdk`
 
-##### Windows
-
-```bash
-pip install python-alipay-sdk
-```
+注：该依赖库暂不支持 Python 自由线程构建。如不需要接入支付宝，可不安装此库。
 
 ##### Linux（仅在 Ubuntu 24.04 测试）
 
@@ -103,6 +101,27 @@ pip install python-alipay-sdk
 ```bash
 python manage.py runserver 0.0.0.0:8000
 ```
+
+## BackendPerfTest, 后端性能测试
+
+1. 安装 [Erlang/OTP](https://www.erlang.org/) 27；
+2. 安装 [Elixir](https://elixir-lang.org/) 1.18；
+   对于 Windows，安装以上两者是简单的。对于 Linux（仅在 Ubuntu 24.04 测试），请依 [Install Elixir](https://elixir-lang.org/install.html#install-scripts) 操作。
+3. （可选）为 Hex 包管理器配置中国大陆镜像源（又拍云）
+   ```bash
+   mix hex.config mirror_url https://hexpm.upyun.com
+   ```
+4. 克隆本仓库，找到 `backend_perf` 文件夹；
+5. 运行 `mix deps.get` 获取依赖库；
+6. 在 `config` 文件夹下新建 `config.exs`
+    ```elixir
+    import Config
+
+    config :backend_perf,
+      host: # 主机地址，如 "127.0.0.1:8000"
+    ```
+
+7. 在启动后端的情况下，运行 `mix test` 测试。
 
 ## 数据传输标准
 
