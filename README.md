@@ -2,9 +2,9 @@
 
 ## 前端部署（GitHub Pages）
 
-在此之前，建议您先了解 [GitHub Pages](https://pages.github.com/)
+在此之前，建议先了解 [GitHub Pages](https://pages.github.com/)
 
-你需要一个特殊名字的 GitHub 仓库：`你的GitHub账户名或组织名.github.io`，记该仓库为 r。然后：
+需要一个特殊名字的 GitHub 仓库：`你的GitHub账户名或组织名.github.io`，记该仓库为 r。然后：
 
 1. Setting -> Actions -> General，设置 Workflow permissions 为 Read and write permissions。
 2. 克隆本仓库。
@@ -13,6 +13,10 @@
 5. 推送至 r。等待 GitHub Actions 运行完成。
 6. Setting -> Actions -> Pages，设置 Build and deployment 中的 Source 为 Deploy from a branch，设置 Branch 为 `gh-pages`。
 7. 等待 2 分钟。然后可以访问网址 `你的GitHub账户名或组织名.github.io`
+
+### 如果你想要本地开发前端……
+
+务必将 NPM 镜像设置为 [npmmirror](https://npmmirror.com/)。经我们测试，npm 官方源和 npmmirror 的 `uglify-es` 包是不一样的，且只有后者能正常 `npm run build`。
 
 ## 后端部署
 
