@@ -14,7 +14,7 @@
 6. Setting -> Actions -> Pages，设置 Build and deployment 中的 Source 为 Deploy from a branch，设置 Branch 为 `gh-pages`。
 7. 等待 2 分钟。然后可以访问网址 `你的GitHub账户名或组织名.github.io`
 
-### 如果你想要本地开发前端……
+### 如果想要本地开发……
 
 务必将 NPM 镜像设置为 [npmmirror](https://npmmirror.com/)。经我们测试，npm 官方源和 npmmirror 的 `uglify-es` 包是不一样的，且只有后者能正常 `npm run build`。
 
@@ -22,9 +22,9 @@
 
 推荐使用无 GIL、带 JIT 的 Python 3.13t（需自行编译）。
 
-### 配置文件
+### 数据库与配置文件
 
-需要安装 MySQL，创建 `pku_backend` 数据库。在项目根目录创建 `.env` 文件写入数据库密码。`.env` 的示例如下：
+安装 MySQL，并创建好一个数据库。在项目根目录创建 `.env` 文件，写入服务器配置：`.env` 的示例如下：
 
 ```ini
 DATABASE_NAME=pku_backend
@@ -36,20 +36,8 @@ PRIVATE_KEY_PATH=<path to private key>
 LOGFILE_PATH=<path to log>
 ```
 
-如果你不想安装 MySQL 可以直接连接至校园网内的测试数据库。在 `backend/backend/settings.py` 修改：
-
-```python
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "<在群里问>（x",
-        "USER": "<在群里问>",
-        "PASSWORD": "<在群里问>",
-        "HOST": "<在群里问>",
-        "PORT": "<在群里问>",
-    }
-}
-```
+- `PRIVATE_KEY_PATH` 是私钥文件的路径。私钥应当与前端中的公钥（可以在项目文件夹搜索 `pubKey`）配对。
+- `LOGFILE_PATH` 是日志文件的路径。
 
 ### 依赖项的安装
 
@@ -69,7 +57,7 @@ source .venv/bin/activate # 假设使用 bash/zsh
 
 #### 安装 `mysqlclient`
 
-首先尝试：
+<!-- 首先尝试：
 
 ```bash
 pip install mysqlclient
@@ -90,7 +78,7 @@ $env:MYSQLCLIENT_CONNECTOR='C:\Program Files\MariaDB\MariaDB Connector C 64-bit\
 
 ```bash
 pip install mysqlclient
-```
+``` -->
 
 ##### Linux（仅在 Ubuntu 24.04 测试）
 
