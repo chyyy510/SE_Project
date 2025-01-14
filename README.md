@@ -4,15 +4,10 @@
 
 在此之前，建议先了解 [GitHub Pages](https://pages.github.com/)
 
-需要一个特殊名字的 GitHub 仓库：`你的GitHub账户名或组织名.github.io`，记该仓库为 r。然后：
-
-1. Settings -> Actions -> General，设置 Workflow permissions 为 Read and write permissions。
-2. Settings -> Pages，设置 Build and deployment 中的 Source 为 GiuHub Actions。
-3. 克隆本仓库。
-4. 删除 `.github/workflows/gh-pages.yml` 第 10 行的 `if: false`。
-5. 修改 `frontend/src/components/api/api.js` 中的 `SERVER_URL` 为后端地址。
-6. 推送至 r。等待 GitHub Actions 运行完成。
-7. 等待 2 分钟。然后可以访问网址 `你的GitHub账户名或组织名.github.io`
+1. 克隆本仓库。
+2. 修改 `frontend/src/components/api/api.js` 中的 `SERVER_URL` 为后端地址。
+3. 推送至 GitHub 仓库。等待 GitHub Actions 运行完成。
+4. 等待 2 分钟。然后可以访问仓库对应的 GitHub Pages 网址。
 
 ### 如果想要本地开发……
 
